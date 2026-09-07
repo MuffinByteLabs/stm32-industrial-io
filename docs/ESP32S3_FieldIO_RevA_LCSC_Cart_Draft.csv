@@ -1,0 +1,54 @@
+Refs,Qty per board,Order qty (7 sets unless noted),MPN,LCSC,Package,Description,Status
+U301,1,6,LMR38020SDDAR,C3192337,HSOIC-8 (DDA),Synchronous buck 4.2-80 V 2 A 400 kHz via RT,confirmed 2026-09-07 (1765 in stock)
+U301 alt,0,0,LMR16020PDDAR,C190006,HSOIC-8 (DDA),Alternate buck 60 V 2 A non-sync (needs SS36 + RT + 0.75 V divider),confirmed 2026-09-07 (1995 in stock) - do not order unless U301 is out
+U401,1,7,USBLC6-2SC6,C7519,SOT-23-6,USB data-line ESD array,Board 1
+U501,1,7,AP2112K-3.3TRG1,C51118,SOT-23-5,3.3 V LDO 600 mA,Board 1
+U601,1,6,ESP32-S3-WROOM-1-N8,C2913198,module,Wi-Fi module 8 MB flash,Board 1
+U701-U704,4,28,EL817S1(C)(TU)-F,C106900,SMD-4 gull-wing,Optocoupler CTR rank C 200-400 %,confirmed 2026-09-07
+BR201,1,7,KBP206,C2494,KBP THT,Bridge rectifier 2 A 600 V,confirmed 2026-09-07 (MDD)
+Q801 Q802,2,14,S8050,C2146,SOT-23,NPN 0.5 A hFE >= 85,verify C-number (JLC Basic S8050 CJ)
+Q901 Q902,2,14,AO3400A,C20917,SOT-23,N-MOSFET 30 V logic-level,Board 1 family (AO3401A was C15127)
+D201,1,7,SMBJ43A,C315993,SMB,TVS 43 V standoff 600 W,confirmed 2026-09-07 (Littelfuse)
+D401,1,7,SMF5.0A,C2980403,SOD-123F,TVS 5 V USB,Board 1
+D301 D402 D901 D902,4,28,SS14,C2480,SMA,Schottky 1 A 40 V,Board 1
+D701-D704 D801 D802,6,42,1N4148W,C81598,SOD-123,Switching diode 150 mA 75 V,confirmed 2026-09-07 (ST Semtech)
+D705-D708 D803 D804 D903 D904,8,56,red LED 0805 high-efficiency,verify,0805,Vf ~1.9 V,pick any in-stock red 0805 (e.g. KT-0805R / XL-0805SURC)
+D501 D602,2,14,KT-0603YG / XL-0603QYGC,C2289,0603,Yellow-green LED Vf 2.0-2.2 V,Board 1
+D302,1,7,green LED 0805,verify,0805,FIELD PWR indicator on 5 V,pick any in-stock green 0805
+K801 K802,2,10,SRD-05VDC-SL-C,C35449,THT 19x15.5 mm,Relay 5 V SPDT 10 A coil 70 ohm,confirmed 2026-09-07 (Songle)
+L301,1,6,SRR1260-150M,C2041333,12x12x6 mm,Shielded inductor 15 uH Isat 4.6 A Irms 5 A 27 mohm,confirmed 2026-09-07 (Bourns)
+F201,1,7,60R110 or MF-RX110,verify,radial 5.08 mm,PPTC 1.1 A hold 60 V - NOT MF-R110 (30 V),verify at LCSC / DigiKey fallback
+F401,1,7,1206L075/16WR,C371166,1206,PPTC 0.75 A 16 V USB,Board 1
+J201,1,7,5.08 mm screw terminal 2P,verify,THT,KF128/DG128/MKDS-class 10 A,choose family then fetch drawing
+J701,1,7,5.08 mm screw terminal 5P,verify,THT,same family,
+J801 J802,2,14,5.08 mm screw terminal 3P,verify,THT,same family,
+J901,1,7,5.08 mm screw terminal 4P,verify,THT,same family,
+J401,1,7,TYPE-C-31-M-12,C165948,USB-C 16P,USB-C receptacle USB 2.0,Board 1
+SW601 SW602,2,14,TS-1187A-B-A-B,C318884,SMD 5.1 mm,Tactile switch,Board 1
+C201,1,7,470 uF 63 V 105 C low-ESR radial >= 0.6 A ripple,verify,12.5x20 mm,Bulk electrolytic (e.g. Nichicon UPW1J471MPD),choose then fetch sheet
+C901,1,7,100 uF 25 V electrolytic,verify,radial or SMD,VLOAD bulk,
+C202,1,7,1 uF 100 V X7R,verify,1206,Bus HF bypass,
+C301 C302,2,14,4.7 uF 100 V X7R,verify,1210,Buck input,
+C303,1,7,100 nF 100 V X7R,verify,0603,Buck HF input bypass,
+C305 C306 C307,3,21,22 uF 25 V X7R,verify,1210,Buck output,
+C701-C704,4,28,4.7 uF 16 V X7R,verify,0805,Opto input filters (tau 47 ms),
+C601,1,7,22 uF 25 V X5R,C45783,0805,Module bulk,Board 1
+C404 C503,2,14,10 uF 25 V X5R,C15850,0805,USB_5V_PROT / 5V_SYS bulk,Board 1
+C501 C502 C603,3,21,1 uF 50 V X5R,C15849,0603,LDO in/out and EN delay,Board 1
+C203 C304 C401 C602,4,28,100 nF 50 V X7R,C14663,0603,Decoupling (C304 is the BOOT cap),Board 1
+C801-C804 (DNP),0,0,100 nF 100 V X7R,verify,1206,Snubber caps - fit per deployment,DNP
+R701-R708,8,56,2.4 kohm 1 % 1206,verify,1206,Opto series resistors 250 mW,
+R201 R304,2,14,100 k / 91 k 1 % 0805,verify,0805,VIN_SENSE top / RENT,
+R301,1,7,64.9 kohm 1 %,verify,0603,RT -> 400 kHz,
+R302 R601 R602 R709-R712 R802 R804 R902 R904,10,70,10 kohm 1 % / 100 kohm 1 % (R302),C98220 (10 k) / C25803 (100 k),0603,Pull-ups and pull-downs; R302 = RFBT 100 k,Board 1 numbers
+R303,1,7,24.9 kohm 1 %,verify,0603,RFBB,
+R305,1,7,20 kohm 1 %,verify,0603,RENB,
+R202,1,7,6.8 kohm 1 %,verify,0603,VIN_SENSE bottom,
+R306 R501 R603 R805 R806 R905 R906,7,49,1 kohm 1 %,verify,0603,LED limits,
+R401 R402,2,14,22 ohm,C23345,0603,USB series,Board 1
+R403 R404,2,14,5.1 kohm,C23186,0603,CC pull-downs,Board 1
+R801 R803,2,14,680 ohm 1 %,verify,0603,Relay base resistors,
+R901 R903,2,14,100 ohm 1 %,verify,0603,Gate resistors,
+R807-R810 (DNP),0,0,100 ohm 1206,verify,1206,Snubber resistors,DNP
+RV801 RV802 (DNP),0,0,07D560K,verify,7 mm disc,MOV 35 V RMS,DNP
+J601 (DNP),0,0,1x6 2.54 mm header,-,THT,Expansion header,DNP
