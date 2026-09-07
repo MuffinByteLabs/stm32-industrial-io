@@ -33,18 +33,18 @@
 18. J401's GND pads A1/B1/A12/B12 **connected** — Board 1's blocking finding.
 
 ### Power integrity
-19. Every decoupler at its pin, millimetres not centimetres: C601/C602 @ module 3V3 · C501 @ LDO in · C502 @ LDO out · C401 @ U401 VBUS · R601/C603 @ EN · R602 @ IO0 · C203 @ IO8 · C701–C704 @ the opto collectors (logic side). Every decoupler's ground pad gets its own via.
+19. Every decoupler at its pin, millimetres not centimetres: C601/C602 @ module 3V3 · C501 (1 µF) @ LDO in · C502 (4.7 µF) @ LDO out · C401 @ U401 VBUS · R601/C603 @ EN · R602 @ IO0 · C203 @ IO8 · C701–C704 (1 µF) @ the opto collectors (logic side). Every decoupler's ground pad gets its own via.
 20. **5V_SYS node** (D301 cathode + D402 cathode + C503 + LDO input) compact and fat.
 21. **C901 (100 µF) at J901**, on the VLOAD pin; D901/D902 anodes at the MOSFET drains, cathodes at VLOAD, short.
 
 ### Thermal
-22. LDO U501: copper pour on its ground pin, stitched to the bottom plane — ≈ 0.46 W peaks, 0.19 W sustained.
+22. LDO U501 (AP7361C, SOT-223): the tab (pin 2, GND) on a copper pour ≥ 1 cm², stitched to the bottom plane with 4+ vias — ≈ 0.49 W peaks, 0.19 W sustained; the SOT-223 was chosen for exactly this pour.
 23. Bridge BR201: 1.5 W at 9 V DC full load — through-hole pins into generous copper on both layers; not next to C201 or the optos.
 24. Relay coils are 0.36 W each, continuous when on — nothing temperature-sensitive touching them (nothing on this board is).
 
 ### Analogue
-25. VIN_SENSE: R201/R202 at the bus, C203 **at the module pin**; the trace runs on the logic side, never alongside SW or the USB pair.
-26. Opto collector nodes IN1_L–IN4_L: short runs from U70x to the module; C70x at the module end of each. 4.7 µF makes them slow nets — the only rule is "not under the inductor".
+25. VIN_SENSE: R201/R202 (the two 100 kΩ) at the bus, R203 and C203 **at the module pin**; the trace runs on the logic side, never alongside SW or the USB pair.
+26. Opto collector nodes IN1_L–IN4_L: short runs from U70x to the module; C70x at the module end of each. 47 kΩ + 1 µF makes them slow, high-impedance nets — keep them off the SW node's side of the board and away from the relay coil drivers; otherwise "not under the inductor" is the only rule.
 
 ### Ground
 27. Bottom layer = one continuous logic-side ground. No trenches, especially under the converter, the USB pair and the module.
@@ -59,7 +59,7 @@
 34. Passives ≥ 0603; opto series resistors and the bus HF cap 1206; buck ceramics 1210. Part orientation consistent (all 0603 values readable from one direction) — it halves the tweezers time.
 35. Copper ≥ 0.5 mm from the board edge; courtyards clear; DRC 0 / unconnected 0 / parity 0 before any order.
 36. Connector openings face off-board; M3 heads Ø 6.5 mm part-free; no hole or standoff in the antenna region.
-37. **Safety silk:** terminal labels in plain English per `PinMap_CheatSheet.md`; **+** at C201, C901 and VLOAD; every diode's cathode and LED cathode; opto and relay pin 1; BOOT/RESET; TP names; NOT FOR MAINS; NOT ISOLATED at J901; ISOLATED at J701/J801/J802.
+37. **Safety silk:** terminal labels in plain English per `PinMap_CheatSheet.md`; **+** at C201, C901 and VLOAD+; every diode's cathode and LED cathode; opto and relay pin 1; BOOT/RESET; TP names; NOT FOR MAINS; NOT ISOLATED at J901; ISOLATED at J701/J801/J802; **DISCONNECT FIELD POWER BEFORE USB** beside J401; **CLOSE JP901 FOR 5V** beside the jumper.
 
 ### Process, before ordering
 38. ERC and DRC clean with board↔schematic parity; the moat rule passing; the paste preview inspected.

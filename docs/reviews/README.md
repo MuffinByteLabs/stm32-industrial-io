@@ -1,10 +1,11 @@
 # Design Reviews — ESP32-S3 Protected Field I/O Controller Rev A
 
-Review records for Rev A, in order. Each one is a real record: what was examined, how, what was found, and what changed as a result. Board 1 had six; this board's list starts before capture.
+Review records for Rev A, in order. Each one is a real record: what was examined, how, what was found, and what changed as a result. Board 1 had six; this board's list starts before capture — two reviews on the same day, from different directions, before a single symbol was placed.
 
 | Date | Review | Method | Outcome |
 |---|---|---|---|
 | 2026-09-07 | [Specification review](Spec_Review_RevA_2026-09-07.md) | Every number in the frozen spec (plan v7.3 §4) re-derived from datasheets, in `../calcs/board2_calcs.py`, and checked against the plan's own claims | **4 blocking findings** — the opto input RC could not hold LOW through the 60 Hz gap, the 7.5 V UVLO contradicted the 9 V input claim, the 0.5 A PPTC tripped at the low end of the DC range, and the chosen buck was a leadless QFN — plus 6 risky, 12 improvements, 11 numbers confirmed. All resolved in the design document before capture |
+| 2026-09-07 | [Second-opinion review](Second_Opinion_Review_RevA_2026-09-07.md) | An independent fifteen-point review of the same spec, weighed point by point against the design document with the calc script extended | **9 points adopted** (SOT-223 regulator, 47 k + 1 µF input filter, VIN_SENSE ratio, jumper default and connector order, silk USB rule, published 12 V minimum, 1.25 A acceptance, bring-up current limit, supervisory wording) · 6 not adopted with arithmetic (LM5012, 100 V capacitor, LTV-814, 100 kΩ pull-downs, 30 VAC, SS14 flyback). Both reviews agreed independently on the four blocking items |
 
 ## Planned gates (each gets a record here)
 

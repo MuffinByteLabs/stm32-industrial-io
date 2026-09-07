@@ -8,9 +8,9 @@ The second board in the series after the [ESP32-S3 Plant Monitor](https://github
 
 | | |
 |---|---|
-| **Power in** | 10–36 V DC either polarity, or 24 VAC (18–28 VAC) — one screw terminal, fused, bridge-rectified, TVS-clamped |
-| **Rails** | LMR38020 synchronous buck (80 V, 2 A) → 5 V for relays and loads · SS14 diode-OR → 4.6 V logic rail · AP2112K → 3.3 V |
-| **Inputs** | 4 × opto-isolated (EL817, rank C), shared COM, AC or DC, either polarity, ≈ 7.6 V threshold, 36 V continuous |
+| **Power in** | 12–36 V DC either polarity (guaranteed down to 10 V), or 24 VAC (18–28 VAC) — one screw terminal, fused, bridge-rectified, TVS-clamped |
+| **Rails** | LMR38020 synchronous buck (80 V, 2 A) → 5 V for relays and loads · SS14 diode-OR → 4.6 V logic rail · AP7361C (1 A, SOT-223) → 3.3 V |
+| **Inputs** | 4 × opto-isolated (EL817, rank C), shared COM, AC or DC, either polarity, ≈ 4 V threshold, 36 V continuous |
 | **Outputs** | 2 × SPDT relay contact sets on terminals (rated here ≤ 2 A / ≤ 30 V AC-DC, isolated) · 2 × low-side MOSFET (AO3400A) with a 5 V-or-external VLOAD jumper |
 | **MCU** | ESP32-S3-WROOM-1-N8, native USB-C for bench programming only, OTA in the field |
 | **Board** | 2-layer, 1 oz, ≤ 100 × 100 mm, field side / logic side with a ≥ 2.5 mm moat enforced by DRC |
@@ -23,6 +23,7 @@ The second board in the series after the [ESP32-S3 Plant Monitor](https://github
 |---|---|
 | 📄 **[Design document](docs/ESP32S3_FieldIO_Final_Design_Document.md)** | Every component and why it is there, organised sheet by sheet, written to be read by someone who is not a PCB engineer |
 | 🔍 **[Specification review](docs/reviews/Spec_Review_RevA_2026-09-07.md)** | The pre-capture review: 4 blocking findings, 6 risky, 12 improvements, 11 numbers confirmed — and what changed because of them |
+| 🔍 **[Second-opinion review](docs/reviews/Second_Opinion_Review_RevA_2026-09-07.md)** | An independent review of the same spec, weighed point by point: 9 adopted, 6 declined with arithmetic |
 | 🧮 **[The arithmetic](docs/calcs/board2_calcs.py)** | One Python file that recomputes every number in the design document |
 | 🧭 **[Project status](docs/PROJECT_STATUS.md)** | Where the project stands, what is decided, what is next |
 | 🔧 **[Bring-up guide](docs/BringUp_Guide.md)** | Staged first power, expected voltages, record sheet |
@@ -34,10 +35,10 @@ The second board in the series after the [ESP32-S3 Plant Monitor](https://github
 |---|---|---|---|
 | 1 | **HVAC runtime monitor** (listen-only, safest) | IN1 = W (heat), IN2 = Y (cool), IN3 = G (fan), COM = C; power from R and C | none — runtime data, filter reminders, short-cycle alerts |
 | 2 | **Whole-house air circulation** | as above, plus K1 COM → R, K1 NO → G | relay in parallel with the fan wire |
-| 3 | **AC condensate overflow guard** | IN4 = float switch to COM; K2 wired in series with Y through **NC** | cooling opens if the pan floods — and keeps running if this board dies |
+| 3 | **AC condensate overflow supervisor** | IN4 = float switch to COM; K2 wired in series with Y through **NC**, *in addition to* the OEM float-switch interlock | a second trip and a phone alert if the pan floods; NC keeps cooling running if this board dies (fail-operational by choice — the OEM interlock stays the safety device) |
 | 4 | **One sprinkler zone** | 24 VAC transformer to PWR IN; K1 COM → 24 VAC, K1 NO → valve | relay switches 24 VAC to the valve |
-| 5 | **Water-leak alarm** | leak pads across IN1/COM with a 12–24 V source; buzzer on VLOAD/OUT1 | buzzer + phone alert |
-| 6 | **Plant waterer** | Board 1's "dry" message + float switch on IN1; pump on VLOAD/OUT1 | pump on OUT1 |
+| 5 | **Water-leak alarm** | leak pads across IN1/COM with a 12–24 V source; buzzer between VLOAD+ and OUT1− (JP901 closed) | buzzer + phone alert |
+| 6 | **Plant waterer** | Board 1's "dry" message + float switch on IN1; pump between VLOAD+ and OUT1− (JP901 closed) | pump on OUT1 |
 
 Uses 1–3 fit one board at once: three monitor inputs + the float switch, fan relay + cooling relay. That is why the count is 4-in / 2-relay and locked.
 
@@ -46,9 +47,9 @@ Uses 1–3 fit one board at once: three monitor inputs + the float switch, fan r
 - **A buck converter laid out on two layers, with the numbers** — hot loop, SW node, UVLO divider, inductor saturation against the current limit, TVS clamp against the converter's absolute maximum.
 - **Isolation as a layout discipline** — a field side and a logic side, a moat the DRC enforces, and an honest isolation map (what is isolated, what is not, and why the power input is not).
 - **AC-and-DC field inputs done properly** — series resistance split for dissipation and voltage rating, anti-parallel diode, and an RC that actually holds LOW through the 60 Hz gap (the arithmetic is in the review; the plan's first value did not).
-- **Outputs that cannot chatter at boot** — pull-downs sized against the ESP32-S3's reset-state pull-ups, pins chosen from the datasheet's no-default-pull set.
+- **Outputs that cannot chatter at boot** — pull-downs sized against the ESP32-S3's reset-state pull-ups, pins chosen from the datasheet's no-default-pull set, and a load-supply jumper that is open until someone closes it on purpose.
 - **A bench that assembles its own prototypes** — stencil and hot plate, and the design rules that fall out of that (leaded packages only, through-hole for anything with a screw or a coil, windowpaned paste on exposed pads).
-- **A documentation trail from day zero** — the specification was reviewed before capture, and the review changed it.
+- **A documentation trail from day zero** — the specification was reviewed twice before capture, from two directions, and both reviews changed it.
 
 ## Repository map
 
@@ -72,10 +73,11 @@ Uses 1–3 fit one board at once: three monitor inputs + the float switch, fan r
 ## Safety notes for anyone wiring this board
 
 1. **Never mains.** ≤ 30 V AC or DC on any terminal, ≤ 2 A through any relay contact. The silkscreen says so; so does the design.
-2. **The power input and the MOSFET outputs share the board's ground; only the opto inputs and the relay contacts are isolated.** An external VLOAD supply must return to the GND pin — and **meter its polarity first**: a reversed VLOAD supply shorts through the flyback diodes.
-3. **USB is a bench port.** Do not connect USB while the board is field-powered from a supply whose negative or AC common is earthed — the USB cable's ground would carry the board's return current around the bridge rectifier. Use the floating plug-in 24 VAC transformer or a battery-powered laptop on the bench; update firmware over Wi-Fi in the field.
+2. **The power input and the MOSFET outputs share the board's ground; only the opto inputs and the relay contacts are isolated.** An external VLOAD supply must return to the GND pin — and **meter its polarity first**: a reversed VLOAD supply shorts through the flyback diodes. JP901 ships open; close it only to run 5 V loads from the board, never with an external supply on VLOAD+.
+3. **DISCONNECT FIELD POWER BEFORE USB** — it is printed on the board. With an earthed field supply and an earthed laptop, the USB cable's ground would carry the board's return current around the bridge rectifier. The only exception is the bench with a floating supply (the plug-in 24 VAC transformer, an unearthed bench supply) or a battery-powered laptop. In the field, firmware updates are over Wi-Fi.
 4. **Inductive loads on the relays** (valves, contactor coils) need the snubber/MOV footprints fitted, or a diode across a DC load. The footprints are there, unpopulated, and the design document says what goes in them.
 5. **Boards assembled here use leaded solder** and are not RoHS-compliant.
+6. **This board supervises equipment; it is not the equipment's safety interlock.** Leave the manufacturer's float switches, high-limit switches and fuses in circuit.
 
 ## License
 

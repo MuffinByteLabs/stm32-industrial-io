@@ -115,10 +115,14 @@ for vin, eta in ((12, 0.90), (24, 0.89), (36, 0.87)):
 print("  plan v7.3 '~0.6 W at 36 V' -> confirmed")
 
 # LDO
-hdr("5. AP2112K on the OR'd logic rail")
+hdr("5. The 3.3 V LDO on the OR'd logic rail -- AP2112K (SOT-23-5) vs AP7361C (SOT-223)")
 for v5, label in ((5.0, "hard 5.0 V rail (plan v7.3 topology)"), (4.6, "behind SS14 OR diode (this document)")):
-    print(f"  {label}: TX peak (5-3.3)... P = ({v5}-3.3) x 0.355 = {(v5-3.3)*0.355:.2f} W;  sustained 150 mA: {(v5-3.3)*0.15:.2f} W -> dT ~ {(v5-3.3)*0.15*150:.0f} C at 150 C/W (SOT-23-5 on a pour)")
-print("  AP2112K dropout ~0.25 V @ 600 mA -> needs >= 3.6 V in; 4.6 V rail leaves 1.0 V")
+    p_pk, p_sus = (v5-3.3)*0.375, (v5-3.3)*0.15
+    print(f"  {label}: TX peak P = ({v5}-3.3) x 0.375 = {p_pk:.2f} W; sustained 150 mA: {p_sus:.2f} W")
+    for name, rja in (("AP2112K SOT-23-5", 150), ("AP7361C SOT-223 datasheet 110 C/W", 110), ("AP7361C SOT-223 tab on a pour ~70 C/W", 70)):
+        print(f"      {name:40s}: dT sustained {p_sus*rja:4.0f} C, dT at TX peak {p_pk*rja:4.0f} C")
+print("  AP7361C-33E-13: VIN 2.2-6.0 V, 1 A, dropout 360 mV @ 1 A (~130 mV @ 0.37 A), IQ 60 uA, CIN >= 1 uF, COUT >= 2.2 uF ceramic, TSD 150 C")
+print("  => second-review item adopted: SOT-223 halves the sustained rise even on the datasheet number; the part is a drop-in on the same rail.")
 
 # Schottky OR
 hdr("6. Diode-OR on the logic 5 V rail")
@@ -131,7 +135,7 @@ hdr("7. Opto inputs (PC817 rank C: CTR 200-400 % @ IF = 5 mA; use CTR_min 50 % x
 R_SERIES = 4800.0
 VF_LED_OPTO = 1.15
 VF_LED_IND  = 1.9   # red indicator in series, field side
-R_PU = 10e3; V33 = 3.3
+R_PU = 47e3; V33 = 3.3   # second review: 47 k + 1 uF gives the same tau with 5x less sink current needed
 I_PU = V33/R_PU
 CTR_MIN = 0.50*0.7
 for vin in (12, 24, 30, 36, 40):
@@ -150,16 +154,17 @@ on_frac = (180-2*ang)/360
 T = 1/60
 print(f"  24 VAC: conducts from {ang:.1f} deg to {180-ang:.1f} deg -> ON {on_frac*T*1e3:.1f} ms, OFF (gap) {(1-on_frac)*T*1e3:.1f} ms per 16.7 ms cycle")
 gap = (1-on_frac)*T
-for C in (1e-6, 2.2e-6, 4.7e-6, 10e-6):
+for C in (0.47e-6, 1e-6, 2.2e-6):
     tau = R_PU*C
     v_end = V33*(1-math.exp(-gap/tau))
     tau_d = R_PU*C*0.8  # X7R derated at 3.3 V bias
     v_end_d = V33*(1-math.exp(-gap/tau_d))
     print(f"  C = {C*1e6:4.1f} uF: tau = {tau*1e3:3.0f} ms -> node rises to {v_end:.2f} V by the end of the gap ({v_end_d:.2f} V with 20 % cap derating); release time ~{3*tau*1e3:.0f} ms")
 print("  ESP32-S3 VIL = 0.25 x 3.3 = 0.825 V, VIH = 0.75 x 3.3 = 2.475 V")
-print("  => plan v7.3's 1 uF (tau 10 ms) reaches ~2 V during the gap: NOT a steady LOW. 4.7 uF (tau 47 ms) holds < 0.7 V. Chosen: 10 k + 4.7 uF X7R 16 V 0805.")
+print("  => plan v7.3's 10 k + 1 uF (tau 10 ms) reaches ~2 V during the gap: NOT a steady LOW. Chosen: 47 k + 1 uF (tau 47 ms, holds < 0.7 V) -- same tau as 10 k + 4.7 uF, but the opto only has to sink 70 uA and the cap is a plain 0603.")
+tau10 = 10e3*1e-6; print(f"  (for the record: 10 k + 1 uF -> {V33*(1-math.exp(-gap/tau10)):.2f} V at the end of the gap)")
 # discharge time on first cycle
-print(f"  First-detect delay: opto must pull 4.7 uF from 3.3 V to 0.8 V with ~{(0.8e-3-I_PU)*1e3:.2f} mA net at 12 V -> {4.7e-6*2.5/((0.8e-3-I_PU))*1e3:.0f} ms (~1 cycle) - fine")
+print(f"  First-detect delay: opto must pull 1 uF from 3.3 V to 0.8 V with ~{(0.65e-3-I_PU)*1e3:.2f} mA net at 12 V -> {1e-6*2.5/((0.65e-3-I_PU))*1e3:.1f} ms - immediate")
 
 # ---------------------------------------------------------------- RELAY
 hdr("8. Relay driver (SRD-05VDC-SL-C: 70 ohm +-10 %, S8050 hFE min 85 @ 50 mA)")
@@ -181,11 +186,13 @@ print(f"  Gate pulldown 10 k vs hypothetical 45 k internal pull-up: gate = 3.3 x
 print(f"  100 ohm gate resistor, Ciss ~ 900 pF: tau = {100*900e-12*1e9:.0f} ns")
 
 # ---------------------------------------------------------------- VIN sense
-hdr("10. VIN_SENSE divider")
-RT_, RB_ = 100e3, 6.8e3
-for v in (9, 24, 39, 45):
-    print(f"  bus {v:2d} V -> {v*RB_/(RT_+RB_):.2f} V at the ADC (0-2.9 V usable, ATTEN 3)")
-print(f"  divider current at 39 V: {39/(RT_+RB_)*1e6:.0f} uA, {39**2/(RT_+RB_)*1e3:.0f} mW; 100 k sees {39*RT_/(RT_+RB_):.0f} V -> 0805 (150 V) ")
+hdr("10. VIN_SENSE divider (second review: ratio raised so a TVS-clamp-level bus stays under the ESP32's 3.6 V absolute maximum)")
+for RT_, RB_, label in ((100e3, 6.8e3, "first draft 100 k / 6.8 k (1:15.7)"), (200e3, 10e3, "chosen 2 x 100 k / 10 k (1:21)")):
+    print(f"  {label}:")
+    for v in (9, 24, 39, 52, 69):
+        flag = "  <-- over 3.6 V abs max" if v*RB_/(RT_+RB_) > 3.6 else ("  (ADC saturates above 2.9 V, pin is safe)" if v*RB_/(RT_+RB_) > 2.9 else "")
+        print(f"     bus {v:2d} V -> {v*RB_/(RT_+RB_):.2f} V at the ADC{flag}")
+    print(f"     divider current at 39 V: {39/(RT_+RB_)*1e6:.0f} uA; each top resistor sees {39*RT_/(RT_+RB_)/(2 if RT_>150e3 else 1):.0f} V; LSB = {2.9/4095*(RT_+RB_)/RB_*1e3:.0f} mV of bus")
 
 # ---------------------------------------------------------------- traces
 hdr("11. Trace widths (IPC-2221 external, 1 oz = 1.37 mil)")
@@ -195,6 +202,14 @@ def ipc_current(w_mm, dT=10, oz=1.0):
 for w in (0.3, 0.5, 0.8, 1.0, 1.5, 2.0):
     print(f"  {w:3.1f} mm: {ipc_current(w):.2f} A @ 10 C rise, {ipc_current(w,20):.2f} A @ 20 C rise")
 print("  => relay contact paths (2 A rating) >= 1.5 mm; 5V_BUCK / VLOAD (1 A) >= 0.8 mm; bus input >= 0.8 mm")
+
+hdr("12b. Acceptance load (second review): test the rail at 1.25 A, design for 1.1 A continuous")
+for vt in (10, 12, 24):
+    I, vb = input_current_dc(vt, p_out=5.0*1.25)
+    print(f"  {vt:2d} V terminal at 1.25 A out: I_in = {I*1e3:.0f} mA (PPTC hold 1100 mA), bus = {vb:.1f} V")
+print("  4 ohm / 10 W resistor across TP2-GND = 1.25 A; bridge loss at 12 V = %.1f W" % (2*VF_BRIDGE_FULL*input_current_dc(12, p_out=6.25)[0]))
+print("  Bench-supply current limit for the *programmed* board at 12 V: Wi-Fi TX peak 0.36 A x 5 V / 0.9 / 9.9 V = %.0f mA -> set 250-300 mA, not 100 mA (100 mA is only for the unprogrammed first power)" % (0.36*5/0.9/9.9*1e3))
+print("  Bulk cap vs a 24 VAC solenoid kick (0.5 H, 0.3 A = 22 mJ) dumped into 470 uF at 34 V: V2 = sqrt(34^2 + 2*0.022/470e-6) = %.1f V -> the node cannot reach the TVS clamp voltage; 63 V rating stands" % math.sqrt(34**2 + 2*0.022/470e-6))
 
 hdr("12. Creepage / clearance sanity (IPC-2221 B2 uncoated external, <= 100 V: 0.6 mm; B4 coated: 0.13 mm)")
 print("  Moat 2.5 mm >= 4x the uncoated requirement for 39 V DC / 40 V peak. Fine; it is discipline + optics, as the plan says.")

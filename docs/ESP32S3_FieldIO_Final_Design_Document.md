@@ -2,7 +2,7 @@
 
 **Board:** target ≈ 100 × 70 mm (must stay ≤ 100 × 100 mm) · **2-layer**, 1 oz · 1.6 mm · lead-free HASL · bare PCB + stencil from JLCPCB, **assembled on the bench** (Sn63/Pb37 hot-plate reflow, through-hole by iron)
 
-**Status:** written 2026-09-07, **before schematic capture** · verified against PCB Freelance Plan v7.3 §4 — every departure from that spec is recorded in [`reviews/Spec_Review_RevA_2026-09-07.md`](reviews/Spec_Review_RevA_2026-09-07.md) and summarised in Addendum A · the arithmetic behind every number is in [`calcs/board2_calcs.py`](calcs/board2_calcs.py)
+**Status:** written 2026-09-07, **before schematic capture** · verified against PCB Freelance Plan v7.3 §4 — every departure from that spec is recorded in [`reviews/Spec_Review_RevA_2026-09-07.md`](reviews/Spec_Review_RevA_2026-09-07.md) · a second, independent review the same day was weighed point by point in [`reviews/Second_Opinion_Review_RevA_2026-09-07.md`](reviews/Second_Opinion_Review_RevA_2026-09-07.md) and its adopted items are folded in below · both are summarised in Addendum A · the arithmetic behind every number is in [`calcs/board2_calcs.py`](calcs/board2_calcs.py)
 
 > **Reference designators use per-sheet numbering** (sheet 02 → 2xx, sheet 03 → 3xx …). Set KiCad's *Annotate → Use first free number after* to 200 / 300 / … per sheet and the designators below survive capture unchanged. If the schematic ends up numbered differently, regenerate the BOM from the schematic and record the cross-map in an Addendum — exactly as Board 1 had to.
 
@@ -18,7 +18,7 @@ The board is the second portfolio project. Its **one new hard thing** is a buck 
 
 ### What the board does
 
-- Accepts **10–36 V DC (either polarity) or 24 VAC** on a screw terminal and makes its own 5 V and 3.3 V from it.
+- Accepts **12–36 V DC (either polarity) or 24 VAC** on a screw terminal — guaranteed to start and run at full load from 10 V DC — and makes its own 5 V and 3.3 V from it.
 - Reads **four opto-isolated inputs** on a shared common: "is 12–30 V present on this wire?" — AC or DC, either polarity, galvanically separated from the logic.
 - Switches **two relay contact sets** (single-pole double-throw, NO/COM/NC all on terminals), rated on this board for ≤ 2 A at ≤ 30 V AC or DC, galvanically separated from the logic.
 - Switches **two low-side MOSFET outputs** for pumps, buzzers and LED strips that share the board's ground, from the board's 5 V or from an external 8–12 V supply.
@@ -32,7 +32,7 @@ The board is the second portfolio project. Its **one new hard thing** is a buck 
 |---|---|---|---|---|
 | 1 | HVAC runtime monitor (listen-only) | IN1–IN3 = W/Y/G, COM = C | none — runtime data, filter reminders, short-cycle alerts | HVAC wiring, read-only |
 | 2 | Whole-house air circulation | schedule | K1 in parallel with the fan wire | HVAC (additive control) |
-| 3 | AC condensate overflow guard | IN4 = float switch | K2 in series with the cooling wire (NC) | HVAC + safety switches |
+| 3 | AC condensate overflow supervisor | IN4 = float switch | K2 in series with the cooling wire (NC), **in addition to** the OEM float-switch interlock, never instead of it | HVAC + safety switches |
 | 4 | One sprinkler zone | schedule / Board 1's "dry" message | K1 switches 24 VAC to the valve | irrigation |
 | 5 | Water-leak alarm | IN = leak pads | buzzer on OUT1, phone alert | flood alarms |
 | 6 | Plant waterer | Board 1 + float switch | pump on OUT1 | dispensers |
@@ -45,8 +45,8 @@ Mains voltage of any kind. RS-485. Battery operation. Current sensing. More chan
 
 ### Success criteria (the bench acceptance, in order)
 
-1. 5V_BUCK = **5.00 V ± 3 %**, ripple **< 50 mV peak-to-peak** at 1 A, on 12 V DC, 36 V DC and the 24 VAC wall transformer.
-2. Clean cold start at **10 V DC** and on the 24 VAC transformer; clean shutdown and restart when the input is ramped down and up (no chatter).
+1. 5V_BUCK = **5.00 V ± 3 %**, ripple **< 50 mV peak-to-peak** at a **1.25 A** test load (design point 1.1 A continuous, worst-case budget 0.95 A), on 12 V DC, 36 V DC and the 24 VAC wall transformer.
+2. Clean cold start at **10 V DC** (the guaranteed floor behind the published 12 V) and on the 24 VAC transformer; clean shutdown and restart when the input is ramped down and up (no chatter).
 3. Flashes over USB with **no field power**, and with USB alone the relays and VLOAD are dead.
 4. All four inputs read a 24 V DC and a 24 VAC source as a steady ON, and read open as OFF.
 5. Both relays click a real 24 VAC sprinkler valve; a pump runs on OUT1.
@@ -68,7 +68,7 @@ One honest detail, stated the same way on the silkscreen: **the power input is n
 
 ### Power flow, in one paragraph
 
-Field power (24 VAC or 10–36 V DC, either way round) enters at J201, passes a resettable fuse and a full bridge rectifier, and becomes the **DC bus**, net VBUS_DC, held up by a 470 µF electrolytic and clamped by a 43 V transient suppressor. The bus is anywhere from 7 V to 39 V. A synchronous buck converter (U301, LMR38020) turns the bus into **5V_BUCK**, a regulated 5.0 V rail that only exists when field power is present. 5V_BUCK feeds the two relay coils and, through a solder jumper, the VLOAD terminal for the MOSFET loads. 5V_BUCK also feeds, through a Schottky diode, the **logic rail 5V_SYS**; USB-C feeds the same 5V_SYS through its own Schottky diode. Whichever source is higher wins, neither can back-feed the other, and 5V_SYS sits at ≈ 4.6 V from either. 5V_SYS feeds the AP2112K regulator, whose 3.3 V output, **+3V3**, powers the ESP32-S3, the opto pull-ups, and every indicator LED on the logic side.
+Field power (24 VAC or 10–36 V DC, either way round) enters at J201, passes a resettable fuse and a full bridge rectifier, and becomes the **DC bus**, net VBUS_DC, held up by a 470 µF electrolytic and clamped by a 43 V transient suppressor. The bus is anywhere from 7 V to 39 V. A synchronous buck converter (U301, LMR38020) turns the bus into **5V_BUCK**, a regulated 5.0 V rail that only exists when field power is present. 5V_BUCK feeds the two relay coils and, through a solder jumper, the VLOAD terminal for the MOSFET loads. 5V_BUCK also feeds, through a Schottky diode, the **logic rail 5V_SYS**; USB-C feeds the same 5V_SYS through its own Schottky diode. Whichever source is higher wins, neither can back-feed the other, and 5V_SYS sits at ≈ 4.6 V from either. 5V_SYS feeds the AP7361C regulator (1 A, SOT-223), whose 3.3 V output, **+3V3**, powers the ESP32-S3, the opto pull-ups, and every indicator LED on the logic side.
 
 ### The rails
 
@@ -78,7 +78,7 @@ Field power (24 VAC or 10–36 V DC, either way round) enters at J201, passes a 
 | 5V_BUCK | Buck output. Field-powered loads only: relay coils, VLOAD (jumpered), the FIELD PWR LED. | 5.02 V ± 3 % |
 | 5V_SYS | Logic supply, OR'd from 5V_BUCK and USB through two SS14 Schottky diodes. | ≈ 4.4–4.85 V |
 | USB_5V_PROT | USB VBUS after its fuse and TVS. | 4.75–5.25 V |
-| +3V3 | AP2112K output. Everything that thinks or indicates. | 3.30 V |
+| +3V3 | AP7361C output. Everything that thinks or indicates. | 3.30 V |
 | VLOAD | MOSFET load supply terminal. = 5V_BUCK with JP901 closed; external 8–12 V with JP901 cut. | 5 V or 8–12 V |
 | GND | Logic ground = bridge negative = USB ground = MOSFET source. **Not** the field common of the inputs. | 0 V |
 | FLD_COM | The shared common of the four opto inputs. Floats at whatever the field wiring puts on it. | field |
@@ -89,7 +89,7 @@ Field power (24 VAC or 10–36 V DC, either way round) enters at J201, passes a 
 |---|---|
 | FLD_PWR_A / FLD_PWR_B | The two power-terminal pins, before the fuse and bridge. Either may be positive, or they may be AC. |
 | VBUS_DC | DC bus after the bridge. |
-| VIN_SENSE | VBUS_DC ÷ 15.7, to an analogue input. |
+| VIN_SENSE | VBUS_DC ÷ 21, to an analogue input. |
 | SW | The buck's switch node — the only fast, high-dV/dt net on the board. |
 | BOOT | The buck's bootstrap capacitor node (not to be confused with the ESP32 BOOT button net, which is `IO0`). |
 | FB / EN_BUCK / RT | Buck feedback, enable (UVLO divider) and frequency-set nodes. |
@@ -120,9 +120,11 @@ On the field side the input current follows the bus voltage: 0.79 A at 9 V DC, 0
 
 - **Field power only** (the installed case): 5V_BUCK and 5V_SYS up, everything works, USB port idle.
 - **USB only** (the bench): 5V_SYS ≈ 4.6 V from the laptop, the ESP32-S3 runs, flashes and logs; **5V_BUCK is dead, so the relays cannot click and VLOAD is 0 V.** This is enforced by the diode topology, not by firmware.
-- **Both**: both Schottky diodes share 5V_SYS at ≈ 4.6 V; the field loads run from the buck. Only allowed with a *floating* field supply — see §17, ground loop.
+- **Both**: both Schottky diodes share 5V_SYS at ≈ 4.6 V; the field loads run from the buck. **Bench only, with a floating field supply** (the plug-in transformer, an unearthed bench supply) or a battery-powered laptop; the silkscreen says *DISCONNECT FIELD POWER BEFORE USB* because in the field the supply's return is usually earthed — see §17, ground loop.
 
 ### Isolation map
+
+Three electrical domains, stated plainly: the **logic domain** (which includes the power entry, the buck, USB and the MOSFET outputs — all one ground), the **input domain** (IN1–IN4 and FLD_COM, floating), and the **relay-contact domains** (K1's contacts and K2's contacts, each floating on its own). The board is *opto-isolated inputs and isolated relay contacts on a non-isolated controller* — not a galvanically isolated controller.
 
 | Boundary | Isolated? | By what | Withstand (as designed) |
 |---|---|---|---|
@@ -134,11 +136,11 @@ On the field side the input current follows the bus voltage: 0.79 A at 9 V DC, 0
 
 ## 3. Field Power Entry — Sheet 02_Field_Power_Entry
 
-This sheet turns anything from 10 V DC to a 24 VAC transformer, wired either way round, into a fused, clamped, filtered DC bus.
+This sheet turns anything from 10 V DC to a 24 VAC transformer, wired either way round, into a fused, clamped, filtered DC bus. The published input is **12–36 V DC / 24 VAC (18–28 VAC)** — the two systems the board is for; the guaranteed floor behind the 12 V figure is 10 V (§4, UVLO). The AC ceiling stays at 28 VAC, not 30: a 30 VAC transformer peaks at 42 V and puts a 41 V bus within 2 V of the TVS standoff.
 
 ### J201 — power terminal (5.08 mm pitch, 2 positions)
 
-A screw terminal accepting 0.5–2.5 mm² wire (26–12 AWG), the kind every furnace and irrigation controller uses. Pins are `FLD_PWR_A` and `FLD_PWR_B`. There is no polarity: the bridge behind it makes either order correct, and 24 VAC is simply both orders sixty times a second. Silkscreen: **PWR IN · 10–36V DC / 24V AC · ANY POLARITY**.
+A screw terminal accepting 0.5–2.5 mm² wire (26–12 AWG), the kind every furnace and irrigation controller uses. Pins are `FLD_PWR_A` and `FLD_PWR_B`. There is no polarity: the bridge behind it makes either order correct, and 24 VAC is simply both orders sixty times a second. Silkscreen: **PWR IN · 12–36V DC / 24V AC · ANY POLARITY**.
 
 ### F201 — resettable fuse (PPTC, 1.1 A hold, 60 V, radial)
 
@@ -171,12 +173,12 @@ The reservoir between the rectifier's 120 Hz peaks. On 24 VAC the bus is refille
 
 - **Ripple arithmetic (tolls format, from the plan):** ΔV = I × Δt / C. At the full-load 0.18 A DC-equivalent and a full 8.3 ms period, 330 µF sags 4.6 V; **470 µF sags 3.2 V**. The bus therefore rides between ≈ 30 V and ≈ 27 V at nominal 24 VAC, or ≈ 24 → 20 V at 18 VAC low line — never near the 6–7 V UVLO.
 - **Ripple current:** a capacitor-input rectifier pulls ≈ 2.2× the DC current as RMS from the capacitor — ≈ 0.40 A RMS at 120 Hz. Specify ≥ 0.6 A ripple rating; electrolytic ripple ratings are quoted at 100 kHz and derate to ≈ 0.6× at 120 Hz, so a "1 A at 100 kHz" part is the right class. Nichicon UPW / Rubycon ZLH / Panasonic FR 470 µF 63 V (≈ 12.5 × 20 mm) or an equivalent 105 °C low-ESR part.
-- **Voltage:** 63 V against a 39 V bus (62 % of rating). Never on the hot plate — through-hole, hand-soldered, big **+** on the silk.
+- **Voltage:** 63 V against a 39 V bus (62 % of rating). A 100 V part was suggested in the second review on the grounds that the TVS can clamp at 69 V; that confuses the TVS's rating with what the node does — the capacitor is in parallel with the TVS, and a 22 mJ solenoid kick (0.5 H at 0.3 A, the worst thing on a 24 VAC secondary) raises 470 µF from 34 V to 35.3 V. The node cannot reach the clamp voltage unless the capacitor has failed open, and then the 85 V buck survives on the TVS alone. 63 V stands; the footprint (Ø 12.5 mm, 5 mm pitch) is the common one. Never on the hot plate — through-hole, hand-soldered, big **+** on the silk.
 - **C202 — 1 µF, 100 V, 1206 X7R** in parallel: takes the high-frequency part of the buck's input ripple that the electrolytic's ESL cannot, and gives the TVS a low-impedance partner for fast edges. (The buck's own ceramic input capacitors are on sheet 03, at its pins.)
 
-### R201, R202, C203 — input-voltage sense (100 kΩ 0805 / 6.8 kΩ 0603 / 100 nF)
+### R201, R202, R203, C203 — input-voltage sense (2 × 100 kΩ 0805 in series / 10 kΩ 0603 / 100 nF)
 
-A divider from VBUS_DC to GND; the midpoint, net `VIN_SENSE`, goes to **IO8 (ADC1_CH7)**. Ratio 6.8 / 106.8 = 1 / 15.7: 9 V → 0.57 V, 24 V → 1.53 V, 39 V → 2.48 V, all inside the ADC's 0–2.9 V window (attenuation 3). The 100 kΩ sits across up to 37 V — an 0805 (150 V rated) for the habit, 14 mW. C203 sits at the ESP32 pin, per the same ADC rule as Board 1 (the converter samples by charging a ≈ 10 pF internal capacitor; the 100 nF at the pin supplies that gulp). Draw: 0.37 mA at 39 V. Firmware uses it for three things: "field power present" gating, input-voltage telemetry, and the low-input-voltage warning that turns "the board keeps resetting" into a number.
+A divider from VBUS_DC to GND; the midpoint, net `VIN_SENSE`, goes to **IO8 (ADC1_CH7)**. Ratio 10 / 210 = **1 / 21**: 9 V → 0.43 V, 24 V → 1.14 V, 39 V → 1.86 V, all inside the ADC's 0–2.9 V window (attenuation 3), 15 mV of bus per LSB. The ratio is set by the *fault* case, not the normal one: the ESP32-S3 has no clamp diodes to its supply and an absolute maximum of 3.6 V on any pin, so even a bus held at the TVS's 69 V clamp must map below that — 69 / 21 = 3.29 V (the first draft's 1:15.7 would have put 4.4 V on the pin). Two 100 kΩ in series split the voltage (≈ 19 V each, 0805 for the habit) and cost 186 µA at 39 V. C203 sits at the ESP32 pin, per the same ADC rule as Board 1 (the converter samples by charging a ≈ 10 pF internal capacitor; the 100 nF at the pin supplies that gulp); with the 200 kΩ source it also makes the node a 20 ms low-pass, which is what a supply-voltage reading wants. Firmware uses it for three things: "field power present" gating, input-voltage telemetry, and the low-input-voltage warning that turns "the board keeps resetting" into a number.
 
 Nets leaving this sheet: VBUS_DC (to the buck), VIN_SENSE (to the core), GND.
 
@@ -230,8 +232,8 @@ UVLO = Under-Voltage Lock-Out: the buck stays off until its input is high enough
 The plan had one 5 V node, with USB OR'd into it. On that node the relays would pull in from USB power alone (USB gives ≈ 4.6 V after a Schottky; the relay's must-operate voltage is 3.75 V), so "outputs stay off until field power is present" would have been a firmware promise. This board separates the rails:
 
 - **5V_BUCK** (the buck's regulation point, 5.02 V) feeds: K1 and K2 coils, JP901 → VLOAD, D302 FIELD PWR LED.
-- **5V_SYS** = 5V_BUCK through **D301 (SS14)**, or USB_5V_PROT through **D402 (SS14)** on sheet 04. Feeds the AP2112K and nothing else that matters.
-- Consequences: USB alone → 5V_BUCK is dead → relays and VLOAD are dead, by physics. The buck can never push current into a laptop (D402 blocks it). USB can never feed a pump. The AP2112K sees ≈ 4.6 V instead of 5.0 V, so its worst-case dissipation drops from 0.60 W to 0.46 W. Cost: one SMA diode and 0.16 W in it at the 0.4 A logic load.
+- **5V_SYS** = 5V_BUCK through **D301 (SS14)**, or USB_5V_PROT through **D402 (SS14)** on sheet 04. Feeds the 3.3 V regulator (U501) and nothing else that matters.
+- Consequences: USB alone → 5V_BUCK is dead → relays and VLOAD are dead, by physics. The buck can never push current into a laptop (D402 blocks it). USB can never feed a pump. The 3.3 V regulator sees ≈ 4.6 V instead of 5.0 V, so its worst-case dissipation drops from 0.64 W to 0.49 W. Cost: one SMA diode and 0.16 W in it at the 0.4 A logic load.
 
 ### Layout law for this sheet (mechanisms in `Hard_Rules_Layout_RevA.md`)
 
@@ -262,12 +264,13 @@ The Board 1 block, designator-shifted to 4xx, with one change: the outgoing rail
 
 Nets leaving this sheet: 5V_SYS, USB_DP, USB_DN, GND.
 
-## 6. 3.3 V Regulator — Sheet 05_3V3_Power (copied from Board 1)
+## 6. 3.3 V Regulator — Sheet 05_3V3_Power (Board 1's block, regulator upgraded)
 
-- **U501** — AP2112K-3.3 (C51118): 600 mA low-dropout linear regulator, EN tied to VIN (a floating EN is a dead board), 250 mV dropout at full load, thermal shutdown at 160 °C. Input 5V_SYS ≈ 4.6 V leaves 1.0 V of headroom.
-- **C501** 1 µF at VIN, **C502** 1 µF at VOUT (datasheet stability capacitors), **C503** 10 µF 25 V 0805 bulk on 5V_SYS beside it.
+- **U501 — AP7361C-33E-13** (Diodes Inc., **SOT-223**, LCSC C500795): 1 A low-dropout linear regulator, fixed 3.3 V, input 2.2–6.0 V, dropout 360 mV at 1 A (≈ 130 mV at this board's 0.37 A peak), 60 µA quiescent, 1.5 A current limit with a 400 mA short-circuit fold-back, thermal shutdown at 150 °C. The 3-pin SOT-223 has no enable pin — nothing to tie, nothing to forget. Pins: 1 IN, 2 GND (tab), 3 OUT.
+- **Why not Board 1's AP2112K:** Board 1 spent its life asleep and its regulator saw 0.26 W in bursts. This board never sleeps — a connected ESP32-S3 draws 100–150 mA all day and 375 mA at every transmit — and it lives in a furnace closet. The same 0.19 W sustained / 0.49 W peak in a SOT-23-5 (≈ 150 °C/W on a pour) is a 29 °C / 73 °C rise; in a SOT-223 with its tab on a ground pour (110 °C/W on the datasheet board, ≈ 70 °C/W with a real pour) it is 14–21 °C / 34–54 °C. Same rail, same footprint class of effort, half the temperature — adopted from the second review. The AP2112K stays in the BOM as the alternate if the SOT-223 is out of stock.
+- **C501** 1 µF at IN (datasheet: ≥ 1 µF ceramic), **C502** 4.7 µF at OUT (datasheet: ≥ 2.2 µF ceramic; 4.7 µF for load-step margin), **C503** 10 µF 25 V 0805 bulk on 5V_SYS beside it. Both regulator capacitors at the pins, tab on a copper pour stitched to the bottom ground.
 - **D501 + R501** — yellow-green LED (C2289, Vf 2.0–2.2 V — the chemistry that lights from 3.3 V) with **1 kΩ** (≈ 1.3 mA). Board 1 used 10 kΩ for a sleep budget; this board never sleeps and the LED must read on camera.
-- **Thermal:** (4.6 − 3.3) × 0.36 = 0.46 W at the Wi-Fi transmit peak, 0.19 W sustained at a typical 150 mA → ≈ 30 °C rise at 150 °C/W on a copper pour. Copper pour under the tab, stitched to the bottom ground. Measure it during the torture loop (step 7); if it runs above 100 °C the Rev B move is a 1 A SOT-223 regulator or a small 3.3 V buck, not a redesign.
+- **Thermal:** (4.6 − 3.3) × 0.375 = 0.49 W at the Wi-Fi transmit peak, 0.19 W sustained at a typical 150 mA — record its temperature in the torture loop (step 7) anyway; the number belongs in the bring-up record.
 
 ## 7. ESP32-S3 Core — Sheet 06_ESP32S3_Core (copied from Board 1)
 
@@ -326,10 +329,10 @@ A shared common is how industrial I/O is actually wired: the thermostat's C wire
 
 - **U701 — EL817S1(C)(TU)-F** (Everlight, LCSC C106900): a PC817-class optocoupler, **CTR rank C (200–400 % at 5 mA)**, in the surface-mount gull-wing DIP-4 package that goes on the hot plate with everything else. CTR = Current Transfer Ratio: how much transistor current you get per unit of LED current. Isolation 5 kV RMS; collector rated 80 V (it sees 3.3 V).
 - **R701, R702 — 2.4 kΩ, 1206, in series (4.8 kΩ total):** sets the LED current and takes the field voltage. Two parts spread the heat and double the voltage rating (2 × 200 V). Current: **1.9 mA at 12 V, 4.4 mA at 24 V, 5.6 mA at 30 V, 6.9 mA at 36 V**. Dissipation: 151 mW total at 30 V, **226 mW at 36 V — 113 mW per resistor**, which is why they are 1206 (250 mW each, 45 % of rating) and not the plan's 0805 (125 mW — 90 % of rating). The board's own power terminal hands out 36 V; the input must survive being wired to it.
-- **D705 — red indicator LED (0805), in series with the opto's LED, on the field side.** It lights with the real field current (1.9–6.9 mA — a high-efficiency red is clearly visible), independent of firmware, and adds nothing to what the opto must sink. The plan put this LED on the logic side, where it would have loaded the opto's collector by another 1.3 mA — at 12 V in, more than the opto can give. Its ≈ 1.9 V forward drop raises the channel's threshold to a useful **≈ 7.6 V**: anything below reads OFF, which is noise immunity, not a limitation, for 12–30 V signals.
+- **D705 — red indicator LED (0805), in series with the opto's LED, on the field side.** It lights with the real field current (1.9–6.9 mA — a high-efficiency red is clearly visible), independent of firmware, and adds nothing to what the opto must sink. The plan put this LED on the logic side, where it would have loaded the opto's collector by another 1.3 mA — at 12 V in, more than the opto can give. Its ≈ 1.9 V forward drop, plus the opto LED's 1.15 V, sets the channel's threshold: **≈ 3.5–4 V** (the two LED drops plus the 0.2 mA the pull-up needs at the derated CTR). Anything below reads OFF — a power-stealing thermostat's leakage produces ≈ 1–2 V across a call wire and stays OFF; 12–30 V signals read ON with a 3× voltage margin.
 - **D701 — 1N4148W (SOD-123), anti-parallel across the (opto LED + indicator LED) pair:** for reverse-wired DC it carries the current harmlessly and clamps the reverse voltage across the two LEDs to under a volt; for AC it carries the negative half-cycle so the input reads 24 VAC as a half-wave signal. Rated 150 mA / 75 V; it carries ≤ 7 mA.
-- **R709 — 10 kΩ pull-up to +3V3, C701 — 4.7 µF X7R 16 V 0805 (τ = 47 ms), on the collector node `IN1_L`.** The transistor pulls the node LOW when the LED is lit. Sink budget: the pull-up needs **0.33 mA**; available collector current is **0.65 mA at 12 V** even with the CTR derated to 35 % (50 % minimum × 0.7 for low LED current) — 2× margin at the worst corner, 6× at 30 V, and far more with the rank-C part actually specified.
-- **Why 4.7 µF and not the plan's 1 µF — the AC arithmetic.** On 24 VAC the opto conducts only while the instantaneous voltage exceeds the ≈ 7.6 V threshold: from 13° to 167° of each positive half-cycle, **7.1 ms on, 9.5 ms off** per 16.7 ms cycle. During the off gap the capacitor charges through 10 kΩ toward 3.3 V: with 1 µF (τ = 10 ms) it reaches **2.0 V** — above the ESP32-S3's VIL of 0.825 V, into the undefined band; with **4.7 µF (τ = 47 ms) it reaches 0.61 V (0.74 V with 20 % capacitor derating)** — a steady LOW. Release after the signal stops: ≈ 3τ ≈ 140 ms. First-detect delay when a signal appears: the opto must drag the capacitor from 3.3 V to 0.8 V with ≈ 0.5 mA net at 12 V — ≈ 25 ms, about one AC cycle.
+- **R709 — 47 kΩ pull-up to +3V3, C701 — 1 µF X7R 16 V 0603 (τ = 47 ms), on the collector node `IN1_L`.** The transistor pulls the node LOW when the LED is lit. Sink budget: the pull-up needs only **70 µA**; available collector current is **0.65 mA at 12 V** even with the CTR derated to 35 % (50 % minimum × 0.7 for low LED current) — **9× margin at the worst corner**, 28× at 30 V, and far more with the rank-C part actually specified. The first draft used 10 kΩ + 4.7 µF — the same 47 ms, but it asked the opto for 0.33 mA (2× margin at the worst corner) and needed a 4.7 µF 0805 that derates under bias. The second review's 47 kΩ + 1 µF is the same time constant with five times the sink margin, a plain 0603 capacitor, and headroom for the CTR to halve over the LED's life — adopted. The price is a lower input threshold (below), which the two LED drops keep at a useful level.
+- **Why τ = 47 ms and not the plan's 10 ms — the AC arithmetic.** On 24 VAC the opto conducts only while the instantaneous voltage exceeds the threshold: from ≈ 7° to 173° of each positive half-cycle, **7.7 ms on, 9.0 ms off** per 16.7 ms cycle. During the off gap the capacitor charges through the pull-up toward 3.3 V: with the plan's 10 kΩ + 1 µF (τ = 10 ms) it reaches **≈ 2.0 V** — above the ESP32-S3's VIL of 0.825 V, into the undefined band; with **47 kΩ + 1 µF (τ = 47 ms) it reaches 0.57 V (0.70 V with 20 % capacitor derating)** — a steady LOW. Release after the signal stops: ≈ 3τ ≈ 140 ms. First-detect delay when a signal appears: the opto drags 1 µF from 3.3 V to 0.8 V with ≈ 0.6 mA net at 12 V in ≈ 4 ms — immediate.
 - **Firmware belt to the hardware braces:** an input changes state only after 3 consecutive 10 ms samples agree (§14).
 
 Field-side rules for this sheet: R701/R702, D701, D705 and the opto's LED pins are field copper — they sit on the field side of the moat with only local fills, no ground pour. The opto body straddles the moat. R709, C701 and the collector are logic copper.
@@ -381,12 +384,13 @@ Two low-side switches for loads that share the board's ground: a 5 V pump, a buz
 - **D901 — SS14 flyback**, anode at the drain, cathode at VLOAD: a pump motor is an inductor; when the MOSFET opens, its energy circulates through D901 instead of driving the drain above 30 V.
 - **D903 + R905 — red LED + 1 kΩ on the GPIO side of R901.**
 
-### J901 — output terminal (5.08 mm, 4 positions): VLOAD · OUT1 · OUT2 · GND — and JP901
+### J901 — output terminal (5.08 mm, 4 positions): VLOAD+ · GND · OUT1− · OUT2− — and JP901
 
-- **JP901 — solder jumper, closed by default** (KiCad `SolderJumper_2_Bridged`), ties VLOAD to 5V_BUCK: the aquarium-pump case, up to the 400 mA allocation, no external supply.
-- **Cut JP901 and feed 8–12 V into VLOAD / GND** for a bigger pump or a 12 V LED strip: the load supply's negative *must* land on the GND pin — these loads share board ground and are not isolated. AO3400A's 30 V rating is why VLOAD is specified ≤ 12 V. **An external VLOAD supply is not reverse-protected**: wired backwards it shorts through the MOSFET body diodes and D901/D902. Big **VLOAD +** on the silk, and a README rule: meter the pump supply before it meets J901.
-- **C901 — 100 µF, 25 V electrolytic on VLOAD** at the terminal: a motor's 3–5× starting inrush comes out of this instead of dipping the buck's output. With the jumper cut it sits on the external supply.
-- Silkscreen: **VLOAD OUT1 OUT2 GND · NOT ISOLATED · JP1 = 5V**.
+- **Pin order** puts the supply pair (VLOAD+, GND) side by side and the two switched returns beside each other, so an external supply lands on two adjacent screws and a load's minus wire visibly goes to an OUT− pin (second review's suggestion — adopted, it is clearer than the first draft's VLOAD · OUT1 · OUT2 · GND).
+- **JP901 — solder jumper, OPEN by default** (KiCad `SolderJumper_2_Open`). Closing it ties VLOAD to 5V_BUCK for the aquarium-pump case, up to the 400 mA allocation, no external supply. The first draft had it bridged by default; the second review's argument for open wins: with the jumper closed, an external 8–12 V supply wired to VLOAD would be driven straight into the buck's output and the two 5 V relay coils — a destructive mistake that an open jumper makes impossible until someone closes it on purpose. Closing a jumper is a five-second, deliberate act; the demo build does it once.
+- **Leave JP901 open and feed 8–12 V into VLOAD+ / GND** for a bigger pump or a 12 V LED strip: the load supply's negative *must* land on the GND pin — these loads share board ground and are not isolated. AO3400A's 30 V rating is why VLOAD is specified ≤ 12 V. **An external VLOAD supply is not reverse-protected**: wired backwards it shorts through the MOSFET body diodes and D901/D902. Big **VLOAD +** on the silk, and a README rule: meter the pump supply before it meets J901.
+- **C901 — 100 µF, 25 V electrolytic on VLOAD** at the terminal: a motor's 3–5× starting inrush comes out of this instead of dipping the buck's output. With the jumper open it sits on the external supply.
+- Silkscreen: **VLOAD+ GND OUT1− OUT2− · NOT ISOLATED · CLOSE JP901 FOR 5V**.
 
 Nets leaving this sheet: OUT1, OUT2 (from the core), 5V_BUCK, GND.
 
@@ -397,7 +401,7 @@ Nets leaving this sheet: OUT1, OUT2 (from the core), 5V_BUCK, GND.
 - **Moat:** ≥ 2.5 mm copper-free on both layers along the whole field/logic boundary, wider (≥ 4 mm) around the relay contact terminals. Silkscreen line plus **FIELD SIDE** / **LOGIC SIDE** text. Enforced by a DRC rule (netclass FIELD ↔ everything else ≥ 2.5 mm — `KiCad_Settings_RevA.md`).
 - **Edges:** field terminals (J201, J701, J801, J802) on at most two edges; USB-C on the opposite edge; J901 (VLOAD, logic-referenced) on the logic side's edge next to nothing field-related. Antenna nose overhanging its edge, ≥ 15 mm from any terminal, screw, wire or the converter.
 - **Mounting:** four M3 holes, Ø 6.5 mm screw-head keep-outs; none in the antenna region.
-- **Silkscreen standard:** plain-English terminal labels as listed on each sheet; pin-1 and polarity marks (C201 +, C901 +, every diode's cathode, LED cathodes, opto pin 1, relay coil pins); BOOT / RESET; every test-point name; **NOT FOR MAINS · ≤30V · 2A**; board name / Rev A / date / MuffinByteLabs.com / designer; the 2× logo from Board 1's `logos.pretty`; **a QR code to the repo** (KiCad's built-in QR footprint generator) — the standard the plan sets for Board 2; JLC's order-number token `JLCJLCJLCJLC` on the bottom silk.
+- **Silkscreen standard:** plain-English terminal labels as listed on each sheet; pin-1 and polarity marks (C201 +, C901 +, every diode's cathode, LED cathodes, opto pin 1, relay coil pins); BOOT / RESET; every test-point name; **NOT FOR MAINS · ≤30V · 2A**; **DISCONNECT FIELD POWER BEFORE USB** beside J401 (the ground-loop rule, §17, in four words); board name / Rev A / date / MuffinByteLabs.com / designer; the 2× logo from Board 1's `logos.pretty`; **a QR code to the repo** (KiCad's built-in QR footprint generator) — the standard the plan sets for Board 2; JLC's order-number token `JLCJLCJLCJLC` on the bottom silk.
 - **Thermal reliefs** on every hand-soldered through-hole pad (relays, five terminals, bridge, electrolytics, PPTC); solid connections where current or heat demands it (buck exposed pad, input capacitor grounds).
 
 ## 12. Complete Bill of Materials — draft for LCSC ordering
@@ -410,7 +414,7 @@ Verified-in-stock LCSC numbers are given where confirmed on 2026-09-07; **(verif
 |---|---|---|---|---|
 | U301 | Synchronous buck, 80 V / 2 A, HSOIC-8 | LMR38020SDDAR (TI) | C3192337 | Alternate: LMR16020PDDAR C190006 (non-sync — different passives, see §4) |
 | U401 | USB ESD array | USBLC6-2SC6 | C7519 | Board 1 |
-| U501 | 3.3 V LDO, 600 mA | AP2112K-3.3TRG1 | C51118 | Board 1 |
+| U501 | 3.3 V LDO, 1 A, SOT-223 | AP7361C-33E-13 (Diodes) | C500795 | Alternate: Board 1's AP2112K-3.3TRG1 C51118 (SOT-23-5, runs hotter — §6) |
 | U601 | Wi-Fi module | ESP32-S3-WROOM-1-N8 | C2913198 | Board 1 |
 | U701–U704 | Optocoupler, CTR rank C, SMD gull-wing | EL817S1(C)(TU)-F (Everlight) | C106900 | PC817C-class equivalents acceptable if the same package |
 | BR201 | Bridge rectifier 2 A / 600 V, KBP through-hole | KBP206 (MDD) | C2494 | any KBP206 / KBP210 |
@@ -439,7 +443,7 @@ Verified-in-stock LCSC numbers are given where confirmed on 2026-09-07; **(verif
 | J401 | USB-C receptacle 16-pin | TYPE-C-31-M-12 | C165948 | Board 1 footprint |
 | J601 | 1 × 6 header 2.54 mm — **DNP** | — | — | footprint only |
 | SW601, SW602 | Tactile 5.1 mm | TS-1187A-B-A-B | C318884 | Board 1's 1/1/2/2 footprint |
-| JP901 | Solder jumper, bridged | KiCad `SolderJumper_2_Bridged` | — | |
+| JP901 | Solder jumper, **open** | KiCad `SolderJumper_2_Open` | — | close for 5 V VLOAD |
 | RV801, RV802 | MOV 7 mm disc — **DNP** | 07D560K | (verify) | 35 V RMS |
 | C201 | 470 µF 63 V 105 °C low-ESR radial, ≥ 0.6 A ripple | Nichicon UPW1J471MPD / Rubycon 63ZLH470 / equivalent | (verify) | 12.5 × 20 mm class |
 | C901 | 100 µF 25 V electrolytic (radial or SMD) | any 105 °C | (verify) | VLOAD bulk |
@@ -448,8 +452,8 @@ Verified-in-stock LCSC numbers are given where confirmed on 2026-09-07; **(verif
 
 | Ref | Value | Package | Purpose |
 |---|---|---|---|
-| R201 | 100 kΩ | 0805 | VIN_SENSE top |
-| R202 | 6.8 kΩ | 0603 | VIN_SENSE bottom |
+| R201, R202 | 100 kΩ | 0805 | VIN_SENSE top, two in series (≈ 19 V each) |
+| R203 | 10 kΩ | 0603 | VIN_SENSE bottom → 1:21 |
 | R301 | 64.9 kΩ | 0603 | RT → 400 kHz |
 | R302 | 100 kΩ | 0603 | RFBT |
 | R303 | 24.9 kΩ | 0603 | RFBB → 5.016 V |
@@ -460,7 +464,7 @@ Verified-in-stock LCSC numbers are given where confirmed on 2026-09-07; **(verif
 | R403, R404 | 5.1 kΩ | 0603 | USB-C CC pull-downs |
 | R601, R602 | 10 kΩ | 0603 | EN / IO0 pull-ups |
 | R701–R708 | 2.4 kΩ | **1206** | Opto series, two per channel |
-| R709–R712 | 10 kΩ | 0603 | Opto collector pull-ups |
+| R709–R712 | 47 kΩ | 0603 | Opto collector pull-ups (τ = 47 ms with C701–C704) |
 | R801, R803 | 680 Ω | 0603 | Relay base resistors |
 | R802, R804, R902, R904 | 10 kΩ | 0603 | Base / gate pull-downs — OFF at boot |
 | R901, R903 | 100 Ω | 0603 | Gate resistors |
@@ -472,9 +476,10 @@ Verified-in-stock LCSC numbers are given where confirmed on 2026-09-07; **(verif
 | C308 | 22 pF — **DNP** | 0603 | CFF footprint |
 | C402, C403 | 100 nF — **DNP** | 0603 | Reserved USB caps |
 | C404, C503 | 10 µF 25 V | 0805 | USB_5V_PROT / 5V_SYS bulk |
-| C501, C502, C603 | 1 µF 16 V+ | 0603 | LDO in/out, EN delay |
+| C501, C603 | 1 µF 16 V+ | 0603 | LDO in, EN delay |
+| C502 | 4.7 µF 16 V X7R | 0603/0805 | LDO out (AP7361C wants ≥ 2.2 µF ceramic) |
 | C601 | 22 µF 25 V | 0805 | Module bulk |
-| C701–C704 | 4.7 µF 16 V X7R | 0805 | Opto input filters (τ = 47 ms) |
+| C701–C704 | 1 µF 16 V X7R | 0603 | Opto input filters (τ = 47 ms with 47 kΩ) |
 | C801–C804 | 100 nF 100 V X7R — **DNP** | 1206 | Snubber capacitors |
 
 ### Tally (the honest estimate)
@@ -503,7 +508,7 @@ TP = Test Point: a bare copper pad, named on the silkscreen, where a probe lands
 | TP10 | TXD0 (THT) | Recovery UART transmit |
 | TP11 | RXD0 (THT) | Recovery UART receive |
 | TP12 | VLOAD | 5 V jumpered, or the external supply |
-| TP13 | VIN_SENSE | Divider output, 0.57–2.48 V |
+| TP13 | VIN_SENSE | Divider output, 0.43–1.86 V (bus ÷ 21) |
 | TP14 | PG | Buck power-good (open drain; add a 10 k pull-up on the probe if a level is wanted) |
 
 None on the field side: probing IN1–IN4, COM or the contacts happens at the terminal screws.
@@ -513,9 +518,10 @@ None on the field side: probing IN1–IN4, COM or the contacts happens at the te
 | Duty | Rule | Why |
 |---|---|---|
 | Outputs at boot | All five drive pins are inputs (high-impedance) until firmware deliberately configures them; hardware pull-downs hold everything OFF. Configure outputs *after* reading VIN_SENSE. | §9, §10 — no relay chatter, ever |
-| Field-power gating | Report "field power absent" and refuse output commands when VIN_SENSE < 7 V. | Relays cannot work without 5V_BUCK anyway; this makes the log say why |
+| Field-power gating | `V_bus = ADC volts × 21`; report "field power absent" and refuse output commands when V_bus < 7 V. | Relays cannot work without 5V_BUCK anyway; this makes the log say why |
 | Input debounce | An input changes state only after 3 consecutive samples 10 ms apart agree. Works identically for AC and DC sources. | §8 — the 4.7 µF makes AC a steady LOW; the debounce makes the edge clean |
 | Relay interlocks | Deployment config declares mutually exclusive relays (heat vs cool) and a minimum off-time (compressor short-cycle lockout, default 5 min). | Use cases 2–3 |
+| Supervisory, not primary | The condensate use case adds a trip and an alert *in series with* the OEM float-switch interlock; firmware and documentation never describe this board as the safety device. | Second review, item 10 — NC wiring is fail-operational, not fail-safe |
 | Safe state on link loss | Configurable per relay: hold / open / close after N minutes without the broker. Default hold. | An overflow guard must not stop guarding because Wi-Fi dropped |
 | OTA | ArduinoOTA over Wi-Fi is the field update path; USB is a bench port. | §17 ground-loop rule |
 | Watchdog | Hardware task watchdog enabled; reset-reason logged and published at boot. | Torture-loop acceptance |
@@ -525,13 +531,13 @@ None on the field side: probing IN1–IN4, COM or the contacts happens at the te
 ## 15. Bring-Up Plan (staged; film the last step)
 
 0. **Inspect before power** (×10 loupe): module castellations and alignment, every polarity mark (C201, C901, all diodes, LEDs, optos, relays, the buck's pin 1), bridges, tombstones, paste starvation. Fix with iron and wick now; the same fault at step 1 costs the debugging session.
-1. **Bench supply, 12 V DC, 100 mA limit, no loads:** bridge orientation (TP1 ≈ 10.5 V), FIELD PWR LED, TP2 = 5.00 V ± 3 %, TP3 ≈ 4.6 V, TP4 = 3.30 V, first look at ripple on TP2 and the SW node shape on TP7. Then 24 V DC and 36 V DC: rails again, buck warmth by touch.
+1. **Bench supply, 12 V DC, 100 mA limit, unprogrammed board, no loads:** bridge orientation (TP1 ≈ 10.5 V), FIELD PWR LED, TP2 = 5.00 V ± 3 %, TP3 ≈ 4.6 V, TP4 = 3.30 V, first look at ripple on TP2 and the SW node shape on TP7. Then 24 V DC and 36 V DC: rails again, buck warmth by touch. **Raise the limit to 250–300 mA before any firmware that uses Wi-Fi runs** — a transmit peak needs ≈ 200 mA at the 12 V input, and a 100 mA limit would fake a brownout (second review, item 15).
 2. **24 VAC wall transformer:** TP1 ripple on the scope (≈ 3 V sawtooth at 120 Hz under load), rails clean, bulk capacitor warmth.
 3. **UVLO:** ramp the bench supply down from 12 V — the buck must stop cleanly at ≈ 7.6 V terminal (6.1 V bus) and restart at ≈ 8.5 V, no chatter. Record both numbers.
 4. **USB only, no field power:** flash blink; TP3 ≈ 4.6 V; **TP2 = 0 V, relays cannot click** — the split rail proves itself.
 5. **Inputs:** 24 V DC then 24 VAC through the resistor jig into each channel; field LED lights, firmware reads a steady ON, scope IN1_L to see the ≤ 0.7 V ripple during the AC gap.
 6. **Relays:** click test, then the real sprinkler valve on K1 NO. **Pump on OUT1** with JP901 closed; note the inrush on TP2.
-7. **Torture loop, 10 minutes:** Wi-Fi ping flood, both relays at 1 Hz, pump on; watch for resets (reset-reason in the log), record buck and LDO temperatures with the probe.
+7. **Rail acceptance at 1.25 A** (4 Ω / 10 W across TP2–GND, on 12 V DC and on 24 VAC): 5.00 V ± 3 %, ripple < 50 mVpp, buck and bridge temperatures after five minutes. Then the **torture loop, 10 minutes:** Wi-Fi ping flood, both relays at 1 Hz, pump on; watch for resets (reset-reason in the log), record buck and LDO temperatures with the probe.
 8. **The demo take.**
 
 Full procedure, expected voltages and record sheet: `BringUp_Guide.md`.
@@ -541,7 +547,7 @@ Full procedure, expected voltages and record sheet: `BringUp_Guide.md`.
 - **JLCPCB order:** bare 2-layer PCB ×5 + **0.12 mm frameless stencil, top paste, ships in the same box**. No PCBA line, no part-tier fees. Order-number token on the bottom silk; "Remove Mark" if it is still free.
 - **Paste layer before ordering the stencil:** the LMR38020 exposed pad and the ESP32 module's centre pad get **windowpaned apertures at ≈ 50–60 % coverage** (four squares each); everything else 1:1. Check the paste layer in the fab preview — a stencil is only as good as its apertures.
 - **Parts:** LCSC, same checkout as the boards. Everything Sn63/Pb37-compatible (all standard).
-- **Reflow order on the plate:** all 0603/0805/1206 passives → SOD-123 / SMA / SOT-23 diodes and transistors → the four optos, USBLC6, AP2112K → the buck IC → the 1210 capacitors → the shielded inductor → **the ESP32-S3 module last**. Single-sided, bottom heat, the paste manufacturer's profile, thermocouple on the board not the plate, board cools undisturbed.
+- **Reflow order on the plate:** all 0603/0805/1206 passives → SOD-123 / SMA / SOT-23 diodes and transistors → the four optos, USBLC6, the SOT-223 regulator → the buck IC → the 1210 capacitors → the shielded inductor → **the ESP32-S3 module last**. Single-sided, bottom heat, the paste manufacturer's profile, thermocouple on the board not the plate, board cools undisturbed.
 - **Iron afterwards, never the plate:** K801, K802, J201, J701, J801, J802, J901, BR201, C201, C901, F201, TP6/TP10/TP11.
 - **One first article, then the rest.** Inspect, bring up, let it say what went wrong, fix the technique, then build the other four.
 - **RoHS statement:** boards assembled with Sn63/Pb37 are not RoHS-compliant and are not represented as such. Fume extraction on, hands washed, no food at the bench.
@@ -551,14 +557,15 @@ Detail and the stencil/aperture worksheet: `Assembly_and_Stencil_Plan.md`.
 ## 17. Known Limitations & Accepted Risks (stated openly)
 
 - **The power input is not isolated from logic ground** — the bridge's negative is GND, one diode drop from the field return. Only the opto inputs and the relay contacts are galvanically isolated. The silkscreen says so.
-- **Ground loop through USB.** If the field supply's negative or the 24 VAC common is earthed *and* the laptop is earthed, the USB cable's ground bypasses the bridge's return diode and carries the board's return current. Rule: USB on the bench only, with the floating plug-in transformer or a battery-powered laptop; never USB while field-powered from an earthed supply. Field updates are OTA. (A USB isolator is the hardware cure if this ever matters.)
+- **Ground loop through USB.** If the field supply's negative or the 24 VAC common is earthed *and* the laptop is earthed, the USB cable's ground bypasses the bridge's return diode and carries the board's return current. Rule, printed on the silk beside the USB connector: **DISCONNECT FIELD POWER BEFORE USB.** The one exception is the bench, where the plug-in 24 VAC transformer and an unearthed bench supply are floating and a battery-powered laptop has no earth — bring-up steps 9–10 rely on that and say so. In the field, USB is never connected; updates are OTA. An isolated USB/debug port is a Rev B feature, not a Rev A promise.
 - **External VLOAD is not reverse-protected.** Wired backwards it shorts through the MOSFET body diodes and the SS14 flybacks. Meter the supply first; big **+** on the silk.
 - **Input range is 10–36 V DC guaranteed, ≈ 8.5 V typical.** "9 V" appears nowhere on the silk or in a proposal. At 9–12 V DC with the full 0.95 A load the bridge dissipates 1–1.5 W and runs warm; this is the price of "either polarity".
 - **UVLO tolerance is ± 12 %** (the EN threshold spread) — start and stop voltages are recorded at bring-up per board, not promised to a tenth of a volt.
 - **The isolation is functional, not a safety barrier.** 5 kV optos and a 2.5 mm moat make 30 V field circuits safe to share a board with the logic; nothing here is rated for mains, and mains is refused.
 - **Relay contacts are rated by the board at 2 A / 30 V**, whatever the relay prints. Inductive loads need the snubber/MOV footprints fitted or a diode across the load.
 - **USB pair impedance is uncontrolled on 2 layers** — short, coupled, via-free, over solid ground. Correct trade at USB Full Speed.
-- **AP2112K runs at up to 0.46 W** during Wi-Fi transmit bursts on a hard 4.6 V rail; measured in the torture loop. Rev B path if it runs hot: 1 A SOT-223 regulator or a small 3.3 V buck.
+- **The 3.3 V regulator dissipates up to 0.49 W** during Wi-Fi transmit bursts; the SOT-223 AP7361C keeps that to a ≈ 35–55 °C rise. Measured in the torture loop.
+- **The condensate use case is supervisory.** Wiring K2 through NC keeps cooling running if this board loses power — that is *fail-operational*, chosen for availability, not fail-safe. The OEM float-switch interlock stays in circuit; this board adds a second trip and a phone alert and is never the primary safety device.
 - **Boards assembled with Sn63/Pb37 are not RoHS-compliant** and will not be represented as such.
 - **PFM at light load** (the S variant) means a little more output ripple when the board is nearly idle; irrelevant to the LDO behind it. The FS variant is a drop-in if it ever matters.
 
@@ -566,7 +573,7 @@ Detail and the stencil/aperture worksheet: `Assembly_and_Stencil_Plan.md`.
 
 - [ ] `hardware/` KiCad project created as `ESP32S3_FieldIO`, libraries from `hardware/libs/` (copied from Board 1 and renamed) in `fp-lib-table` / `sym-lib-table`.
 - [ ] Per-sheet annotation set (200 / 300 / … per sheet) before the first component is placed.
-- [ ] LMR38020 symbol + HSOIC-8 (DDA) footprint, SRR1260 footprint, KBP footprint, SRD-05VDC footprint, 5.08 mm terminal footprints, EL817S1 SMD-4 footprint, radial PPTC footprint, 12.5 mm electrolytic footprint — each checked against its datasheet drawing (Board 1's `Footprint_Check` method).
+- [ ] LMR38020 symbol + HSOIC-8 (DDA) footprint, AP7361C SOT-223 (KiCad stock `SOT-223-3_TabPin2`), SRR1260 footprint, KBP footprint, SRD-05VDC footprint, 5.08 mm terminal footprints, EL817S1 SMD-4 footprint, radial PPTC footprint, 12.5 mm electrolytic footprint — each checked against its datasheet drawing (Board 1's `Footprint_Check` method).
 - [ ] Netclasses FIELD / CONTACT / POWER / USB created and the moat DRC rule entered (`KiCad_Settings_RevA.md`).
 - [ ] LCSC stock re-checked for U301, L301, F201, U701–U704, K801/K802 on the day the BOM is frozen; alternates recorded in the BOM.
 - [ ] Datasheets for every new part in `references/datasheets/` (index in its README; the ones not yet fetched are listed there with links).
@@ -592,6 +599,23 @@ Every change is a finding in [`reviews/Spec_Review_RevA_2026-09-07.md`](reviews/
 | Snubber/MOV "footprints" | RC 100 Ω + 100 nF 100 V; MOV 07D560K; across COM–NO and COM–NC | [15] |
 | Power LED per Board 1 (10 k) | 1 kΩ | no sleep budget [19] |
 | — | Per-sheet ×100 annotation; moat as a DRC rule; ≤ 100 × 100 mm; 0.12 mm stencil with windowpaned pads | [17, 18, 20, 21] |
+
+### Adopted from the second-opinion review (same day) — [`reviews/Second_Opinion_Review_RevA_2026-09-07.md`](reviews/Second_Opinion_Review_RevA_2026-09-07.md)
+
+| First draft of this document said | Now says | Because |
+|---|---|---|
+| U501 = AP2112K-3.3 (SOT-23-5), reused from Board 1 | **AP7361C-33E-13, 1 A, SOT-223** (C500795); AP2112K as alternate | this board never sleeps; SOT-223 halves the temperature rise [2nd-review 5] |
+| Opto filter 10 kΩ + 4.7 µF | **47 kΩ + 1 µF** (same τ = 47 ms) | 5× the sink margin, 0603 cap, CTR-ageing headroom [2nd-review 6, the RC part of it] |
+| VIN_SENSE 100 k / 6.8 k (1:15.7) | **2 × 100 k / 10 k (1:21)** | 69 V clamp must map below the ESP32's 3.6 V absolute maximum [2nd-review 12, ratio adjusted] |
+| JP901 bridged by default; J901 = VLOAD · OUT1 · OUT2 · GND | **JP901 open by default; J901 = VLOAD+ · GND · OUT1− · OUT2−** | an external supply into a closed jumper would feed the buck output and the relay coils [2nd-review 11] |
+| USB rule in prose only | **DISCONNECT FIELD POWER BEFORE USB on the silk**; bench exception spelled out | [2nd-review 8] |
+| Published input 10–36 V DC | **12–36 V DC published, 10 V guaranteed floor** | the two real systems are 12 V and 24 V; the arithmetic still guarantees 10 V [2nd-review 1, lower bound only] |
+| Rail acceptance at 0.8 A | **1.25 A test load, 1.1 A design point** | [2nd-review 13] |
+| Bring-up limit 100 mA | 100 mA for the unprogrammed board, **250–300 mA once Wi-Fi runs** | [2nd-review 15] |
+| "Condensate overflow guard" | "**supervisor**, in series with the OEM interlock" | NC is fail-operational, not fail-safe [2nd-review 10] |
+| Isolation map | + the three-domain sentence | [2nd-review 7, already the design — wording made explicit] |
+
+Not adopted, with the reasons in the review file: LM5012 (COT + ripple injection + catch diode is more design risk than the synchronous, internally compensated LMR38020, whose 85 V absolute maximum already passes the TVS check), 100 V bulk capacitor (the node cannot reach the clamp voltage with 470 µF in parallel), LTV-814 AC-input optocouplers (20 % minimum CTR, and the series indicator LED needs the anti-parallel diode anyway), 100 kΩ pull-downs (reset-state pull-ups), 30 VAC upper limit (41 V bus against a 43 V standoff), SS14 for the relay flyback (1N4148W is rated 2× the coil current; optional).
 
 ### Companion documents
 

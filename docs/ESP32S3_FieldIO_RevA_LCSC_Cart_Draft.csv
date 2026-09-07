@@ -2,7 +2,7 @@ Refs,Qty per board,Order qty (7 sets unless noted),MPN,LCSC,Package,Description,
 U301,1,6,LMR38020SDDAR,C3192337,HSOIC-8 (DDA),Synchronous buck 4.2-80 V 2 A 400 kHz via RT,confirmed 2026-09-07 (1765 in stock)
 U301 alt,0,0,LMR16020PDDAR,C190006,HSOIC-8 (DDA),Alternate buck 60 V 2 A non-sync (needs SS36 + RT + 0.75 V divider),confirmed 2026-09-07 (1995 in stock) - do not order unless U301 is out
 U401,1,7,USBLC6-2SC6,C7519,SOT-23-6,USB data-line ESD array,Board 1
-U501,1,7,AP2112K-3.3TRG1,C51118,SOT-23-5,3.3 V LDO 600 mA,Board 1
+U501,1,7,AP7361C-33E-13,C500795,SOT-223,3.3 V LDO 1 A (tab = GND); alternate AP2112K-3.3TRG1 C51118,confirmed 2026-09-07 (second review)
 U601,1,6,ESP32-S3-WROOM-1-N8,C2913198,module,Wi-Fi module 8 MB flash,Board 1
 U701-U704,4,28,EL817S1(C)(TU)-F,C106900,SMD-4 gull-wing,Optocoupler CTR rank C 200-400 %,confirmed 2026-09-07
 BR201,1,7,KBP206,C2494,KBP THT,Bridge rectifier 2 A 600 V,confirmed 2026-09-07 (MDD)
@@ -31,19 +31,21 @@ C202,1,7,1 uF 100 V X7R,verify,1206,Bus HF bypass,
 C301 C302,2,14,4.7 uF 100 V X7R,verify,1210,Buck input,
 C303,1,7,100 nF 100 V X7R,verify,0603,Buck HF input bypass,
 C305 C306 C307,3,21,22 uF 25 V X7R,verify,1210,Buck output,
-C701-C704,4,28,4.7 uF 16 V X7R,verify,0805,Opto input filters (tau 47 ms),
+C701-C704,4,28,1 uF 16 V X7R,C15849 (1 uF 50 V X5R Board 1) or any 0603,0603,Opto input filters (tau 47 ms with 47 k),
 C601,1,7,22 uF 25 V X5R,C45783,0805,Module bulk,Board 1
 C404 C503,2,14,10 uF 25 V X5R,C15850,0805,USB_5V_PROT / 5V_SYS bulk,Board 1
-C501 C502 C603,3,21,1 uF 50 V X5R,C15849,0603,LDO in/out and EN delay,Board 1
+C501 C603,2,14,1 uF 50 V X5R,C15849,0603,LDO in and EN delay,Board 1
+C502,1,7,4.7 uF 16 V X5R/X7R,C19666,0603,LDO out (AP7361C wants >= 2.2 uF),Board 1 number (4.7 uF 0603)
 C203 C304 C401 C602,4,28,100 nF 50 V X7R,C14663,0603,Decoupling (C304 is the BOOT cap),Board 1
 C801-C804 (DNP),0,0,100 nF 100 V X7R,verify,1206,Snubber caps - fit per deployment,DNP
 R701-R708,8,56,2.4 kohm 1 % 1206,verify,1206,Opto series resistors 250 mW,
-R201 R304,2,14,100 k / 91 k 1 % 0805,verify,0805,VIN_SENSE top / RENT,
+R201 R202 R304,3,21,100 k / 100 k / 91 k 1 % 0805,verify,0805,VIN_SENSE top pair (2 x 100 k) / RENT,
 R301,1,7,64.9 kohm 1 %,verify,0603,RT -> 400 kHz,
-R302 R601 R602 R709-R712 R802 R804 R902 R904,10,70,10 kohm 1 % / 100 kohm 1 % (R302),C98220 (10 k) / C25803 (100 k),0603,Pull-ups and pull-downs; R302 = RFBT 100 k,Board 1 numbers
+R203 R601 R602 R802 R804 R902 R904,7,49,10 kohm 1 %,C98220,0603,VIN_SENSE bottom; EN/IO0 pull-ups; base/gate pull-downs,Board 1 number
+R302,1,7,100 kohm 1 %,C25803,0603,RFBT,Board 1 number
+R709-R712,4,28,47 kohm 1 %,verify,0603,Opto collector pull-ups (47 k + 1 uF = 47 ms),
 R303,1,7,24.9 kohm 1 %,verify,0603,RFBB,
 R305,1,7,20 kohm 1 %,verify,0603,RENB,
-R202,1,7,6.8 kohm 1 %,verify,0603,VIN_SENSE bottom,
 R306 R501 R603 R805 R806 R905 R906,7,49,1 kohm 1 %,verify,0603,LED limits,
 R401 R402,2,14,22 ohm,C23345,0603,USB series,Board 1
 R403 R404,2,14,5.1 kohm,C23186,0603,CC pull-downs,Board 1
@@ -52,3 +54,4 @@ R901 R903,2,14,100 ohm 1 %,verify,0603,Gate resistors,
 R807-R810 (DNP),0,0,100 ohm 1206,verify,1206,Snubber resistors,DNP
 RV801 RV802 (DNP),0,0,07D560K,verify,7 mm disc,MOV 35 V RMS,DNP
 J601 (DNP),0,0,1x6 2.54 mm header,-,THT,Expansion header,DNP
+JP901,0,0,SolderJumper_2_Open,-,footprint,VLOAD jumper - ships OPEN; close for 5 V VLOAD,no part

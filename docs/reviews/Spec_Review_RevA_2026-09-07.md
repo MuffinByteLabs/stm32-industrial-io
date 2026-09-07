@@ -4,6 +4,8 @@
 
 **Outcome: 4 blocking findings, 6 risky, 12 improvements, and 11 plan numbers confirmed as written.** Everything is resolved in the design document ([`../ESP32S3_FieldIO_Final_Design_Document.md`](../ESP32S3_FieldIO_Final_Design_Document.md)); this file is the record of *why* the design document differs from plan §4.
 
+> **Superseded details (same day, by the [second-opinion review](Second_Opinion_Review_RevA_2026-09-07.md)) — the findings stand, three of the fix values moved:** finding 1's fix is now **47 kΩ + 1 µF** (same τ = 47 ms as 10 kΩ + 4.7 µF, five times the sink margin); finding 11's divider is now **2 × 100 kΩ / 10 kΩ (1:21)** so a 69 V clamp stays under the ESP32's 3.6 V pin maximum; the published input is **12–36 V DC** with the 10 V figure kept as the guaranteed floor (decision 2 below). The table is left as written — it is the record of what this review found.
+
 Severity scale (same as Board 1's reviews): **BLOCKING** = the board would not do what the spec says · **RISKY** = works, with a real failure mode waiting · **IMPROVE** = works, better with a small change · **CONFIRMED** = the plan's number is right as written.
 
 ---

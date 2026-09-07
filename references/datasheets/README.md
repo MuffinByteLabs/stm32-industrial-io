@@ -11,6 +11,7 @@ yet — fetch them before capture and rename to the same pattern.
 |---|---|---|---|
 | U301 | LMR38020SDDAR synchronous buck, 80 V / 2 A | C3192337 | [BUCK_TI_LMR38020](BUCK_TI_LMR38020_80V_2A_Synchronous_Datasheet.pdf) (SNVSC40E) |
 | U301 alt | LMR16020PDDAR, 60 V / 2 A non-synchronous | C190006 | [BUCK_TI_LMR16020](BUCK_TI_LMR16020_60V_2A_NonSync_Datasheet_ALTERNATE.pdf) |
+| U501 | AP7361C-33E-13 LDO, 1 A, SOT-223 | C500795 | [LDO_Diodes_AP7361C](LDO_Diodes_AP7361C_1A_SOT223_Datasheet.pdf) (DS37274) |
 | L301 | SRR1260-150M shielded 15 µH | C2041333 | [INDUCTOR_Bourns_SRR1260](INDUCTOR_Bourns_SRR1260_Shielded_Datasheet.pdf) |
 | BR201 | KBP206 bridge, 2 A / 600 V | C2494 | [BRIDGE_Diodes_KBP2xx](BRIDGE_Diodes_KBP2xx_2A_Datasheet.pdf) (Diodes Inc. family sheet; MDD's is equivalent) |
 | K801, K802 | SRD-05VDC-SL-C relay | C35449 | [RELAY_Songle_SRD-05VDC-SL-C](RELAY_Songle_SRD-05VDC-SL-C_Datasheet.pdf) |
@@ -30,7 +31,7 @@ yet — fetch them before capture and rename to the same pattern.
 |---|---|---|---|
 | U601 | ESP32-S3-WROOM-1-N8 | C2913198 | `ESP32S3_Espressif_WROOM-1_WROOM-1U_Module_Datasheet_v1.8.pdf` |
 | — | ESP32-S3 Hardware Design Guidelines | — | `ESP32S3_Espressif_Hardware_Design_Guidelines_2026-06-23.pdf` |
-| U501 | AP2112K-3.3 | C51118 | `LDO_Diodes_AP2112K-3.3_600mA_3V3_Regulator_Datasheet.pdf` |
+| U501 alt | AP2112K-3.3 (Board 1's regulator, the BOM alternate) | C51118 | `LDO_Diodes_AP2112K-3.3_600mA_3V3_Regulator_Datasheet.pdf` |
 | U401 | USBLC6-2SC6 | C7519 | `ESD_ST_USBLC6-2SC6_USB2_DataLine_Protection_Datasheet.pdf` |
 | D401 | SMF5.0A | C2980403 | `TVS_MDD_SMF5_0A_5V_Unidirectional_Datasheet.pdf` |
 | D301, D402, D901, D902 | SS14 | C2480 | `DIODE_SS14_Schottky_1A40V_Family_Datasheet.pdf` |

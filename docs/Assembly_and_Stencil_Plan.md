@@ -29,7 +29,7 @@
    1. all 0603 resistors and capacitors
    2. 0805 / 1206 passives and LEDs
    3. SOD-123 (1N4148W, SMF5.0A), SMA (SS14 ×4), SOT-23 (S8050 ×2, AO3400A ×2)
-   4. SOT-23-5/6 (AP2112K, USBLC6), SMB (SMBJ43A)
+   4. SOT-23-6 (USBLC6), SMB (SMBJ43A), SOT-223 (AP7361C — sits square, tab on its pour)
    5. the four EL817S1 optos
    6. **U301** — pin 1 dot under the loupe, sitting square on the windowpaned paste
    7. the 1210 ceramics (C301, C302, C305–C307)
