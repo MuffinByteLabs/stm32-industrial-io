@@ -479,7 +479,7 @@ Verified-in-stock LCSC numbers are given where confirmed on 2026-09-07; **(verif
 
 ### Tally (the honest estimate)
 
-≈ **112 placed components in ≈ 45 BOM lines** (≈ 95 reflowed on the plate, 17 through-hole by iron), plus 14 test points, 4 mounting holes, 1 logo, 1 QR, and 13 DNP footprints (J601, C308, C402, C403, R807–R810, C801–C804, RV801, RV802). The plan's "60–75 parts" was the count before the review added the second rail, the LED chain and the snubber footprints; the bench time it implies is ≈ 1.5–2.5 h of placement for the first article.
+≈ **112 placed components in ≈ 45 BOM lines** (101 reflowed on the plate, 11 through-hole by iron: K801, K802, F201, BR201, C201, C901 and the five terminals), plus 14 test points, 4 mounting holes, 1 logo, 1 QR, and 14 DNP footprints (J601, C308, C402, C403, R807–R810, C801–C804, RV801, RV802). The plan's "60–75 parts" was the count before the review added the second rail, the LED chain and the snubber footprints; the bench time it implies is ≈ 1.5–2.5 h of placement for the first article.
 
 ### Bought separately — bench and demo (plan §10)
 
