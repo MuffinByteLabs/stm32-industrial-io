@@ -1,0 +1,67 @@
+# KiCad ERC / DRC on every push — the modern hardware-repo baseline.
+#
+# Runs once hardware/ESP32S3_FieldIO.kicad_sch / .kicad_pcb exist; until then the
+# steps are skipped rather than failing. Uses kicad-cli from the official KiCad
+# container. Adjust the image tag to the KiCad major version the project is saved in
+# (the project is being drawn in KiCad 10).
+#
+# What it produces: ERC and DRC reports as build artifacts, and a failed build on
+# any ERC/DRC *error* (warnings are reported, not fatal). Schematic PDF and gerbers
+# are exported on tags only (revA, revB ...) so the frozen package can be reproduced.
+
+name: kicad-ci
+
+on:
+  push:
+    branches: [main]
+    tags: ['rev*']
+  pull_request:
+
+jobs:
+  erc-drc:
+    runs-on: ubuntu-latest
+    container:
+      image: kicad/kicad:10.0
+      options: --user root
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect project files
+        id: files
+        run: |
+          echo "sch=$([ -f hardware/ESP32S3_FieldIO.kicad_sch ] && echo yes || echo no)" >> "$GITHUB_OUTPUT"
+          echo "pcb=$([ -f hardware/ESP32S3_FieldIO.kicad_pcb ] && echo yes || echo no)" >> "$GITHUB_OUTPUT"
+
+      - name: ERC
+        if: steps.files.outputs.sch == 'yes'
+        run: |
+          mkdir -p out
+          kicad-cli sch erc --severity-all --exit-code-violations \
+            --output out/erc.rpt hardware/ESP32S3_FieldIO.kicad_sch || { cat out/erc.rpt; exit 1; }
+          cat out/erc.rpt
+
+      - name: DRC (with zone refill and schematic parity)
+        if: steps.files.outputs.pcb == 'yes'
+        run: |
+          mkdir -p out
+          kicad-cli pcb drc --severity-all --schematic-parity --exit-code-violations \
+            --output out/drc.rpt hardware/ESP32S3_FieldIO.kicad_pcb || { cat out/drc.rpt; exit 1; }
+          cat out/drc.rpt
+
+      - name: Export schematic PDF and gerbers (tags only)
+        if: startsWith(github.ref, 'refs/tags/rev') && steps.files.outputs.pcb == 'yes'
+        run: |
+          mkdir -p out/gerbers
+          kicad-cli sch export pdf --output out/ESP32S3_FieldIO_Schematic.pdf hardware/ESP32S3_FieldIO.kicad_sch
+          kicad-cli pcb export gerbers --output out/gerbers/ \
+            --layers F.Cu,B.Cu,F.Mask,B.Mask,F.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts \
+            hardware/ESP32S3_FieldIO.kicad_pcb
+          kicad-cli pcb export drill --output out/gerbers/ hardware/ESP32S3_FieldIO.kicad_pcb
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kicad-reports
+          path: out/
+          if-no-files-found: ignore

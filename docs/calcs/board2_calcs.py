@@ -131,21 +131,24 @@ print("  Buck can never back-feed USB, USB can never feed relays/VLOAD (they han
 print(f"  OR diode dissipation at 0.4 A: {0.4*0.40:.2f} W (SMA, fine)")
 
 # ---------------------------------------------------------------- OPTO
-hdr("7. Opto inputs (PC817 rank C: CTR 200-400 % @ IF = 5 mA; use CTR_min 50 % x 0.7 low-IF derating in the maths)")
-R_SERIES = 4800.0
+hdr("7. Opto inputs -- IEC 61131-2 Type 1 version (audit): 2 x 1.6 k 1206 + BZT52C4V7 + indicator LED + EL817C; 47 k + 1 uF")
+R_SERIES = 3200.0        # two 1.6 k 1206 in series (audit: was 2 x 2.4 k)
 VF_LED_OPTO = 1.15
 VF_LED_IND  = 1.9   # red indicator in series, field side
+VZ          = 4.7   # BZT52C4V7 in series: sets a defined threshold (IEC 61131-2 Type 1: OFF <= 5 V, ON >= 15 V)
 R_PU = 47e3; V33 = 3.3   # second review: 47 k + 1 uF gives the same tau with 5x less sink current needed
 I_PU = V33/R_PU
 CTR_MIN = 0.50*0.7
-for vin in (12, 24, 30, 36, 40):
-    i_f = (vin - VF_LED_OPTO - VF_LED_IND)/R_SERIES
+for vin in (5, 12, 15, 24, 30, 36, 40):
+    i_f = max(0.0, (vin - VF_LED_OPTO - VF_LED_IND - VZ))/R_SERIES
     p_r = i_f**2*R_SERIES
     i_c = i_f*CTR_MIN
-    print(f"  {vin:2d} V DC: IF = {i_f*1e3:4.2f} mA, P(R total) = {p_r*1e3:5.0f} mW ({p_r/2*1e3:3.0f} mW each of two), IC avail (CTR 35 %) = {i_c*1e3:4.2f} mA vs {I_PU*1e3:.2f} mA needed -> margin {i_c/I_PU:.1f}x")
-print("  => 0805 (125 mW each) is over its rating at 36 V DC; 1206 (250 mW each) keeps 2x margin. Two 2.4 k 1206 in series.")
+    pz = VZ*i_f
+    print(f"  {vin:2d} V DC: IF = {i_f*1e3:4.2f} mA, P(R total) = {p_r*1e3:5.0f} mW ({p_r/2*1e3:3.0f} mW each of two 1206), P(zener) = {pz*1e3:3.0f} mW, IC avail (CTR 35 %) = {i_c*1e3:4.2f} mA vs {I_PU*1e3:.2f} mA needed -> margin {i_c/I_PU:.1f}x" if i_f > 0 else f"  {vin:2d} V DC: IF = 0 (below the zener + LED knee) -> OFF")
+print("  IEC 61131-2 Type 1 check: ON region 15-30 V needs 2-15 mA ->", f"{max(0,(15-VF_LED_OPTO-VF_LED_IND-VZ))/R_SERIES*1e3:.2f} mA at 15 V, {max(0,(30-VF_LED_OPTO-VF_LED_IND-VZ))/R_SERIES*1e3:.2f} mA at 30 V; OFF region <= 5 V: 0 mA (zener knee)")
+print("  1206 at 36 V: %.0f mW each of a 250 mW rating; zener %.0f mW of 500 mW" % (((36-VF_LED_OPTO-VF_LED_IND-VZ)/R_SERIES)**2*R_SERIES/2*1e3, VZ*(36-VF_LED_OPTO-VF_LED_IND-VZ)/R_SERIES*1e3))
 i_f_min = (I_PU/CTR_MIN)
-v_thresh = VF_LED_OPTO + VF_LED_IND + i_f_min*R_SERIES
+v_thresh = VF_LED_OPTO + VF_LED_IND + VZ + i_f_min*R_SERIES
 print(f"  Input threshold: needs IF >= {i_f_min*1e3:.2f} mA -> V_in >= {v_thresh:.1f} V to register (below that reads OFF = good noise immunity)")
 # AC gap
 Vpk = 24*math.sqrt(2)

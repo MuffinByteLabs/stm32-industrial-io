@@ -19,7 +19,7 @@ The board is the second portfolio project. Its **one new hard thing** is a buck 
 ### What the board does
 
 - Accepts **12–36 V DC (either polarity) or 24 VAC** on a screw terminal — guaranteed to start and run at full load from 10 V DC — and makes its own 5 V and 3.3 V from it.
-- Reads **four opto-isolated inputs** on a shared common: "is 12–30 V present on this wire?" — AC or DC, either polarity, galvanically separated from the logic.
+- Reads **four opto-isolated inputs** on a shared common: "is 12–30 V present on this wire?" — AC or DC, either polarity, galvanically separated from the logic, with **IEC 61131-2 Type 1 thresholds** (OFF ≤ 5 V, ON ≥ 15 V).
 - Switches **two relay contact sets** (single-pole double-throw, NO/COM/NC all on terminals), rated on this board for ≤ 2 A at ≤ 30 V AC or DC, galvanically separated from the logic.
 - Switches **two low-side MOSFET outputs** for pumps, buzzers and LED strips that share the board's ground, from the board's 5 V or from an external 8–12 V supply.
 - Is programmed over **USB-C** on the bench; the same port never powers the field loads.
@@ -328,11 +328,12 @@ A shared common is how industrial I/O is actually wired: the thermostat's C wire
 ### One channel (×4): U701 · R701 + R702 · D701 · D705 · R709 · C701
 
 - **U701 — EL817S1(C)(TU)-F** (Everlight, LCSC C106900): a PC817-class optocoupler, **CTR rank C (200–400 % at 5 mA)**, in the surface-mount gull-wing DIP-4 package that goes on the hot plate with everything else. CTR = Current Transfer Ratio: how much transistor current you get per unit of LED current. Isolation 5 kV RMS; collector rated 80 V (it sees 3.3 V).
-- **R701, R702 — 2.4 kΩ, 1206, in series (4.8 kΩ total):** sets the LED current and takes the field voltage. Two parts spread the heat and double the voltage rating (2 × 200 V). Current: **1.9 mA at 12 V, 4.4 mA at 24 V, 5.6 mA at 30 V, 6.9 mA at 36 V**. Dissipation: 151 mW total at 30 V, **226 mW at 36 V — 113 mW per resistor**, which is why they are 1206 (250 mW each, 45 % of rating) and not the plan's 0805 (125 mW — 90 % of rating). The board's own power terminal hands out 36 V; the input must survive being wired to it.
-- **D705 — red indicator LED (0805), in series with the opto's LED, on the field side.** It lights with the real field current (1.9–6.9 mA — a high-efficiency red is clearly visible), independent of firmware, and adds nothing to what the opto must sink. The plan put this LED on the logic side, where it would have loaded the opto's collector by another 1.3 mA — at 12 V in, more than the opto can give. Its ≈ 1.9 V forward drop, plus the opto LED's 1.15 V, sets the channel's threshold: **≈ 3.5–4 V** (the two LED drops plus the 0.2 mA the pull-up needs at the derated CTR). Anything below reads OFF — a power-stealing thermostat's leakage produces ≈ 1–2 V across a call wire and stays OFF; 12–30 V signals read ON with a 3× voltage margin.
+- **R701, R702 — 1.6 kΩ, 1206 anti-surge thick film, in series (3.2 kΩ total):** sets the LED current and takes the field voltage. Two parts spread the heat and double the voltage rating (2 × 200 V); the anti-surge class (Yageo PA/AC series, Panasonic ERJ-P08) survives the surge pulses a plain thick film cracks under. Current through the chain: **1.33 mA at 12 V, 2.27 mA at 15 V, 5.1 mA at 24 V, 6.95 mA at 30 V, 8.8 mA at 36 V**. Dissipation: 155 mW total at 30 V, **249 mW at 36 V — 125 mW per resistor, 50 % of the 1206 rating** (an 0805 would be at 100 %). The board's own power terminal hands out 36 V; the input must survive being wired to it.
+- **D709 — BZT52C4V7 Zener (SOD-123), in series with the two LEDs — the threshold-setting part.** Below the Zener knee plus the two LED drops (≈ 7.75 V) no current flows at all; above it the resistors set the current. That turns the input into an **IEC 61131-2 Type 1 digital input**: OFF for anything ≤ 5 V (0 mA), ON from 15 V with 2.27 mA (the standard asks ≥ 2 mA), 6.95 mA at 30 V (the standard allows ≤ 15 mA). Without it (the first two drafts of this document) the threshold was ≈ 4 V and depended on the optocoupler's CTR — a number nobody could put on a datasheet. The Zener dissipates 41 mW at 36 V against a 500 mW rating. (Industry-standard audit, §2.1.)
+- **D705 — red indicator LED (0805), in series with the opto's LED, on the field side.** It lights with the real field current (1.9–6.9 mA — a high-efficiency red is clearly visible), independent of firmware, and adds nothing to what the opto must sink. The plan put this LED on the logic side, where it would have loaded the opto's collector by another 1.3 mA — at 12 V in, more than the opto can give. Its ≈ 1.9 V forward drop adds to the opto LED's 1.15 V and the Zener's 4.7 V: the channel's threshold is **≈ 8–8.4 V** (the three drops plus the 0.2 mA the pull-up needs at the derated CTR). Anything below reads OFF — a power-stealing thermostat's 1–2 V of leakage, or a 5 V logic level, stays OFF; 12 V reads ON with margin, 15–30 V is squarely in the Type 1 ON band. At 12 V the indicator runs at 1.33 mA — dim but clearly visible on a high-efficiency red; at 24 V it is bright.
 - **D701 — 1N4148W (SOD-123), anti-parallel across the (opto LED + indicator LED) pair:** for reverse-wired DC it carries the current harmlessly and clamps the reverse voltage across the two LEDs to under a volt; for AC it carries the negative half-cycle so the input reads 24 VAC as a half-wave signal. Rated 150 mA / 75 V; it carries ≤ 7 mA.
 - **R709 — 47 kΩ pull-up to +3V3, C701 — 1 µF X7R 16 V 0603 (τ = 47 ms), on the collector node `IN1_L`.** The transistor pulls the node LOW when the LED is lit. Sink budget: the pull-up needs only **70 µA**; available collector current is **0.65 mA at 12 V** even with the CTR derated to 35 % (50 % minimum × 0.7 for low LED current) — **9× margin at the worst corner**, 28× at 30 V, and far more with the rank-C part actually specified. The first draft used 10 kΩ + 4.7 µF — the same 47 ms, but it asked the opto for 0.33 mA (2× margin at the worst corner) and needed a 4.7 µF 0805 that derates under bias. The second review's 47 kΩ + 1 µF is the same time constant with five times the sink margin, a plain 0603 capacitor, and headroom for the CTR to halve over the LED's life — adopted. The price is a lower input threshold (below), which the two LED drops keep at a useful level.
-- **Why τ = 47 ms and not the plan's 10 ms — the AC arithmetic.** On 24 VAC the opto conducts only while the instantaneous voltage exceeds the threshold: from ≈ 7° to 173° of each positive half-cycle, **7.7 ms on, 9.0 ms off** per 16.7 ms cycle. During the off gap the capacitor charges through the pull-up toward 3.3 V: with the plan's 10 kΩ + 1 µF (τ = 10 ms) it reaches **≈ 2.0 V** — above the ESP32-S3's VIL of 0.825 V, into the undefined band; with **47 kΩ + 1 µF (τ = 47 ms) it reaches 0.57 V (0.70 V with 20 % capacitor derating)** — a steady LOW. Release after the signal stops: ≈ 3τ ≈ 140 ms. First-detect delay when a signal appears: the opto drags 1 µF from 3.3 V to 0.8 V with ≈ 0.6 mA net at 12 V in ≈ 4 ms — immediate.
+- **Why τ = 47 ms and not the plan's 10 ms — the AC arithmetic.** On 24 VAC the opto conducts only while the instantaneous voltage exceeds the ≈ 8.4 V threshold: from ≈ 14° to 166° of each positive half-cycle, **7.0 ms on, 9.7 ms off** per 16.7 ms cycle. During the off gap the capacitor charges through the pull-up toward 3.3 V: with the plan's 10 kΩ + 1 µF (τ = 10 ms) it reaches **≈ 2.0 V** — above the ESP32-S3's VIL of 0.825 V, into the undefined band; with **47 kΩ + 1 µF (τ = 47 ms) it reaches 0.61 V (0.75 V with 20 % capacitor derating — an X7R 16 V 0603 at 3.3 V actually derates ≈ 5 %)** — a steady LOW. If bring-up measures more than 0.7 V at the end of the gap, C701–C704 become 1.5 µF (τ = 70 ms, 0.42 V) — same footprint. Release after the signal stops: ≈ 3τ ≈ 140 ms. First-detect delay when a signal appears: the opto drags 1 µF from 3.3 V to 0.8 V with ≈ 0.6 mA net at 12 V in ≈ 4 ms — immediate.
 - **Firmware belt to the hardware braces:** an input changes state only after 3 consecutive 10 ms samples agree (§14).
 
 Field-side rules for this sheet: R701/R702, D701, D705 and the opto's LED pins are field copper — they sit on the field side of the moat with only local fills, no ground pour. The opto body straddles the moat. R709, C701 and the collector are logic copper.
@@ -341,16 +342,17 @@ Nets leaving this sheet: IN1_L … IN4_L (to the core).
 
 ## 9. Relay Outputs ×2 — Sheet 08_Relay_Outputs (field side, isolated contacts)
 
-### K801, K802 — SRD-05VDC-SL-C (Songle, LCSC C35449), SPDT, through-hole
+### K801, K802 — Hongfa HF3FF/005-1ZTF (LCSC C2764967), SPDT, through-hole
 
-- **Coil:** 5 V nominal, **70 Ω ± 10 % → 63–79 mA**, 0.36 W, must-operate ≤ 75 % (3.75 V), must-release ≥ 10 %. On 5V_BUCK the coil sees 5.02 − 0.15 V (transistor saturation) = 4.87 V, 97 % of nominal.
+- **Why Hongfa and not the plan's Songle SRD-05VDC-SL-C:** same 19 × 15.2 mm "T73" outline, same coil, but an industrial part: **UL E134517, VDE R50148356, CQC**, **AgSnO₂ contacts** (the T suffix — the right material for inductive loads; Songle's AgCdO is the old one), **−40…85 °C** (the Songle is −25…70 °C, which a furnace closet or an attic exceeds), 1 × 10⁷ mechanical operations, 1500 VAC coil-to-contact. Hongfa is a top-three relay maker; the SRD is the clone. ≈ $0.80 against ≈ $0.25 — the most expensive upgrade on the board and the most obviously worth it. (Industry-standard audit, §1.)
+- **Coil:** 5 V nominal, **70 Ω ± 10 % → 63–79 mA**, 0.36 W, pick-up ≤ 3.8 V, drop-out ≥ 0.5 V. On 5V_BUCK the coil sees 5.02 − 0.15 V (transistor saturation) = 4.87 V, 97 % of nominal.
 - **Contacts:** one SPDT set (COM, NO = normally open, NC = normally closed), datasheet-rated 10 A at 250 VAC / 28 VDC. **This board rates them at ≤ 2 A, ≤ 30 V AC or DC** — set by the moat, the terminal, the trace width and the refusal of mains, not by the relay.
 - **Why SPDT with all three contacts on terminals:** each deployment picks its own fail-safe direction. An overflow guard wired through **NC** keeps the air conditioner running even if this board loses power; a sprinkler valve wired through **NO** stays shut if the board dies. Kept verbatim in the README.
 - Body 19.0 × 15.5 × 15.3 mm, the tallest part on the board. Through-hole, hand-soldered after reflow, thermal reliefs on its pads so the iron can wet them.
 
 ### Driver per relay: Q801 · R801 · R802 · D801 · D803 + R805
 
-- **Q801 — S8050 (NPN, SOT-23):** low-side switch for the coil. hFE minimum 85 at 50 mA.
+- **Q801 — MMBT2222A (NPN, SOT-23; onsemi MMBT2222ALT1G / Nexperia MMBT2222A,215 / Diodes MMBT2222A-7-F):** low-side switch for the coil — the 2N2222 in SOT-23, 600 mA, hFE ≥ 100 at 150 mA (≥ 90 at this coil's 79 mA), three tier-one sources. Replaces the plan's S8050, a commodity part with vague gain bins; BC817-40 is the equally standard alternate. Same network, same arithmetic.
 - **R801 — 680 Ω base resistor** from the GPIO: (3.3 − 0.7) / 680 = **3.75 mA** of base current for a ≤ 79 mA coil → forced gain 21, against a minimum hFE of 85 — **4× overdrive, deep saturation**, VCE(sat) ≈ 0.15 V, 12 mW in the transistor.
 - **R802 — 10 kΩ base pull-down:** the relay is OFF from the first microsecond of power, through reset, through the bootloader, until firmware says otherwise. Sized so that even a pin with a 45 kΩ internal pull-up would sit at 0.6 V at the base node — the plan's value would have been fine here, but 10 kΩ is used on every output on this board for one reason stated once (§10).
 - **D801 — 1N4148W flyback across the coil** (cathode to 5V_BUCK): when the transistor opens, the coil's stored energy (≈ 0.2 mJ) circulates through the diode instead of spiking the collector. Release is slowed by ≈ L/R ≈ 1 ms — irrelevant for valves and fans.
@@ -396,7 +398,8 @@ Nets leaving this sheet: OUT1, OUT2 (from the core), 5V_BUCK, GND.
 
 ## 11. Mechanical, Moat, Silkscreen — Sheet 10_Mechanical
 
-- **Board:** 2 layers, 1 oz outer copper, 1.6 mm FR4, lead-free HASL, green mask. Target ≈ **100 × 70 mm; hard ceiling 100 × 100 mm** (JLC's cheapest 2-layer tier, stencil ships in the same box). 1–2 mm corner radius (Board 1's lesson: a radius forces tab-routing, which is fine at this size).
+- **Board:** 2 layers, 1 oz outer copper, 1.6 mm FR4, lead-free HASL, green mask. **Outline from the enclosure, decided before layout** (`../mechanical/README.md`): a field controller lives on DIN rail, so the board is sized to a 6-module DIN enclosure's PCB drawing (reference class Camdenboss CNMB/6, 106 × 90 × 58 mm) with the terminals at its two windows — which is what the plan's "field terminals on at most two edges" was already asking for. Hard ceiling **100 × 100 mm** (JLC's cheapest 2-layer tier, stencil ships in the same box); 1–2 mm corner radius (Board 1's lesson: a radius forces tab-routing, which is fine at this size).
+- **Fiducials:** FID1–FID3, 1 mm copper / 2 mm mask opening (KiCad `Fiducial_1mm_Mask2mm_SilkRing`), in three corners of the top side, ≥ 5 mm from the edge. They align the stencil on the bench and are mandatory the day a batch is assembled at JLC.
 - **Layer plan:** every component on the top layer (single-sided reflow). Bottom copper = one unbroken ground beneath the logic side and the converter. The field side has **no ground pour at all** — its copper is local fills per net (the bridge output, the relay contact nets, the opto LED nets). The rectifier/bulk-capacitor return joins the logic ground at a **single star point at the buck's input capacitors**, so the rectifier's 120 Hz pulse current never flows through the ESP32's ground.
 - **Moat:** ≥ 2.5 mm copper-free on both layers along the whole field/logic boundary, wider (≥ 4 mm) around the relay contact terminals. Silkscreen line plus **FIELD SIDE** / **LOGIC SIDE** text. Enforced by a DRC rule (netclass FIELD ↔ everything else ≥ 2.5 mm — `KiCad_Settings_RevA.md`).
 - **Edges:** field terminals (J201, J701, J801, J802) on at most two edges; USB-C on the opposite edge; J901 (VLOAD, logic-referenced) on the logic side's edge next to nothing field-related. Antenna nose overhanging its edge, ≥ 15 mm from any terminal, screw, wire or the converter.
@@ -418,12 +421,13 @@ Verified-in-stock LCSC numbers are given where confirmed on 2026-09-07; **(verif
 | U601 | Wi-Fi module | ESP32-S3-WROOM-1-N8 | C2913198 | Board 1 |
 | U701–U704 | Optocoupler, CTR rank C, SMD gull-wing | EL817S1(C)(TU)-F (Everlight) | C106900 | PC817C-class equivalents acceptable if the same package |
 | BR201 | Bridge rectifier 2 A / 600 V, KBP through-hole | KBP206 (MDD) | C2494 | any KBP206 / KBP210 |
-| Q801, Q802 | NPN, SOT-23 | S8050 | (verify — JLC Basic S8050 CJ, C2146) | hFE ≥ 85 |
+| Q801, Q802 | NPN, SOT-23 | MMBT2222A (onsemi / Nexperia / Diodes) | (LCSC: pick a tier-one maker's listing) | hFE ≥ 100 at 150 mA; alt BC817-40 |
 | Q901, Q902 | N-MOSFET 30 V logic-level, SOT-23 | AO3400A | C20917 | |
 | D201 | TVS 43 V standoff, 600 W, SMB | SMBJ43A (Littelfuse) | C315993 | |
 | D401 | TVS 5 V, SOD-123F | SMF5.0A | C2980403 | Board 1 |
 | D301, D402, D901, D902 | Schottky 1 A / 40 V, SMA | SS14 | C2480 | OR diodes + MOSFET flybacks |
 | D701–D704, D801, D802 | Switching diode, SOD-123 | 1N4148W | C81598 | opto anti-parallel, coil flyback |
+| D709–D712 | Zener 4.7 V 500 mW, SOD-123 | BZT52C4V7-7-F (Diodes) | C260907 | input threshold — IEC 61131-2 Type 1 |
 | D705–D708, D803, D804, D903, D904 | Red LED 0805 | (any high-efficiency red, Vf ≈ 1.9 V) | (verify) | 8 pcs |
 | D501, D602 | Yellow-green LED 0603 | KT-0603YG / XL-0603QYGC | C2289 | Board 1's chemistry rule: ≈ 2 V Vf for a 3.3 V rail |
 | D302 | Green LED 0805 | (any, on 5 V) | (verify) | FIELD PWR |
@@ -432,21 +436,22 @@ Verified-in-stock LCSC numbers are given where confirmed on 2026-09-07; **(verif
 
 | Ref | What | Part | LCSC | Notes |
 |---|---|---|---|---|
-| K801, K802 | Relay 5 V SPDT 10 A, THT | SRD-05VDC-SL-C (Songle) | C35449 | or JQC-3FF-S-Z 5 V, same footprint family |
+| K801, K802 | Relay 5 V SPDT 10 A, THT, AgSnO₂, UL/VDE | HF3FF/005-1ZTF (Hongfa) | C2764967 | −40…85 °C; the Songle SRD-05VDC-SL-C (C35449) fits the footprint but is not the part |
 | L301 | 15 µH shielded, Isat ≥ 3.8 A | SRR1260-150M (Bourns) | C2041333 | 12 × 12 × 6 mm; any equivalent ≥ 3.8 A Isat / ≤ 60 mΩ |
 | F201 | PPTC 1.1 A hold / 60 V, radial | 60R110 (Littelfuse) or MF-RX110 (Bourns) | (verify; DigiKey fallback) | **not MF-R110 (30 V)** |
 | F401 | PPTC 0.75 A / 16 V, 1206 | 1206L075/16WR | C371166 | Board 1 |
-| J201 | Screw terminal 5.08 mm, 2 pos | KF128 / DG128 / MKDS-class 5.08 | (verify) | ≥ 10 A, 0.5–2.5 mm² wire |
-| J701 | Screw terminal 5.08 mm, 5 pos | same family | (verify) | |
-| J801, J802 | Screw terminal 5.08 mm, 3 pos | same family | (verify) | |
-| J901 | Screw terminal 5.08 mm, 4 pos | same family | (verify) | |
+| J201 | Screw terminal, 2 pos, UL/VDE | Degson DG128-5.0-02P-14-00A(H) | C711349 | 5.0 mm pitch family (or Phoenix MKDS 1.5/2-5.08 from DigiKey); ≥ 10 A, 0.5–2.5 mm² wire; one family for all five |
+| J701 | Screw terminal, 5 pos | Degson DG128-5.0-05P-14-00A(H) | (verify) | |
+| J801, J802 | Screw terminal, 3 pos | Degson DG128-5.0-03P-14-00A(H) | C691861 | |
+| J901 | Screw terminal, 4 pos | Degson DG128-5.0-04P-14-00A(H) | (verify) | |
 | J401 | USB-C receptacle 16-pin | TYPE-C-31-M-12 | C165948 | Board 1 footprint |
 | J601 | 1 × 6 header 2.54 mm — **DNP** | — | — | footprint only |
 | SW601, SW602 | Tactile 5.1 mm | TS-1187A-B-A-B | C318884 | Board 1's 1/1/2/2 footprint |
 | JP901 | Solder jumper, **open** | KiCad `SolderJumper_2_Open` | — | close for 5 V VLOAD |
-| RV801, RV802 | MOV 7 mm disc — **DNP** | 07D560K | (verify) | 35 V RMS |
-| C201 | 470 µF 63 V 105 °C low-ESR radial, ≥ 0.6 A ripple | Nichicon UPW1J471MPD / Rubycon 63ZLH470 / equivalent | (verify) | 12.5 × 20 mm class |
-| C901 | 100 µF 25 V electrolytic (radial or SMD) | any 105 °C | (verify) | VLOAD bulk |
+| RV801, RV802 | MOV 7 mm disc — **DNP** | TDK/EPCOS S07K35 (B72207S0350K101) or 07D560K | (verify) | 35 V RMS / 45 V DC continuous |
+| C201 | 470 µF 63 V 105 °C long-life low-ESR radial, ≥ 0.6 A ripple, ≥ 5,000 h | Nichicon UPW1J471MPD / Rubycon 63ZLH470MEFC12.5X20 / Panasonic EEU-FR1J471 | (verify) | 12.5 × 20 mm, 5 mm pitch; no no-name brands here |
+| C901 | 100 µF 25 V electrolytic, 105 °C long-life | Nichicon UPW / Rubycon ZLH / Panasonic FR | (verify) | VLOAD bulk |
+| FID1–FID3 | Fiducial 1 mm Cu / 2 mm mask | KiCad `Fiducial_1mm_Mask2mm_SilkRing` | — | three corners, top |
 
 ### Passives (0603 unless noted; all resistors 1 %)
 
@@ -463,7 +468,7 @@ Verified-in-stock LCSC numbers are given where confirmed on 2026-09-07; **(verif
 | R401, R402 | 22 Ω | 0603 | USB series |
 | R403, R404 | 5.1 kΩ | 0603 | USB-C CC pull-downs |
 | R601, R602 | 10 kΩ | 0603 | EN / IO0 pull-ups |
-| R701–R708 | 2.4 kΩ | **1206** | Opto series, two per channel |
+| R701–R708 | 1.6 kΩ | **1206, anti-surge** (Yageo PA/AC, Panasonic ERJ-P08) | Opto series, two per channel |
 | R709–R712 | 47 kΩ | 0603 | Opto collector pull-ups (τ = 47 ms with C701–C704) |
 | R801, R803 | 680 Ω | 0603 | Relay base resistors |
 | R802, R804, R902, R904 | 10 kΩ | 0603 | Base / gate pull-downs — OFF at boot |
@@ -484,7 +489,7 @@ Verified-in-stock LCSC numbers are given where confirmed on 2026-09-07; **(verif
 
 ### Tally (the honest estimate)
 
-≈ **112 placed components in ≈ 45 BOM lines** (101 reflowed on the plate, 11 through-hole by iron: K801, K802, F201, BR201, C201, C901 and the five terminals), plus 14 test points, 4 mounting holes, 1 logo, 1 QR, and 14 DNP footprints (J601, C308, C402, C403, R807–R810, C801–C804, RV801, RV802). The plan's "60–75 parts" was the count before the review added the second rail, the LED chain and the snubber footprints; the bench time it implies is ≈ 1.5–2.5 h of placement for the first article.
+≈ **116 placed components in ≈ 46 BOM lines** (105 reflowed on the plate, 11 through-hole by iron: K801, K802, F201, BR201, C201, C901 and the five terminals), plus 14 test points, 3 fiducials, 4 mounting holes, 1 logo, 1 QR, and 14 DNP footprints (J601, C308, C402, C403, R807–R810, C801–C804, RV801, RV802). The plan's "60–75 parts" was the count before the review added the second rail, the LED chain and the snubber footprints; the bench time it implies is ≈ 1.5–2.5 h of placement for the first article.
 
 ### Bought separately — bench and demo (plan §10)
 
@@ -546,7 +551,8 @@ Full procedure, expected voltages and record sheet: `BringUp_Guide.md`.
 
 - **JLCPCB order:** bare 2-layer PCB ×5 + **0.12 mm frameless stencil, top paste, ships in the same box**. No PCBA line, no part-tier fees. Order-number token on the bottom silk; "Remove Mark" if it is still free.
 - **Paste layer before ordering the stencil:** the LMR38020 exposed pad and the ESP32 module's centre pad get **windowpaned apertures at ≈ 50–60 % coverage** (four squares each); everything else 1:1. Check the paste layer in the fab preview — a stencil is only as good as its apertures.
-- **Parts:** LCSC, same checkout as the boards. Everything Sn63/Pb37-compatible (all standard).
+- **Parts:** LCSC, same checkout as the boards. Everything Sn63/Pb37-compatible (all standard). **MSL discipline (J-STD-033):** the ESP32-S3 module is MSL 3 — 168 h of floor life after the bag is opened; the buck and the optocouplers are typically MSL 3 too. Keep them sealed with their desiccant until assembly day, or bake (125 °C, 24 h for the module) before reflow. A "popcorned" module cracks under the pad nobody can see.
+- **Bench:** ESD mat and wrist strap (ANSI/ESD S20.20 practice — the plan's silicone mat is not an ESD mat); inspection to **IPC-A-610 Class 2** criteria (`Assembly_and_Stencil_Plan.md` §6).
 - **Reflow order on the plate:** all 0603/0805/1206 passives → SOD-123 / SMA / SOT-23 diodes and transistors → the four optos, USBLC6, the SOT-223 regulator → the buck IC → the 1210 capacitors → the shielded inductor → **the ESP32-S3 module last**. Single-sided, bottom heat, the paste manufacturer's profile, thermocouple on the board not the plate, board cools undisturbed.
 - **Iron afterwards, never the plate:** K801, K802, J201, J701, J801, J802, J901, BR201, C201, C901, F201, TP6/TP10/TP11.
 - **One first article, then the rest.** Inspect, bring up, let it say what went wrong, fix the technique, then build the other four.
@@ -564,6 +570,8 @@ Detail and the stencil/aperture worksheet: `Assembly_and_Stencil_Plan.md`.
 - **The isolation is functional, not a safety barrier.** 5 kV optos and a 2.5 mm moat make 30 V field circuits safe to share a board with the logic; nothing here is rated for mains, and mains is refused.
 - **Relay contacts are rated by the board at 2 A / 30 V**, whatever the relay prints. Inductive loads need the snubber/MOV footprints fitted or a diode across the load.
 - **USB pair impedance is uncontrolled on 2 layers** — short, coupled, via-free, over solid ground. Correct trade at USB Full Speed.
+- **EMC immunity is not tested.** No IEC 61000-4-2/-4/-5 claim is made. The inputs have 3.2 kΩ of series resistance and diodes both ways; the power entry has the TVS and 470 µF. Bidirectional TVS per input and a power-entry choke are the Rev B footprints if a client requires the test (audit §4).
+- **Not a listed product.** UL-recognised components throughout (relay, PPTC, terminals, optos, TVS); the board itself carries no UL/CE listing and the README does not claim one.
 - **The 3.3 V regulator dissipates up to 0.49 W** during Wi-Fi transmit bursts; the SOT-223 AP7361C keeps that to a ≈ 35–55 °C rise. Measured in the torture loop.
 - **The condensate use case is supervisory.** Wiring K2 through NC keeps cooling running if this board loses power — that is *fail-operational*, chosen for availability, not fail-safe. The OEM float-switch interlock stays in circuit; this board adds a second trip and a phone alert and is never the primary safety device.
 - **Boards assembled with Sn63/Pb37 are not RoHS-compliant** and will not be represented as such.
@@ -573,7 +581,8 @@ Detail and the stencil/aperture worksheet: `Assembly_and_Stencil_Plan.md`.
 
 - [ ] `hardware/` KiCad project created as `ESP32S3_FieldIO`, libraries from `hardware/libs/` (copied from Board 1 and renamed) in `fp-lib-table` / `sym-lib-table`.
 - [ ] Per-sheet annotation set (200 / 300 / … per sheet) before the first component is placed.
-- [ ] LMR38020 symbol + HSOIC-8 (DDA) footprint, AP7361C SOT-223 (KiCad stock `SOT-223-3_TabPin2`), SRR1260 footprint, KBP footprint, SRD-05VDC footprint, 5.08 mm terminal footprints, EL817S1 SMD-4 footprint, radial PPTC footprint, 12.5 mm electrolytic footprint — each checked against its datasheet drawing (Board 1's `Footprint_Check` method).
+- [ ] **Enclosure chosen and its PCB drawing in `mechanical/`** — the board outline and terminal positions come from it (`../mechanical/README.md`).
+- [ ] LMR38020 symbol + HSOIC-8 (DDA) footprint, AP7361C SOT-223 (KiCad stock `SOT-223-3_TabPin2`), SRR1260 footprint, KBP footprint, HF3FF footprint (Hongfa drawing: coil pins 12.2 mm apart, contact pins on 3.4 mm ± 0.3 — the SRD "T73" pattern, but draw it from the Hongfa sheet), Degson DG128 terminal footprints, EL817S1 SMD-4 footprint, radial PPTC footprint, 12.5 mm electrolytic footprint, SOD-123 for the Zeners — each checked against its datasheet drawing (Board 1's `Footprint_Check` method).
 - [ ] Netclasses FIELD / CONTACT / POWER / USB created and the moat DRC rule entered (`KiCad_Settings_RevA.md`).
 - [ ] LCSC stock re-checked for U301, L301, F201, U701–U704, K801/K802 on the day the BOM is frozen; alternates recorded in the BOM.
 - [ ] Datasheets for every new part in `references/datasheets/` (index in its README; the ones not yet fetched are listed there with links).
@@ -615,7 +624,23 @@ Every change is a finding in [`reviews/Spec_Review_RevA_2026-09-07.md`](reviews/
 | "Condensate overflow guard" | "**supervisor**, in series with the OEM interlock" | NC is fail-operational, not fail-safe [2nd-review 10] |
 | Isolation map | + the three-domain sentence | [2nd-review 7, already the design — wording made explicit] |
 
-Not adopted, with the reasons in the review file: LM5012 (COT + ripple injection + catch diode is more design risk than the synchronous, internally compensated LMR38020, whose 85 V absolute maximum already passes the TVS check), 100 V bulk capacitor (the node cannot reach the clamp voltage with 470 µF in parallel), LTV-814 AC-input optocouplers (20 % minimum CTR, and the series indicator LED needs the anti-parallel diode anyway), 100 kΩ pull-downs (reset-state pull-ups), 30 VAC upper limit (41 V bus against a 43 V standoff), SS14 for the relay flyback (1N4148W is rated 2× the coil current; optional).
+### Adopted from the industry-standard audit (same day) — [`reviews/Industry_Standard_Audit_RevA_2026-09-07.md`](reviews/Industry_Standard_Audit_RevA_2026-09-07.md)
+
+| Was | Now | Because |
+|---|---|---|
+| Songle SRD-05VDC-SL-C relays | **Hongfa HF3FF/005-1ZTF** (C2764967) | UL/VDE, AgSnO₂, −40…85 °C, top-three maker; same outline and coil [audit §1] |
+| S8050 relay transistors | **MMBT2222A** (BC817-40 alt) | three tier-one sources, specified gain; same network [audit §1] |
+| Opto input: 2 × 2.4 kΩ, threshold ≈ 4 V by CTR | **BZT52C4V7 in series + 2 × 1.6 kΩ 1206 anti-surge** — **IEC 61131-2 Type 1** (OFF ≤ 5 V, ON ≥ 15 V at 2.27 mA) | a defined threshold is what a 24 V input is [audit §2.1] |
+| generic KF128 screw terminals | **Degson DG128 (UL/VDE) or Phoenix MKDS** | recognised makers for anything touching field wiring [audit §1] |
+| — | **FID1–FID3** fiducials | stencil alignment; JLC-ready [audit §2.13] |
+| board size "≈ 100 × 70 mm" | **outline from a DIN-rail enclosure's PCB drawing**, chosen before layout | field controllers live on DIN rail [audit §2.12] |
+| — | **MSL / J-STD-033 handling, IPC-A-610 Class 2 acceptance, ESD mat** in the assembly plan | [audit §2.5–2.8] |
+| electrolytics "any 105 °C" | **named long-life series** (Nichicon UPW / Rubycon ZLH / Panasonic FR, ≥ 5,000 h) | always-on equipment [audit §1] |
+| — | `mechanical/`, `CHANGELOG.md`, KiCad ERC/DRC CI | repository audit [audit §3] |
+
+Recorded as optional or Rev B in the audit's §4: ISO1211/ISO1212 digital-input receivers, TPL7407L / TPS27S100 protected outputs, per-input TVS and a power-entry choke, pluggable terminal blocks, conformal coating, PlatformIO, TLS/signed OTA.
+
+Not adopted from the second-opinion review, with the reasons in its file: LM5012 (COT + ripple injection + catch diode is more design risk than the synchronous, internally compensated LMR38020, whose 85 V absolute maximum already passes the TVS check), 100 V bulk capacitor (the node cannot reach the clamp voltage with 470 µF in parallel), LTV-814 AC-input optocouplers (20 % minimum CTR, and the series indicator LED needs the anti-parallel diode anyway), 100 kΩ pull-downs (reset-state pull-ups), 30 VAC upper limit (41 V bus against a 43 V standoff), SS14 for the relay flyback (1N4148W is rated 2× the coil current; optional).
 
 ### Companion documents
 

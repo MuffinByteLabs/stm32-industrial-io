@@ -53,7 +53,7 @@
 
 ### Assembly & fabrication (bench process — new)
 30. **Every reflowed part on the top layer.** Nothing on the bottom but copper and silk.
-31. **Through-hole for anything with a screw, a coil or a can**: K801, K802, J201, J701, J801, J802, J901, BR201, C201, C901, F201. Their pads get **thermal reliefs** so the iron can wet them after reflow. The through-hole test points TP6/TP10/TP11 likewise.
+31. **Through-hole for anything with a screw, a coil or a can**: K801, K802 (Hongfa HF3FF — draw the footprint from the Hongfa sheet: coil pins 12.2 mm apart, contact pins on 3.4 mm ± 0.3), J201, J701, J801, J802, J901 (Degson DG128), BR201, C201, C901, F201. Their pads get **thermal reliefs** so the iron can wet them after reflow. The through-hole test points TP6/TP10/TP11 likewise.
 32. **No leadless packages** (no QFN, no DFN, no BGA) — every joint inspectable under ×10. Finest pitch on the board is the USB-C's 0.5 mm; the buck is 1.27 mm HSOIC.
 33. **Paste layer:** U301's exposed pad and U601's centre pad windowpaned to ≈ 50–60 % coverage; all other apertures 1:1. Checked on the fab's paste preview before the stencil is ordered.
 34. Passives ≥ 0603; opto series resistors and the bus HF cap 1206; buck ceramics 1210. Part orientation consistent (all 0603 values readable from one direction) — it halves the tweezers time.
@@ -76,7 +76,8 @@
 44. Opto bodies in a row along the moat; series resistors and LEDs on the field side of each; pull-up and capacitor on the logic side of each — the schematic's left-right order becomes the board's.
 45. Relays with coil pins toward the logic side, contacts toward the field terminals — the relay's own pinout draws the moat for you.
 46. 45° corners; parts at 0°/90°; doubled vias where real current changes layers (5V_BUCK, VLOAD, VBUS_DC return).
-47. Keep the board ≤ 100 × 100 mm; aim for ≈ 100 × 70. The stencil ships in the same box, and the PCB price stays in the lowest tier.
+47. **The outline comes from the enclosure** (`../mechanical/README.md`): import the DIN-rail enclosure's PCB drawing onto Edge.Cuts before placing anything, put the terminals at its windows, and keep the board ≤ 100 × 100 mm so the stencil ships in the same box and the PCB price stays in the lowest tier.
+47a. **Three fiducials** (FID1–FID3, 1 mm copper / 2 mm mask, `Fiducial_1mm_Mask2mm_SilkRing`) in three corners of the top side, ≥ 5 mm from the edge, clear of the antenna region and of any silk.
 48. Silk: name / Rev A / date / MuffinByteLabs.com / designer, the 2× logo, and a **QR to the repo** — the standard the plan sets from Board 2 on.
 
 ## Pocket numbers

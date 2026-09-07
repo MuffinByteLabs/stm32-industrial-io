@@ -2,7 +2,9 @@
 
 **Status: no code yet — by design.** Board 1's sketch was written against its hardware contract before the boards landed; this board follows the same order: the contract first, here, then the sketch after the schematic is frozen and the pin map is final, then measurements from the first article replace every "expected" number.
 
-The sketch will live in `field_io/`, Arduino IDE, split across files exactly like Board 1's `plant_monitor/` (`config.h` for every number the board imposes, `secrets.h` gitignored, `net.cpp` reused for Wi-Fi, MQTT and Home Assistant discovery). Pin assignments are in [`../docs/PinMap_CheatSheet.md`](../docs/PinMap_CheatSheet.md).
+The sketch will live in `field_io/`, split across files exactly like Board 1's `plant_monitor/` (`config.h` for every number the board imposes, `secrets.h` gitignored, `net.cpp` reused for Wi-Fi, MQTT and Home Assistant discovery). Pin assignments are in [`../docs/PinMap_CheatSheet.md`](../docs/PinMap_CheatSheet.md).
+
+**Toolchain (industry-standard audit §4):** build under **PlatformIO** (VS Code) with the Arduino-ESP32 framework, so `platformio.ini` pins the framework and every library version — a reproducible build, which the Arduino IDE cannot promise. The code stays Arduino-API; Board 1's files port unchanged. Security baseline for anything left running in someone's house: MQTT over TLS, a unique per-device credential, and OTA images that are at least checksummed and password-gated (signed if the ESP-IDF secure-boot route is ever taken).
 
 ---
 

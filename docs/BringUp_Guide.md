@@ -19,7 +19,7 @@
 * **5V_SYS is ≈ 4.6 V, not 5 V** — it sits behind a Schottky from either source. The LDO needs ≥ 3.6 V and is happy.
 * **The buck's turn-on and turn-off voltages are ± 12 %** (EN threshold spread): expect start somewhere in 7.6–9.3 V at the terminal and stop in 6.7–8.3 V, light load. Record the pair per board.
 * **The bulk capacitor sawtooths ≈ 3 V at 120 Hz on 24 VAC under load** — expected; the buck does not care.
-* **An input reads ON only above ≈ 3.5–4 V** (opto LED + indicator LED drops plus the little current the 47 k pull-up needs). Below that it reads OFF by design — a power-stealing thermostat's 1–2 V of leakage stays OFF.
+* **An input reads ON only above ≈ 8 V** (the 4.7 V Zener plus the opto and indicator LED drops, plus the little current the 47 k pull-up needs) — IEC 61131-2 Type 1: anything ≤ 5 V reads OFF, 15 V and up reads ON with ≥ 2 mA. A power-stealing thermostat's 1–2 V of leakage and a 5 V logic level both stay OFF.
 * **An AC input's collector node ripples ≤ 0.7 V** during each zero-crossing gap; the GPIO reads a steady LOW. If it ripples to 2 V, R70x is a 10 k instead of the 47 k, or C70x is not the 1 µF part.
 * **First detect on an input takes a few ms; release takes ≈ 140 ms** — the RC, then the 3-sample firmware debounce on top.
 * **The bridge runs warm at low DC input under full load** (1–1.5 W at 9–12 V). At 24 V and above it is cool.
@@ -62,7 +62,7 @@
 **E — inputs**
 11. 24 V DC between IN1 and COM, either polarity: field LED D705 lights, firmware reads ON, TP-less check of IN1_L at C701: ≈ 0.05 V. Reverse the polarity: identical. Repeat IN2–IN4.
 12. 24 VAC between IN1 and COM: LED lights (half-wave, looks steady), firmware reads a **steady ON**; scope IN1_L at C701: a sawtooth that never exceeds ≈ 0.7 V. Remove the source: reads OFF after ≈ 150 ms.
-13. 12 V DC on each input (the low corner): LED dim but visible, firmware reads ON, IN1_L < 0.2 V. 3 V DC: reads OFF (below threshold, by design); note the voltage at which each channel first reads ON (expect ≈ 3.5–4 V).
+13. 12 V DC on each input (the low corner): LED dim but visible (1.3 mA), firmware reads ON, IN1_L < 0.2 V. **5 V DC: reads OFF** (Type 1 OFF band). Ramp slowly and note the voltage at which each channel first reads ON (expect ≈ 8 V, ± 0.5 V for the Zener knee). At 15 V the channel draws ≈ 2.3 mA (meter in series — Type 1 asks ≥ 2 mA).
 
 **F — outputs**
 14. Relay click test from firmware, K1 then K2; the coil LED follows. Meter continuity NO–C and NC–C in both states. Then the real sprinkler valve on K1 NO / C from the 24 VAC transformer: it opens and closes; no reset on the board (watch TP2 on the scope at the click — a few tens of mV dip at most).
@@ -84,7 +84,7 @@
 | Board resets when a relay closes | 5V_SYS sag: D301 / C503; check TP3 on the scope at the click |
 | Relay clicks on USB power | D301 / D402 wiring — 5V_BUCK is tied to 5V_SYS somewhere it should not be |
 | Nothing on VLOAD with the pump connected | JP901 ships open — close it (or feed an external supply to VLOAD+ / GND) |
-| Input never reads ON | R701/R702 open, D701 backwards (steals the current), opto orientation, R709 missing |
+| Input never reads ON | R701/R702 open, D709 (Zener) backwards or D701 backwards (steals the current), opto orientation, R709 missing |
 | Input reads ON with nothing connected | C70x leaking / opto collector-emitter swapped, pull-up missing |
 | AC input chatters | R70x pull-up is 10 k instead of 47 k (τ too short); firmware debounce not running |
 | Relay energised at boot | wrong pin (a pull-up-at-reset pin), R802/R804 missing |
@@ -107,7 +107,8 @@
 | 24 VAC TP1 sawtooth at 1.25 A | ≈ 4 V | | | | | |
 | TP13 at 12 V in (VIN_SENSE) | ≈ 0.50 V | | | | | |
 | USB-only: TP2 | 0 V, relays silent | | | | | |
-| IN1–IN4 at 24 V DC / 24 VAC / 12 V DC | ON / ON / ON | | | | | |
+| IN1–IN4 at 24 V DC / 24 VAC / 12 V DC / 5 V DC | ON / ON / ON / OFF | | | | | |
+| Input ON threshold (ramp) | ≈ 8 V | | | | | |
 | IN1_L ripple on AC | ≤ 0.7 V | | | | | |
 | Torture loop resets | 0 | | | | | |
 | Temps: U301 / L301 / BR201 / U501 | record | | | | | |

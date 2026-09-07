@@ -10,6 +10,7 @@ What exists today:
 - [`ESP32S3_FieldIO_Final_Design_Document.md`](ESP32S3_FieldIO_Final_Design_Document.md) — complete, sheet by sheet, with per-sheet designators, a BOM draft with LCSC numbers, test points, bring-up and limitations.
 - [`reviews/Spec_Review_RevA_2026-09-07.md`](reviews/Spec_Review_RevA_2026-09-07.md) — the pre-capture review of plan v7.3 §4. **Four blocking findings** changed the design before a single symbol was placed: the opto input RC (1 µF could not hold LOW through the 60 Hz gap), the UVLO/9 V contradiction, the undersized PPTC, and the leadless buck package.
 - [`reviews/Second_Opinion_Review_RevA_2026-09-07.md`](reviews/Second_Opinion_Review_RevA_2026-09-07.md) — an independent second review of the same spec, weighed point by point: **9 adopted** (SOT-223 regulator, 47 k + 1 µF input filter, VIN_SENSE ratio, open jumper + connector order, silk USB rule, published 12 V minimum, 1.25 A acceptance, bring-up current limit, supervisory wording), 6 declined with arithmetic.
+- [`reviews/Industry_Standard_Audit_RevA_2026-09-07.md`](reviews/Industry_Standard_Audit_RevA_2026-09-07.md) — every part checked for lifecycle, grade and sourcing, the design against IEC 61131-2 / IPC / J-STD, the repository against engineering-organisation expectations. **Upgrades:** Hongfa HF3FF relays, MMBT2222A drivers, Zener-defined IEC Type 1 inputs, Degson/Phoenix terminals, fiducials, DIN-rail enclosure before layout, MSL/IPC-A-610/ESD process, `mechanical/`, `CHANGELOG.md`, ERC/DRC CI.
 - [`calcs/board2_calcs.py`](calcs/board2_calcs.py) — every number, recomputable.
 - `hardware/libs/` — Board 1's verified footprints, symbols and 3D models, renamed `FieldIO_JLC`, with the project library tables ready for a new KiCad project.
 - `references/datasheets/` — the new parts' datasheets that could be fetched (7), and an index listing the rest with links.
@@ -31,9 +32,10 @@ What exists today:
 - **Input spec: published 12–36 V DC / 24 VAC (18–28 VAC); guaranteed floor 10 V DC (≈ 8.5 V typical start).** "9 V" is retired from every client-facing line; 30 VAC is refused (41 V bus vs 43 V standoff).
 - **Two 5 V nets:** 5V_BUCK (relays, VLOAD, FIELD PWR LED) and 5V_SYS (logic; OR of buck and USB through SS14s). Relays cannot click on USB — by physics.
 - **PPTC F201 = 1.1 A / 60 V radial** (60R110 or MF-RX110). Not MF-R110 (30 V).
-- **Opto input = 2 × 2.4 k 1206 in series + series red LED (field side) + 1N4148W anti-parallel; 47 k + 1 µF on the collector (τ = 47 ms).** Threshold ≈ 4 V. Firmware: 3 consecutive 10 ms samples.
+- **Opto input = BZT52C4V7 Zener + 2 × 1.6 k 1206 anti-surge in series + series red LED (field side) + 1N4148W anti-parallel; 47 k + 1 µF on the collector (τ = 47 ms).** **IEC 61131-2 Type 1**: OFF ≤ 5 V, ON ≥ 15 V at 2.27 mA; threshold ≈ 8–8.4 V. Firmware: 3 consecutive 10 ms samples.
 - **Every output pull-down is 10 kΩ**; outputs on IO9–IO13 (no default pull at reset). IO1/IO2 unused (pulled up at reset).
-- **Relays SRD-05VDC-SL-C**, S8050 + 680 Ω + 10 k + 1N4148W; contacts rated on this board ≤ 2 A / ≤ 30 V; snubber/MOV footprints DNP.
+- **Relays Hongfa HF3FF/005-1ZTF** (UL/VDE, AgSnO₂, −40…85 °C, C2764967), **MMBT2222A** + 680 Ω + 10 k + 1N4148W; contacts rated on this board ≤ 2 A / ≤ 30 V; snubber (100 Ω + 100 nF 100 V) / MOV (TDK S07K35) footprints DNP.
+- **Terminals: Degson DG128-5.0 family (UL/VDE) or Phoenix MKDS 1.5/x-5.08** — one family for all five. **Fiducials FID1–FID3.** **Board outline from the DIN-rail enclosure's PCB drawing** (`../mechanical/README.md`), chosen before layout; ≤ 100 × 100 mm.
 - **MOSFET outputs AO3400A**, 100 Ω / 10 k, SS14 flyback to VLOAD, **JP901 open by default** (close for 5 V VLOAD), J901 = VLOAD+ · GND · OUT1− · OUT2−, VLOAD ≤ 12 V external, 100 µF on VLOAD, not reverse-protected (documented).
 - **Bulk C201 = 470 µF 63 V 105 °C ≥ 0.6 A ripple; TVS D201 = SMBJ43A; bridge BR201 = KBP206.**
 - **VIN_SENSE = 2 × 100 k / 10 k (1:21) + 100 nF → IO8** — a 69 V clamp maps to 3.29 V, under the ESP32's 3.6 V absolute maximum. PG → TP only.
@@ -46,7 +48,9 @@ What exists today:
 ## Open items (none blocks capture)
 
 - Confirm the 60 V PPTC's LCSC number (LCSC search is not server-rendered; DigiKey is the fallback for 60R110 / MF-RX110).
-- Choose the exact 5.08 mm terminal family (KF128 / DG128 / MKDS-class) and pull its footprint drawing.
+- **Choose the DIN-rail enclosure** (reference class Camdenboss CNMB/6) and put its PCB drawing in `mechanical/` — the board outline comes from it.
+- Confirm the Degson DG128 4P and 5P C-numbers (2P C711349 and 3P C691861 are confirmed) or switch the whole family to Phoenix MKDS from DigiKey; pull the footprint drawing.
+- Pick a named LED maker (Everlight / Kingbright / Würth) for the eleven indicator LEDs at freeze.
 - Fetch the datasheets still missing from `references/datasheets/README.md` (Everlight EL817, Littelfuse SMBJ series, the PPTC, the terminal blocks, the electrolytic).
 - Decide whether use-case wiring diagrams become drawings in `docs/images/`.
 

@@ -10,10 +10,10 @@ The second board in the series after the [ESP32-S3 Plant Monitor](https://github
 |---|---|
 | **Power in** | 12–36 V DC either polarity (guaranteed down to 10 V), or 24 VAC (18–28 VAC) — one screw terminal, fused, bridge-rectified, TVS-clamped |
 | **Rails** | LMR38020 synchronous buck (80 V, 2 A) → 5 V for relays and loads · SS14 diode-OR → 4.6 V logic rail · AP7361C (1 A, SOT-223) → 3.3 V |
-| **Inputs** | 4 × opto-isolated (EL817, rank C), shared COM, AC or DC, either polarity, ≈ 4 V threshold, 36 V continuous |
-| **Outputs** | 2 × SPDT relay contact sets on terminals (rated here ≤ 2 A / ≤ 30 V AC-DC, isolated) · 2 × low-side MOSFET (AO3400A) with a 5 V-or-external VLOAD jumper |
+| **Inputs** | 4 × opto-isolated (EL817, rank C), shared COM, AC or DC, either polarity, **IEC 61131-2 Type 1 thresholds** (OFF ≤ 5 V, ON ≥ 15 V), 36 V continuous |
+| **Outputs** | 2 × SPDT relay contact sets (Hongfa HF3FF, UL/VDE, AgSnO₂) on terminals, rated here ≤ 2 A / ≤ 30 V AC-DC, isolated · 2 × low-side MOSFET (AO3400A) with a 5 V-or-external VLOAD jumper |
 | **MCU** | ESP32-S3-WROOM-1-N8, native USB-C for bench programming only, OTA in the field |
-| **Board** | 2-layer, 1 oz, ≤ 100 × 100 mm, field side / logic side with a ≥ 2.5 mm moat enforced by DRC |
+| **Board** | 2-layer, 1 oz, sized to a 6-module DIN-rail enclosure (≤ 100 × 100 mm), field side / logic side with a ≥ 2.5 mm moat enforced by DRC, fiducials |
 | **Assembly** | Bare PCB + 0.12 mm stencil from JLCPCB, hot-plate reflow and iron on the bench (Sn63/Pb37 — not RoHS) |
 | **Tools** | KiCad 10 · LCSC parts · JLCPCB fab |
 
@@ -24,6 +24,7 @@ The second board in the series after the [ESP32-S3 Plant Monitor](https://github
 | 📄 **[Design document](docs/ESP32S3_FieldIO_Final_Design_Document.md)** | Every component and why it is there, organised sheet by sheet, written to be read by someone who is not a PCB engineer |
 | 🔍 **[Specification review](docs/reviews/Spec_Review_RevA_2026-09-07.md)** | The pre-capture review: 4 blocking findings, 6 risky, 12 improvements, 11 numbers confirmed — and what changed because of them |
 | 🔍 **[Second-opinion review](docs/reviews/Second_Opinion_Review_RevA_2026-09-07.md)** | An independent review of the same spec, weighed point by point: 9 adopted, 6 declined with arithmetic |
+| 🏷 **[Industry-standard audit](docs/reviews/Industry_Standard_Audit_RevA_2026-09-07.md)** | Every part checked for lifecycle, grade and sourcing; the design checked against IEC 61131-2, IPC-2221/7351/A-610, J-STD-020/033; the repository against what an engineering organisation expects |
 | 🧮 **[The arithmetic](docs/calcs/board2_calcs.py)** | One Python file that recomputes every number in the design document |
 | 🧭 **[Project status](docs/PROJECT_STATUS.md)** | Where the project stands, what is decided, what is next |
 | 🔧 **[Bring-up guide](docs/BringUp_Guide.md)** | Staged first power, expected voltages, record sheet |
@@ -46,10 +47,10 @@ Uses 1–3 fit one board at once: three monitor inputs + the float switch, fan r
 
 - **A buck converter laid out on two layers, with the numbers** — hot loop, SW node, UVLO divider, inductor saturation against the current limit, TVS clamp against the converter's absolute maximum.
 - **Isolation as a layout discipline** — a field side and a logic side, a moat the DRC enforces, and an honest isolation map (what is isolated, what is not, and why the power input is not).
-- **AC-and-DC field inputs done properly** — series resistance split for dissipation and voltage rating, anti-parallel diode, and an RC that actually holds LOW through the 60 Hz gap (the arithmetic is in the review; the plan's first value did not).
+- **AC-and-DC field inputs done properly** — IEC 61131-2 Type 1 thresholds from a series Zener, series resistance split for dissipation and voltage rating (anti-surge class), anti-parallel diode, and an RC that actually holds LOW through the 60 Hz gap (the arithmetic is in the reviews; the plan's first value did not).
 - **Outputs that cannot chatter at boot** — pull-downs sized against the ESP32-S3's reset-state pull-ups, pins chosen from the datasheet's no-default-pull set, and a load-supply jumper that is open until someone closes it on purpose.
 - **A bench that assembles its own prototypes** — stencil and hot plate, and the design rules that fall out of that (leaded packages only, through-hole for anything with a screw or a coil, windowpaned paste on exposed pads).
-- **A documentation trail from day zero** — the specification was reviewed twice before capture, from two directions, and both reviews changed it.
+- **A documentation trail from day zero** — the specification was reviewed three times before capture (a number-by-number review, an independent second opinion, and an industry-standard audit), and each one changed it.
 
 ## Repository map
 
@@ -65,6 +66,9 @@ Uses 1–3 fit one board at once: three monitor inputs + the float switch, fan r
 | [`docs/Assembly_and_Stencil_Plan.md`](docs/Assembly_and_Stencil_Plan.md) | Bench assembly, stencil, apertures, first article |
 | [`docs/BringUp_Guide.md`](docs/BringUp_Guide.md) | First power, expected voltages, record sheet |
 | [`hardware/`](hardware/README.md) | KiCad 10 project (to be created); verified footprints and 3D models carried over from Board 1 in `hardware/libs/` |
+| [`mechanical/`](mechanical/README.md) | The DIN-rail enclosure decision, its PCB drawing, the board outline and 3D export |
+| [`CHANGELOG.md`](CHANGELOG.md) | Revision history (Keep-a-Changelog format) |
+| [`.github/workflows/kicad-ci.yml`](.github/workflows/kicad-ci.yml) | ERC/DRC on every push once the KiCad project exists; schematic PDF and gerbers on `rev*` tags |
 | [`fabrication/`](fabrication/README.md) | Frozen fab packages, one folder per ordered revision — empty until Rev A is ordered |
 | [`firmware/`](firmware/README.md) | The hardware → firmware contract; the sketch comes after bring-up |
 | [`references/datasheets/`](references/datasheets/README.md) | Vendor datasheets, [indexed here](references/datasheets/README.md) |

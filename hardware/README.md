@@ -30,7 +30,7 @@ Set *Annotate → Use first free number after* per sheet (200, 300, …) **befor
 | `D_SMA`, `D_SOD-123F`, `Fuse_1206_3216Metric` | assembled | SS14, SMF5.0A, 1206L075 |
 | `logos/logos.pretty` (`muffinByteLogo`, `_2x`) | on Board 1's silk | use the 2× |
 
-New footprints for this board (draw or import, then check each against its datasheet drawing per Board 1's `Footprint_Check` method): LMR38020 HSOIC-8 (TI DDA), SRR1260, KBP, SRD-05VDC-SL-C, EL817S1 SMD-4, 5.08 mm terminals ×4 sizes, radial PPTC, Ø 12.5 mm radial electrolytic, 07D MOV; from KiCad stock: SOT-223-3_TabPin2 (AP7361C), **SolderJumper_2_Open** (JP901 ships open), TestPoint pads.
+New footprints for this board (draw or import, then check each against its datasheet drawing per Board 1's `Footprint_Check` method): LMR38020 HSOIC-8 (TI DDA), SRR1260, KBP, Hongfa HF3FF (from the Hongfa drawing), EL817S1 SMD-4, Degson DG128 terminals ×4 sizes, radial PPTC, Ø 12.5 mm radial electrolytic, 07D MOV; from KiCad stock: SOT-223-3_TabPin2 (AP7361C), **SolderJumper_2_Open** (JP901 ships open), TestPoint pads.
 
 ## Housekeeping (Board 1 lessons)
 

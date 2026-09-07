@@ -11,6 +11,7 @@
 | Parts | LCSC, same checkout | Quantities for **6–7 boards** of every cheap line; 5 of the expensive ones (U301, U601, L301, relays) + 1 spare U301 | LCSC and JLCPCB share a cart and a shipment |
 | Solder paste | local / Amazon | Sn63/Pb37 no-clean, T3/T4 mesh, syringe or jar | Store per the manufacturer's instructions; bring to room temperature before opening |
 | Hot plate, tweezers, squeegee, loupe, flux, wick, IPA, Kapton, thermocouple | plan §10 starter kit | | Bought once, before Board 2 |
+| **ESD mat + wrist strap** | ≈ $15 | ANSI/ESD S20.20 bench practice | The plan's silicone mat is not an ESD mat; the module, the buck and the optos are ESD-sensitive |
 
 ## 2. Stencil thickness and apertures — the decision
 
@@ -21,6 +22,14 @@
 - Every other aperture 1:1 with the pad. No aperture reduction on 0603s at 0.12 mm.
 - **Check the paste layer twice:** in KiCad's 3D viewer with paste shown, and in the JLC fab preview's paste view, before the stencil is ordered.
 
+## 2b. Moisture sensitivity — J-STD-033 (industry-standard audit §2.6)
+
+The ESP32-S3-WROOM-1 is **MSL 3**: Espressif's datasheet says it must be soldered within **168 hours** of opening the bag at ≤ 25 ± 5 °C / 60 % RH, or baked. The LMR38020 (HSOIC) and the EL817 optos are typically MSL 3 as well. The bench buys parts weeks ahead, so:
+
+- Leave MSL-3 parts **in their sealed moisture-barrier bag with the desiccant** until assembly day; open the module's bag last.
+- If a bag has been open longer than 168 h (or the humidity card has changed colour), **bake before reflow**: 125 °C for 24 h is the J-STD-033 figure for a package of the module's thickness — on a cheap toaster oven with a thermocouple, or the hot plate at 125 °C with the parts on a tray. Do not bake parts in tape/reels that cannot take 125 °C.
+- Why it matters here: absorbed moisture flashes to steam at reflow and delaminates the package ("popcorning"). On the module that crack forms under the hidden ground pad, where no inspection finds it and only a flaky Wi-Fi link months later reports it.
+
 ## 3. Paste and place
 
 1. Tape two spare boards (from the same order) flat as shims either side of the working board; tape the working board down; align the stencil on the fiducial-free board by eye against the pad pattern under the loupe (add two 1 mm fiducial dots on the silk if alignment is hard — free).
@@ -28,7 +37,7 @@
 3. **Place smallest and lowest first, tallest last** (tall parts block the tweezers for everything behind them):
    1. all 0603 resistors and capacitors
    2. 0805 / 1206 passives and LEDs
-   3. SOD-123 (1N4148W, SMF5.0A), SMA (SS14 ×4), SOT-23 (S8050 ×2, AO3400A ×2)
+   3. SOD-123 (1N4148W ×6, BZT52C4V7 ×4, SMF5.0A), SMA (SS14 ×4), SOT-23 (MMBT2222A ×2, AO3400A ×2)
    4. SOT-23-6 (USBLC6), SMB (SMBJ43A), SOT-223 (AP7361C — sits square, tab on its pour)
    5. the four EL817S1 optos
    6. **U301** — pin 1 dot under the loupe, sitting square on the windowpaned paste
@@ -51,7 +60,7 @@ In this order (short parts first): TP6/TP10/TP11 pins if fitted · F201 · C901 
 
 ## 6. First-article inspection (before power — this is BringUp step 0)
 
-Under ×10, in this order, tick each:
+Acceptance criteria are **IPC-A-610 Class 2** (the industry's assembly-acceptance standard for dedicated service electronics): chip components — side overhang ≤ 50 % of the termination width, **no** end overhang, fillet wetting evident on both terminations, no tombstones; gull-wing leads — toe/heel fillets present, side overhang ≤ 50 % of lead width; through-hole — ≥ 270° of wetting around the barrel on the solder side, fillet visible on the component side for the power pins. Under ×10, in this order, tick each:
 
 - [ ] Module: all castellations wetted, no bridges, aligned to silk; no visible tilt
 - [ ] U301: eight fillets visible, pin 1 correct, no solder balls at the pad edges
@@ -62,6 +71,8 @@ Under ×10, in this order, tick each:
 - [ ] All THT joints shiny cones, no cold joints on the relay and terminal pins
 
 Fix with the iron first. A temperature-controlled hot-air station is bought only if the iron proves insufficient (plan §10) — decide after this board, not before.
+
+**Bench ESD:** mat and wrist strap on from the moment the bags open until the board is in its enclosure.
 
 ## 7. What to write down (the assembly record)
 

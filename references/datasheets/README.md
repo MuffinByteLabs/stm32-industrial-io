@@ -14,16 +14,19 @@ yet — fetch them before capture and rename to the same pattern.
 | U501 | AP7361C-33E-13 LDO, 1 A, SOT-223 | C500795 | [LDO_Diodes_AP7361C](LDO_Diodes_AP7361C_1A_SOT223_Datasheet.pdf) (DS37274) |
 | L301 | SRR1260-150M shielded 15 µH | C2041333 | [INDUCTOR_Bourns_SRR1260](INDUCTOR_Bourns_SRR1260_Shielded_Datasheet.pdf) |
 | BR201 | KBP206 bridge, 2 A / 600 V | C2494 | [BRIDGE_Diodes_KBP2xx](BRIDGE_Diodes_KBP2xx_2A_Datasheet.pdf) (Diodes Inc. family sheet; MDD's is equivalent) |
-| K801, K802 | SRD-05VDC-SL-C relay | C35449 | [RELAY_Songle_SRD-05VDC-SL-C](RELAY_Songle_SRD-05VDC-SL-C_Datasheet.pdf) |
+| K801, K802 | **HF3FF/005-1ZTF relay (Hongfa)** — UL E134517 / VDE | C2764967 | [RELAY_Hongfa_HF3FF](RELAY_Hongfa_HF3FF_10A_SPDT_Datasheet.pdf) — the footprint master (coil pins 12.2 mm, contacts on 3.4 mm) |
+| K801 alt | SRD-05VDC-SL-C (Songle) — fits the footprint, not the part | C35449 | [RELAY_Songle_SRD-05VDC-SL-C](RELAY_Songle_SRD-05VDC-SL-C_Datasheet.pdf) |
+| Q801, Q802 | **MMBT2222A** (Nexperia sheet; onsemi / Diodes equivalent) | verify | [NPN_Nexperia_MMBT2222A](NPN_Nexperia_MMBT2222A_SOT23_Datasheet.pdf) |
 | Q901, Q902 | AO3400A N-MOSFET | C20917 | [MOSFET_AlphaOmega_AO3400A](MOSFET_AlphaOmega_AO3400A_NchannelMOSFET_Datasheet.pdf) |
 | D701–D704, D801, D802 | 1N4148W | C81598 | [DIODE_Diodes_1N4148W](DIODE_Diodes_1N4148W_SOD123_Datasheet.pdf) |
 | U701–U704 | EL817S1(C)(TU)-F optocoupler, rank C | C106900 | **to fetch** — [LCSC product page](https://www.lcsc.com/product-detail/Optocouplers_Everlight-Elec-EL817S1-C-TU-F_C106900.html) (datasheet link on the page) |
 | D201 | SMBJ43A TVS | C315993 | **to fetch** — [Littelfuse SMBJ series](https://www.littelfuse.com/products/overvoltage-protection/tvs-diodes/surface-mount/smbj/smbj43a) |
 | F201 | 60R110 (Littelfuse) / MF-RX110 (Bourns) 1.1 A 60 V PPTC | verify | **to fetch** — [Littelfuse 60R110](https://www.littelfuse.com/products/fuses-overcurrent-protection/polyswitch-resettable-pptc-devices/radial-leaded-polyswitch-resettable-pptc-devices/60r/60r110) · [Bourns MF-RX110](https://www.newark.com/bourns/rx110/fuse-ptc-reset-60v-1-1a-radial/dp/05B2444) |
-| Q801, Q802 | S8050 NPN | verify (JLC Basic C2146) | **to fetch** — any S8050 SOT-23 sheet (hFE ≥ 85 at 50 mA is the number used) |
+| D709–D712 | BZT52C4V7-7-F Zener (Diodes) | C260907 | **to fetch** — [Diodes BZT52C series (DS30117)](https://www.diodes.com/assets/Datasheets/ds30117.pdf) |
 | C201 | 470 µF 63 V 105 °C low-ESR radial | verify | **to fetch** — the chosen family's sheet (ripple rating at 120 Hz is the number used) |
-| J201, J701, J801, J802, J901 | 5.08 mm screw terminals | verify | **to fetch** — the chosen family's drawing (pin spacing, footprint) |
-| RV801, RV802 | 07D560K MOV | verify | **to fetch** |
+| J201, J701, J801, J802, J901 | Degson DG128-5.0 screw terminals (UL/VDE) | C711349 (2P), C691861 (3P), 4P/5P verify | **to fetch** — [Degson DG128-5.0 product page](https://www.degson.com/content/details_552_880720.html?lang=en) (drawing on the page); or Phoenix MKDS 1.5/x-5.08 from DigiKey |
+| RV801, RV802 | TDK/EPCOS S07K35 MOV (B72207S0350K101) | verify | **to fetch** — TDK B722 series datasheet |
+| — (optional, Rev B) | TI ISO1211 isolated 24 V digital-input receiver | — | [REF_TI_ISO1211_OPTIONAL](REF_TI_ISO1211_Isolated_24V_Digital_Input_Datasheet_OPTIONAL.pdf) — the modern certified-Type-1/3 alternative, recorded by the audit |
 
 ## Carried over from Board 1 (same part, same document) — copy into this folder
 

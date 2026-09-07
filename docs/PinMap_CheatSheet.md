@@ -3,7 +3,7 @@
 
 ## At a glance
 
-* **Inputs (active LOW at the GPIO):** IN1 = **IO4** · IN2 = **IO5** · IN3 = **IO6** · IN4 = **IO7**. Opto collector nodes `IN1_L`…`IN4_L`, 47 k pull-up + 1 µF (τ = 47 ms). Debounce in firmware: 3 samples 10 ms apart.
+* **Inputs (active LOW at the GPIO):** IN1 = **IO4** · IN2 = **IO5** · IN3 = **IO6** · IN4 = **IO7**. Opto collector nodes `IN1_L`…`IN4_L`, 47 k pull-up + 1 µF (τ = 47 ms). Field side: Zener + 2 × 1.6 k + LED + opto — IEC 61131-2 Type 1 thresholds. Debounce in firmware: 3 samples 10 ms apart.
 * **Relays (active HIGH):** K1 = **IO9** (`RLY1`) · K2 = **IO10** (`RLY2`). 680 Ω base, 10 k pull-down → OFF at boot.
 * **MOSFETs (active HIGH):** OUT1 = **IO11** · OUT2 = **IO12**. 100 Ω gate, 10 k pull-down → OFF at boot.
 * **Status LED:** **IO13** (`STATUS_LED`, 1 k, yellow-green).
@@ -69,7 +69,7 @@
 | Ref | Positions | Labels (left → right) | Side | Notes |
 |---|---|---|---|---|
 | J201 | 2 | PWR IN A · B | field | 12–36 V DC either way (10 V guaranteed floor), or 24 VAC (18–28) |
-| J701 | 5 | IN1 · IN2 · IN3 · IN4 · COM | field | 12–30 V AC/DC signals to COM, either polarity; ≈ 4 V threshold; 36 V continuous max |
+| J701 | 5 | IN1 · IN2 · IN3 · IN4 · COM | field | 12–30 V AC/DC signals to COM, either polarity; IEC 61131-2 Type 1 (OFF ≤ 5 V, ON ≥ 15 V; threshold ≈ 8 V); 36 V continuous max |
 | J801 | 3 | K1: NO · C · NC | field | ≤ 2 A, ≤ 30 V AC/DC, isolated |
 | J802 | 3 | K2: NO · C · NC | field | same |
 | J901 | 4 | VLOAD+ · GND · OUT1− · OUT2− | **logic** | not isolated; VLOAD = 5 V only with JP901 closed, else external 8–12 V returned to GND; **meter polarity first** |

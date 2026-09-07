@@ -1,57 +1,58 @@
-Refs,Qty per board,Order qty (7 sets unless noted),MPN,LCSC,Package,Description,Status
-U301,1,6,LMR38020SDDAR,C3192337,HSOIC-8 (DDA),Synchronous buck 4.2-80 V 2 A 400 kHz via RT,confirmed 2026-09-07 (1765 in stock)
-U301 alt,0,0,LMR16020PDDAR,C190006,HSOIC-8 (DDA),Alternate buck 60 V 2 A non-sync (needs SS36 + RT + 0.75 V divider),confirmed 2026-09-07 (1995 in stock) - do not order unless U301 is out
-U401,1,7,USBLC6-2SC6,C7519,SOT-23-6,USB data-line ESD array,Board 1
-U501,1,7,AP7361C-33E-13,C500795,SOT-223,3.3 V LDO 1 A (tab = GND); alternate AP2112K-3.3TRG1 C51118,confirmed 2026-09-07 (second review)
-U601,1,6,ESP32-S3-WROOM-1-N8,C2913198,module,Wi-Fi module 8 MB flash,Board 1
-U701-U704,4,28,EL817S1(C)(TU)-F,C106900,SMD-4 gull-wing,Optocoupler CTR rank C 200-400 %,confirmed 2026-09-07
-BR201,1,7,KBP206,C2494,KBP THT,Bridge rectifier 2 A 600 V,confirmed 2026-09-07 (MDD)
-Q801 Q802,2,14,S8050,C2146,SOT-23,NPN 0.5 A hFE >= 85,verify C-number (JLC Basic S8050 CJ)
-Q901 Q902,2,14,AO3400A,C20917,SOT-23,N-MOSFET 30 V logic-level,Board 1 family (AO3401A was C15127)
-D201,1,7,SMBJ43A,C315993,SMB,TVS 43 V standoff 600 W,confirmed 2026-09-07 (Littelfuse)
-D401,1,7,SMF5.0A,C2980403,SOD-123F,TVS 5 V USB,Board 1
-D301 D402 D901 D902,4,28,SS14,C2480,SMA,Schottky 1 A 40 V,Board 1
-D701-D704 D801 D802,6,42,1N4148W,C81598,SOD-123,Switching diode 150 mA 75 V,confirmed 2026-09-07 (ST Semtech)
-D705-D708 D803 D804 D903 D904,8,56,red LED 0805 high-efficiency,verify,0805,Vf ~1.9 V,pick any in-stock red 0805 (e.g. KT-0805R / XL-0805SURC)
-D501 D602,2,14,KT-0603YG / XL-0603QYGC,C2289,0603,Yellow-green LED Vf 2.0-2.2 V,Board 1
-D302,1,7,green LED 0805,verify,0805,FIELD PWR indicator on 5 V,pick any in-stock green 0805
-K801 K802,2,10,SRD-05VDC-SL-C,C35449,THT 19x15.5 mm,Relay 5 V SPDT 10 A coil 70 ohm,confirmed 2026-09-07 (Songle)
-L301,1,6,SRR1260-150M,C2041333,12x12x6 mm,Shielded inductor 15 uH Isat 4.6 A Irms 5 A 27 mohm,confirmed 2026-09-07 (Bourns)
-F201,1,7,60R110 or MF-RX110,verify,radial 5.08 mm,PPTC 1.1 A hold 60 V - NOT MF-R110 (30 V),verify at LCSC / DigiKey fallback
-F401,1,7,1206L075/16WR,C371166,1206,PPTC 0.75 A 16 V USB,Board 1
-J201,1,7,5.08 mm screw terminal 2P,verify,THT,KF128/DG128/MKDS-class 10 A,choose family then fetch drawing
-J701,1,7,5.08 mm screw terminal 5P,verify,THT,same family,
-J801 J802,2,14,5.08 mm screw terminal 3P,verify,THT,same family,
-J901,1,7,5.08 mm screw terminal 4P,verify,THT,same family,
-J401,1,7,TYPE-C-31-M-12,C165948,USB-C 16P,USB-C receptacle USB 2.0,Board 1
-SW601 SW602,2,14,TS-1187A-B-A-B,C318884,SMD 5.1 mm,Tactile switch,Board 1
-C201,1,7,470 uF 63 V 105 C low-ESR radial >= 0.6 A ripple,verify,12.5x20 mm,Bulk electrolytic (e.g. Nichicon UPW1J471MPD),choose then fetch sheet
-C901,1,7,100 uF 25 V electrolytic,verify,radial or SMD,VLOAD bulk,
-C202,1,7,1 uF 100 V X7R,verify,1206,Bus HF bypass,
-C301 C302,2,14,4.7 uF 100 V X7R,verify,1210,Buck input,
-C303,1,7,100 nF 100 V X7R,verify,0603,Buck HF input bypass,
-C305 C306 C307,3,21,22 uF 25 V X7R,verify,1210,Buck output,
-C701-C704,4,28,1 uF 16 V X7R,C15849 (1 uF 50 V X5R Board 1) or any 0603,0603,Opto input filters (tau 47 ms with 47 k),
-C601,1,7,22 uF 25 V X5R,C45783,0805,Module bulk,Board 1
-C404 C503,2,14,10 uF 25 V X5R,C15850,0805,USB_5V_PROT / 5V_SYS bulk,Board 1
-C501 C603,2,14,1 uF 50 V X5R,C15849,0603,LDO in and EN delay,Board 1
-C502,1,7,4.7 uF 16 V X5R/X7R,C19666,0603,LDO out (AP7361C wants >= 2.2 uF),Board 1 number (4.7 uF 0603)
-C203 C304 C401 C602,4,28,100 nF 50 V X7R,C14663,0603,Decoupling (C304 is the BOOT cap),Board 1
-C801-C804 (DNP),0,0,100 nF 100 V X7R,verify,1206,Snubber caps - fit per deployment,DNP
-R701-R708,8,56,2.4 kohm 1 % 1206,verify,1206,Opto series resistors 250 mW,
-R201 R202 R304,3,21,100 k / 100 k / 91 k 1 % 0805,verify,0805,VIN_SENSE top pair (2 x 100 k) / RENT,
-R301,1,7,64.9 kohm 1 %,verify,0603,RT -> 400 kHz,
-R203 R601 R602 R802 R804 R902 R904,7,49,10 kohm 1 %,C98220,0603,VIN_SENSE bottom; EN/IO0 pull-ups; base/gate pull-downs,Board 1 number
-R302,1,7,100 kohm 1 %,C25803,0603,RFBT,Board 1 number
-R709-R712,4,28,47 kohm 1 %,verify,0603,Opto collector pull-ups (47 k + 1 uF = 47 ms),
-R303,1,7,24.9 kohm 1 %,verify,0603,RFBB,
-R305,1,7,20 kohm 1 %,verify,0603,RENB,
-R306 R501 R603 R805 R806 R905 R906,7,49,1 kohm 1 %,verify,0603,LED limits,
-R401 R402,2,14,22 ohm,C23345,0603,USB series,Board 1
-R403 R404,2,14,5.1 kohm,C23186,0603,CC pull-downs,Board 1
-R801 R803,2,14,680 ohm 1 %,verify,0603,Relay base resistors,
-R901 R903,2,14,100 ohm 1 %,verify,0603,Gate resistors,
-R807-R810 (DNP),0,0,100 ohm 1206,verify,1206,Snubber resistors,DNP
-RV801 RV802 (DNP),0,0,07D560K,verify,7 mm disc,MOV 35 V RMS,DNP
-J601 (DNP),0,0,1x6 2.54 mm header,-,THT,Expansion header,DNP
-JP901,0,0,SolderJumper_2_Open,-,footprint,VLOAD jumper - ships OPEN; close for 5 V VLOAD,no part
+Refs,Qty per board,Order qty (7 sets unless noted),Manufacturer,MPN,LCSC,Package,Description,Alternate,Status
+U301,1,6,Texas Instruments,LMR38020SDDAR,C3192337,HSOIC-8 (DDA),Synchronous buck 4.2-80 V 2 A 400 kHz via RT,LMR16020PDDAR C190006 (non-sync: different passives),confirmed 2026-09-07 (1765 in stock)
+U401,1,7,STMicroelectronics,USBLC6-2SC6,C7519,SOT-23-6,USB data-line ESD array,Nexperia PRTR5V0U2X,Board 1
+U501,1,7,Diodes Inc.,AP7361C-33E-13,C500795,SOT-223,3.3 V LDO 1 A (tab = GND),AP2112K-3.3TRG1 C51118 (SOT-23-5 runs hotter); TI TLV1117LV33,confirmed 2026-09-07
+U601,1,6,Espressif,ESP32-S3-WROOM-1-N8,C2913198,module,Wi-Fi module 8 MB flash - MSL 3 keep sealed,-,Board 1
+U701-U704,4,28,Everlight,EL817S1(C)(TU)-F,C106900,SMD-4 gull-wing,Optocoupler CTR rank C 200-400 % UL/VDE,Lite-On LTV-817S-TA1-C; Vishay/Sharp PC817X,confirmed 2026-09-07
+BR201,1,7,MDD (or Diodes KBP206G / Vishay),KBP206,C2494,KBP THT,Bridge rectifier 2 A 600 V,KBP210,confirmed 2026-09-07
+Q801 Q802,2,14,onsemi / Nexperia / Diodes,MMBT2222A (MMBT2222ALT1G / MMBT2222A.215 / MMBT2222A-7-F),verify (pick a tier-one maker's LCSC listing),SOT-23,NPN 600 mA hFE >= 100 @ 150 mA - relay driver,BC817-40 (Nexperia/onsemi/Diodes),audit 2026-09-07 - replaces S8050
+Q901 Q902,2,14,Alpha & Omega,AO3400A,C20917,SOT-23,N-MOSFET 30 V logic-level,Vishay Si2302; Diodes DMN2075U,Board 1 family
+D201,1,7,Littelfuse,SMBJ43A,C315993,SMB,TVS 43 V standoff 600 W,Vishay/Bourns SMBJ43A,confirmed 2026-09-07
+D401,1,7,Littelfuse / MDD,SMF5.0A,C2980403,SOD-123F,TVS 5 V USB,-,Board 1
+D301 D402 D901 D902,4,28,MDD / Vishay / onsemi,SS14,C2480,SMA,Schottky 1 A 40 V,-,Board 1
+D701-D704 D801 D802,6,42,ST Semtech (or Diodes 1N4148W-7-F / Nexperia),1N4148W,C81598,SOD-123,Switching diode 150 mA 75 V,-,confirmed 2026-09-07
+D709-D712,4,28,Diodes Inc.,BZT52C4V7-7-F,C260907,SOD-123,Zener 4.7 V 500 mW - input threshold (IEC 61131-2 Type 1),BZT52C4V7-13-F C151054; Nexperia BZT52-C4V7,audit 2026-09-07 - new
+D705-D708 D803 D804 D903 D904,8,56,Everlight / Kingbright / Wurth (name one at freeze),red LED 0805 high-efficiency Vf ~1.9 V,verify,0805,Indicator LEDs,-,pick a named maker
+D501 D602,2,14,XINGLIGHT,XL-0603QYGC (KT-0603YG),C2289,0603,Yellow-green LED Vf 2.0-2.2 V,-,Board 1
+D302,1,7,Everlight / Kingbright (name one at freeze),green LED 0805,verify,0805,FIELD PWR indicator on 5 V,-,pick a named maker
+K801 K802,2,10,Hongfa,HF3FF/005-1ZTF,C2764967,THT 19x15.2 mm (T73),Relay 5 V SPDT 10 A AgSnO2 UL E134517 VDE -40..85 C coil 70 ohm,HF3FF/005-1ZST (sealed) if stocked; Songle SRD-05VDC-SL-C C35449 fits but is not the part,audit 2026-09-07 - replaces SRD (2360 in stock)
+L301,1,6,Bourns,SRR1260-150M,C2041333,12x12x6 mm,Shielded inductor 15 uH Isat 4.6 A Irms 5 A 27 mohm,Wurth 744771115; Coilcraft MSS1260-153,confirmed 2026-09-07
+F201,1,7,Littelfuse / Bourns,60R110 / MF-RX110,verify (DigiKey fallback),radial 5.08 mm,PPTC 1.1 A hold 60 V - NOT MF-R110 (30 V),-,verify at LCSC
+F401,1,7,Littelfuse,1206L075/16WR,C371166,1206,PPTC 0.75 A 16 V USB,Bourns MF-MSMF075-2,Board 1
+J201,1,7,Degson,DG128-5.0-02P-14-00A(H),C711349,THT 5.0 mm pitch,Screw terminal 2P UL/VDE 0.5-2.5 mm2,Phoenix MKDS 1.5/2-5.08 (DigiKey),audit 2026-09-07
+J701,1,7,Degson,DG128-5.0-05P-14-00A(H),verify,THT 5.0 mm pitch,Screw terminal 5P,Phoenix MKDS 1.5/5-5.08,same family as J201
+J801 J802,2,14,Degson,DG128-5.0-03P-14-00A(H),C691861,THT 5.0 mm pitch,Screw terminal 3P,Phoenix MKDS 1.5/3-5.08,same family
+J901,1,7,Degson,DG128-5.0-04P-14-00A(H),verify,THT 5.0 mm pitch,Screw terminal 4P,Phoenix MKDS 1.5/4-5.08,same family
+J401,1,7,HRO,TYPE-C-31-M-12,C165948,USB-C 16P,USB-C receptacle USB 2.0,GCT USB4085-GF-A; Amphenol 12401610E4#2A,Board 1 verified footprint
+SW601 SW602,2,14,XKB,TS-1187A-B-A-B,C318884,SMD 5.1 mm,Tactile switch,C&K PTS645; Omron B3FS,Board 1 verified footprint
+C201,1,7,Nichicon / Rubycon / Panasonic,UPW1J471MPD / 63ZLH470MEFC12.5X20 / EEU-FR1J471,verify,radial 12.5x20 mm 5 mm pitch,470 uF 63 V 105 C long-life >= 0.6 A ripple,-,name a series - no no-name brand
+C901,1,7,Nichicon / Rubycon / Panasonic,UPW1E101MED / 25ZLH100 / EEU-FR1E101,verify,radial 6.3x11 mm,100 uF 25 V 105 C long-life - VLOAD bulk,-,
+C202,1,7,Murata / TDK / Samsung,1 uF 100 V X7R,verify,1206,Bus HF bypass,-,
+C301 C302,2,14,Murata / TDK / Samsung,GRM32ER72A475KA12 / C3225X7R2A475K / CL32B475KCJ,verify,1210,4.7 uF 100 V X7R buck input,-,
+C303,1,7,Murata / Samsung,100 nF 100 V X7R,verify,0603,Buck HF input bypass,-,
+C305 C306 C307,3,21,Samsung / Murata,22 uF 25 V X7R,verify,1210,Buck output,-,
+C701-C704,4,28,Samsung,CL10A105KB8NNNC (1 uF 50 V X5R),C15849,0603,Opto input filters (47 k + 1 uF = 47 ms); 1.5 uF if gap ripple > 0.7 V,-,Board 1 number
+C601,1,7,Samsung,CL21A226MAQNNNE,C45783,0805,22 uF 25 V X5R module bulk,-,Board 1
+C404 C503,2,14,Samsung,CL21A106KAYNNNE,C15850,0805,10 uF 25 V X5R USB_5V_PROT / 5V_SYS bulk,-,Board 1
+C501 C603,2,14,Samsung,CL10A105KB8NNNC,C15849,0603,1 uF 50 V X5R LDO in / EN delay,-,Board 1
+C502,1,7,Samsung,CL10A475KO8NNNC,C19666,0603,4.7 uF 16 V X5R LDO out (AP7361C wants >= 2.2 uF),-,Board 1 number
+C203 C304 C401 C602,4,28,Samsung,CC0603KRX7R9BB104,C14663,0603,100 nF 50 V X7R decoupling (C304 = BOOT cap),-,Board 1
+C801-C804 (DNP),0,0,Murata / TDK,100 nF 100 V X7R,verify,1206,Snubber caps - fit per deployment,-,DNP
+R701-R708,8,56,Yageo / Panasonic,PA1206FR-071K6L (anti-surge) / ERJ-P08F1601V,verify,1206 anti-surge,1.6 kohm 1 % opto series - two per channel (IEC Type 1 current),plain RC1206FR-071K6L acceptable,audit 2026-09-07 - was 2.4 k
+R201 R202 R304,3,21,Yageo,RC0805FR-07100KL / RC0805FR-0791KL,verify,0805,100 k / 100 k / 91 k 1 % - VIN_SENSE top pair + RENT,-,
+R301,1,7,Yageo,RC0603FR-0764K9L,verify,0603,64.9 kohm 1 % RT -> 400 kHz,-,
+R203 R601 R602 R802 R804 R902 R904,7,49,Yageo,RC0603FR-0710KL,C98220,0603,10 kohm 1 % - VIN_SENSE bottom; EN/IO0 pull-ups; base/gate pull-downs,-,Board 1 number
+R302,1,7,Uniroyal / Yageo,0603WAF1003T5E / RC0603FR-07100KL,C25803,0603,100 kohm 1 % RFBT,-,Board 1 number
+R709-R712,4,28,Yageo,RC0603FR-0747KL,verify,0603,47 kohm 1 % opto collector pull-ups,-,
+R303,1,7,Yageo,RC0603FR-0724K9L,verify,0603,24.9 kohm 1 % RFBB,-,
+R305,1,7,Yageo,RC0603FR-0720KL,verify,0603,20 kohm 1 % RENB,-,
+R306 R501 R603 R805 R806 R905 R906,7,49,Yageo,RC0603FR-071KL,verify,0603,1 kohm 1 % LED limits,-,
+R401 R402,2,14,Uniroyal,0603WAF220JT5E,C23345,0603,22 ohm USB series,-,Board 1
+R403 R404,2,14,Uniroyal,0603WAF5101T5E,C23186,0603,5.1 kohm CC pull-downs,-,Board 1
+R801 R803,2,14,Yageo,RC0603FR-07680RL,verify,0603,680 ohm 1 % relay base resistors,-,
+R901 R903,2,14,Yageo,RC0603FR-07100RL,verify,0603,100 ohm 1 % gate resistors,-,
+R807-R810 (DNP),0,0,Yageo,RC1206FR-07100RL,verify,1206,100 ohm snubber resistors,-,DNP
+RV801 RV802 (DNP),0,0,TDK/EPCOS,S07K35 (B72207S0350K101),verify,7 mm disc 5 mm pitch,MOV 35 V RMS / 45 V DC,07D560K generic,DNP
+J601 (DNP),0,0,-,1x6 2.54 mm header,-,THT,Expansion header,-,DNP
+JP901,0,0,-,SolderJumper_2_Open,-,footprint,VLOAD jumper - ships OPEN; close for 5 V VLOAD,-,no part
+FID1-FID3,0,0,-,Fiducial_1mm_Mask2mm_SilkRing,-,footprint,Assembly fiducials three corners top,-,no part
