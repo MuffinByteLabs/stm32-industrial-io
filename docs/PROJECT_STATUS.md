@@ -13,7 +13,7 @@ What exists today:
 - [`reviews/Industry_Standard_Audit_RevA_2026-09-07.md`](reviews/Industry_Standard_Audit_RevA_2026-09-07.md) — every part checked for lifecycle, grade and sourcing, the design against IEC 61131-2 / IPC / J-STD, the repository against engineering-organisation expectations. **Upgrades:** Hongfa HF3FF relays, MMBT2222A drivers, Zener-defined IEC Type 1 inputs, Degson/Phoenix terminals, fiducials, DIN-rail enclosure before layout, MSL/IPC-A-610/ESD process, `mechanical/`, `CHANGELOG.md`, ERC/DRC CI.
 - [`calcs/board2_calcs.py`](calcs/board2_calcs.py) — every number, recomputable.
 - `hardware/libs/` — Board 1's verified footprints, symbols and 3D models, renamed `FieldIO_JLC`, with the project library tables ready for a new KiCad project.
-- `references/datasheets/` — the new parts' datasheets that could be fetched (7), and an index listing the rest with links.
+- `references/datasheets/` — the full set for every chosen part (completed 2026-09-14 by the pre-capture deep check), indexed in its README.
 
 ## Gates ahead (each one gets a review record in `docs/reviews/`)
 
@@ -33,7 +33,7 @@ What exists today:
 - **Two 5 V nets:** 5V_BUCK (relays, VLOAD, FIELD PWR LED) and 5V_SYS (logic; OR of buck and USB through SS14s). Relays cannot click on USB — by physics.
 - **PPTC F201 = 1.1 A / 60 V radial** (60R110 or MF-RX110). Not MF-R110 (30 V).
 - **Opto input = BZT52C4V7 Zener + 2 × 1.6 k 1206 anti-surge in series + series red LED (field side) + 1N4148W anti-parallel; 47 k + 1 µF on the collector (τ = 47 ms).** **IEC 61131-2 Type 1**: OFF ≤ 5 V, ON ≥ 15 V at 2.27 mA; threshold ≈ 8–8.4 V. Firmware: 3 consecutive 10 ms samples.
-- **Every output pull-down is 10 kΩ**; outputs on IO9–IO13 (no default pull at reset). IO1/IO2 unused (pulled up at reset).
+- **Every output pull-down is 10 kΩ**; outputs on IO9–IO13 (no default pull at reset — confirmed against SoC datasheet v2.2 Table 2-1). IO1/IO2 unused either way (v2.2 lists them no-pull at reset; older revisions said pulled up).
 - **Relays Hongfa HF3FF/005-1ZTF** (UL/VDE, AgSnO₂, −40…85 °C, C2764967), **MMBT2222A** + 680 Ω + 10 k + 1N4148W; contacts rated on this board ≤ 2 A / ≤ 30 V; snubber (100 Ω + 100 nF 100 V) / MOV (TDK S07K35) footprints DNP.
 - **Terminals: Degson DG128-5.0 family (UL/VDE) or Phoenix MKDS 1.5/x-5.08** — one family for all five. **Fiducials FID1–FID3.** **Board outline from the DIN-rail enclosure's PCB drawing** (`../mechanical/README.md`), chosen before layout; ≤ 100 × 100 mm.
 - **MOSFET outputs AO3400A**, 100 Ω / 10 k, SS14 flyback to VLOAD, **JP901 open by default** (close for 5 V VLOAD), J901 = VLOAD+ · GND · OUT1− · OUT2−, VLOAD ≤ 12 V external, 100 µF on VLOAD, not reverse-protected (documented).
@@ -44,15 +44,13 @@ What exists today:
 - **Assembly on the bench:** 0.12 mm stencil, windowpaned paste on the LMR38020 and module pads, THT by iron, Sn63/Pb37, first article before the rest.
 - **Ground-loop rule, on the silk: DISCONNECT FIELD POWER BEFORE USB.** Bench exception: floating supply (plug-in transformer, unearthed bench supply) or battery laptop. OTA in the field.
 - **Condensate use case is supervisory** — in series with the OEM float-switch interlock, never instead of it.
+- **Final part picks (2026-09-14, deep check on file):** optos **EL817S1(C)(TU)-FV C470884** (VDE option; the -F was 0 stock) · Q801/Q802 **onsemi MMBT2222ALT1G C82460** · terminals **Phoenix MKDS 1,5 family, 5.0 mm** (1715022 / 1715035 ×2 / 1715048 / 1715187, DigiKey; Degson DG128-5.0 is the same-footprint alternate) · F201 **Bourns MF-RX110** (LCSC C208495 exists but stockless — DigiKey) · indicator LEDs **Lite-On LTST-C170KRKT** (red ×8) / **LTST-C170KGKT** (green, D302) · R701–R708 **Panasonic ERJ-P08F1601V** · 1 µF 0603 → **Samsung CL10B105KA8NNNC C29936** (X7R; the old X5R C15849 hit 0 stock) · C201/C901 **Nichicon UPW1J471MPD / UPW1E101MED**. One small DigiKey line joins the LCSC checkout; nothing is JLC-assembly-dependent (bench build).
 
 ## Open items (none blocks capture)
 
-- Confirm the 60 V PPTC's LCSC number (LCSC search is not server-rendered; DigiKey is the fallback for 60R110 / MF-RX110).
 - **Choose the DIN-rail enclosure** (reference class Camdenboss CNMB/6) and put its PCB drawing in `mechanical/` — the board outline comes from it.
-- Confirm the Degson DG128 4P and 5P C-numbers (2P C711349 and 3P C691861 are confirmed) or switch the whole family to Phoenix MKDS from DigiKey; pull the footprint drawing.
-- Pick a named LED maker (Everlight / Kingbright / Würth) for the eleven indicator LEDs at freeze.
-- Fetch the datasheets still missing from `references/datasheets/README.md` (Everlight EL817, Littelfuse SMBJ series, the PPTC, the terminal blocks, the electrolytic).
 - Decide whether use-case wiring diagrams become drawings in `docs/images/`.
+- *Resolved 2026-09-14* (deep check + final part picks — see `reviews/PreCapture_Deep_Check_2026-09-14.md` and the settled-facts bullet): the PPTC number, the terminal family, the LED maker, the MMBT2222A listing, the missing datasheets. Two sheets remain manual-fetch-only-if-bought: Littelfuse 60R (littelfuse.com blocks robots) and the Panasonic ERJ-P anti-surge family PDF.
 
 ## Key files
 

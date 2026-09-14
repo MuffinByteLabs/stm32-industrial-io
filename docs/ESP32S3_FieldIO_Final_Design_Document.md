@@ -140,7 +140,7 @@ This sheet turns anything from 10 V DC to a 24 VAC transformer, wired either way
 
 ### J201 — power terminal (5.08 mm pitch, 2 positions)
 
-A screw terminal accepting 0.5–2.5 mm² wire (26–12 AWG), the kind every furnace and irrigation controller uses. Pins are `FLD_PWR_A` and `FLD_PWR_B`. There is no polarity: the bridge behind it makes either order correct, and 24 VAC is simply both orders sixty times a second. Silkscreen: **PWR IN · 12–36V DC / 24V AC · ANY POLARITY**.
+A screw terminal accepting 0.14–1.5 mm² wire (26–16 AWG) — every use case here wires with 18–22 AWG thermostat, doorbell and sprinkler wire, well inside that. The chosen Phoenix MKDS 1,5 is the industrial reference part; the same-footprint Degson alternate takes up to 2.5 mm². Pins are `FLD_PWR_A` and `FLD_PWR_B`. There is no polarity: the bridge behind it makes either order correct, and 24 VAC is simply both orders sixty times a second. Silkscreen: **PWR IN · 12–36V DC / 24V AC · ANY POLARITY**.
 
 ### F201 — resettable fuse (PPTC, 1.1 A hold, 60 V, radial)
 
@@ -278,7 +278,7 @@ Nets leaving this sheet: 5V_SYS, USB_DP, USB_DN, GND.
 
 - **Power:** 3V3 (pin 2) with **C601** 22 µF 0805 + **C602** 100 nF at the pin, smallest capacitor closest. GND pins 1, 40 and the exposed pad 41 to ground; pad vias into the bottom plane.
 - **Reset:** EN (pin 3) with **R601** 10 kΩ to +3V3, **C603** 1 µF to ground, **SW602 = RESET** across the capacitor. **Boot:** IO0 (pin 27) with **R602** 10 kΩ to +3V3 and **SW601 = BOOT** to ground; no capacitor on IO0. Both switches are the TS-1187A (C318884) on **Board 1's renumbered 1/1/2/2 footprint** — the four-pad pairing trap is already solved in the copied library.
-- **Strapping pins** IO3, IO45, IO46 unconnected. **IO1 and IO2 are left unconnected too**: the datasheet lists them (with IO0, IO43, IO44 and the flash pins) as pulled *up* at reset, which is exactly wrong for an output that must wake OFF.
+- **Strapping pins** IO3, IO45, IO46 unconnected. **IO1 and IO2 are left unconnected too**: they are not needed, and datasheet revisions have disagreed about their reset state (SoC datasheet v2.2 Table 2-1 lists them input-enabled with no pull; earlier revisions said pulled up) — a pin whose reset behaviour needs a footnote does not drive an output on this board.
 - **USB:** IO19 = D− (`USB_DN`), IO20 = D+ (`USB_DP`), native USB-Serial/JTAG, no bridge chip.
 - **Recovery UART:** TXD0 (IO43, pin 37) and RXD0 (IO44, pin 36) to through-hole test points with a through-hole GND beside them — Board 1's trio.
 - **D602 + R603** — STATUS LED (yellow-green, 1 kΩ) on IO13: Wi-Fi state and heartbeat, so a board on a shelf shows it is alive and connected.
@@ -310,7 +310,7 @@ Nets leaving this sheet: 5V_SYS, USB_DP, USB_DN, GND.
 | 36 | RXD0 (IO44) | RXD0 | Recovery UART, TP | pull-up |
 | 37 | TXD0 (IO43) | TXD0 | Recovery UART, TP | pull-up |
 | 15, 16, 26 | IO3, IO46, IO45 | — | Strapping pins, unconnected | (strap) |
-| 38, 39 | IO2, IO1 | — | Unconnected (pulled up at reset) | pull-up |
+| 38, 39 | IO2, IO1 | — | Unconnected (kept free) | none per SoC DS v2.2 (older revisions: pull-up) |
 | 8, 23–25, 28–35 | IO15, IO21, IO47, IO48, IO35–IO42 | — | Unconnected | none |
 
 The five outputs (IO9–IO13) are on pins with **no default pull**, so the 10 kΩ pull-downs on sheets 08 and 09 hold every relay and MOSFET off from the first microsecond of power until firmware takes over. (The datasheet's Table 2-2 lists ≈ 60 µs power-up glitches on some pins; a 60 µs pulse cannot move a relay armature and would blink a pump for 60 µs — harmless, but check the table when the pins are final.) The four inputs and the ADC pin also have no default pull, so nothing biases the input filter or the sense divider before firmware runs.
@@ -327,7 +327,7 @@ A shared common is how industrial I/O is actually wired: the thermostat's C wire
 
 ### One channel (×4): U701 · R701 + R702 · D701 · D705 · R709 · C701
 
-- **U701 — EL817S1(C)(TU)-F** (Everlight, LCSC C106900): a PC817-class optocoupler, **CTR rank C (200–400 % at 5 mA)**, in the surface-mount gull-wing DIP-4 package that goes on the hot plate with everything else. CTR = Current Transfer Ratio: how much transistor current you get per unit of LED current. Isolation 5 kV RMS; collector rated 80 V (it sees 3.3 V).
+- **U701 — EL817S1(C)(TU)-FV** (Everlight, LCSC C470884): a PC817-class optocoupler, **CTR rank C (200–400 % at 5 mA)**, in the surface-mount gull-wing DIP-4 package that goes on the hot plate with everything else. The **-FV suffix is Everlight's VDE-certified option** — the right grade for the isolation part on a board whose relays and terminals are already UL/VDE — and it was in stock when the plain -F (C106900) was not (2026-09-14). CTR = Current Transfer Ratio: how much transistor current you get per unit of LED current. Isolation 5 kV RMS; collector rated 35 V (it sees 3.3 V; an earlier draft said 80 V — the EL817 series VCEO is 35 V, and the V in -FV is VDE, not a voltage).
 - **R701, R702 — 1.6 kΩ, 1206 anti-surge thick film, in series (3.2 kΩ total):** sets the LED current and takes the field voltage. Two parts spread the heat and double the voltage rating (2 × 200 V); the anti-surge class (Yageo PA/AC series, Panasonic ERJ-P08) survives the surge pulses a plain thick film cracks under. Current through the chain: **1.33 mA at 12 V, 2.27 mA at 15 V, 5.1 mA at 24 V, 6.95 mA at 30 V, 8.8 mA at 36 V**. Dissipation: 155 mW total at 30 V, **249 mW at 36 V — 125 mW per resistor, 50 % of the 1206 rating** (an 0805 would be at 100 %). The board's own power terminal hands out 36 V; the input must survive being wired to it.
 - **D709 — BZT52C4V7 Zener (SOD-123), in series with the two LEDs — the threshold-setting part.** Below the Zener knee plus the two LED drops (≈ 7.75 V) no current flows at all; above it the resistors set the current. That turns the input into an **IEC 61131-2 Type 1 digital input**: OFF for anything ≤ 5 V (0 mA), ON from 15 V with 2.27 mA (the standard asks ≥ 2 mA), 6.95 mA at 30 V (the standard allows ≤ 15 mA). Without it (the first two drafts of this document) the threshold was ≈ 4 V and depended on the optocoupler's CTR — a number nobody could put on a datasheet. The Zener dissipates 41 mW at 36 V against a 500 mW rating. (Industry-standard audit, §2.1.)
 - **D705 — red indicator LED (0805), in series with the opto's LED, on the field side.** It lights with the real field current (1.9–6.9 mA — a high-efficiency red is clearly visible), independent of firmware, and adds nothing to what the opto must sink. The plan put this LED on the logic side, where it would have loaded the opto's collector by another 1.3 mA — at 12 V in, more than the opto can give. Its ≈ 1.9 V forward drop adds to the opto LED's 1.15 V and the Zener's 4.7 V: the channel's threshold is **≈ 8–8.4 V** (the three drops plus the 0.2 mA the pull-up needs at the derated CTR). Anything below reads OFF — a power-stealing thermostat's 1–2 V of leakage, or a 5 V logic level, stays OFF; 12 V reads ON with margin, 15–30 V is squarely in the Type 1 ON band. At 12 V the indicator runs at 1.33 mA — dim but clearly visible on a high-efficiency red; at 24 V it is bright.
@@ -382,7 +382,7 @@ Two low-side switches for loads that share the board's ground: a 5 V pump, a buz
 
 - **Q901 — AO3400A** (N-channel, SOT-23, C20917): 30 V, 5.7 A, **RDS(on) ≤ 48 mΩ at 2.5 V gate drive, ≈ 40 mΩ at 3.3 V** — a logic-level part that is fully on from a 3.3 V GPIO. 0.4 A → 6 mW; 1 A → 40 mW. Threshold 0.65–1.45 V.
 - **R901 — 100 Ω gate resistor:** with ≈ 900 pF of gate capacitance that is a 90 ns edge — slow enough to be quiet, fast enough to be lossless at these switching rates (this output is on/off, not PWM by default; if firmware ever PWMs a pump, keep it ≤ 1 kHz).
-- **R902 — 10 kΩ gate pull-down.** *The one rule for every output on this board:* the ESP32-S3 has pins that are pulled **up** at reset (IO0, IO1, IO2, IO3, IO43, IO44 and the flash pins). Against a ≈ 45 kΩ internal pull-up the plan's 100 kΩ pull-down would sit the gate at 2.3 V — above the 0.65 V minimum threshold, i.e. **ON at reset**. 10 kΩ gives 0.60 V even in that case, and the outputs are additionally assigned only to pins with no default pull. Same value on the relay bases for the same reason.
+- **R902 — 10 kΩ gate pull-down.** *The one rule for every output on this board:* the ESP32-S3 has pins that are pulled **up** at reset (IO0, IO43, IO44 and the flash pins — SoC datasheet v2.2 Table 2-1; earlier datasheet revisions also listed IO1–IO3, which v2.2 shows as input-enabled with no pull). Against a ≈ 45 kΩ internal pull-up the plan's 100 kΩ pull-down would sit the gate at 2.3 V — above the 0.65 V minimum threshold, i.e. **ON at reset**. 10 kΩ gives 0.60 V even in that case, and the outputs are additionally assigned only to pins with no default pull. Same value on the relay bases for the same reason.
 - **D901 — SS14 flyback**, anode at the drain, cathode at VLOAD: a pump motor is an inductor; when the MOSFET opens, its energy circulates through D901 instead of driving the drain above 30 V.
 - **D903 + R905 — red LED + 1 kΩ on the GPIO side of R901.**
 
@@ -419,18 +419,18 @@ Verified-in-stock LCSC numbers are given where confirmed on 2026-09-07; **(verif
 | U401 | USB ESD array | USBLC6-2SC6 | C7519 | Board 1 |
 | U501 | 3.3 V LDO, 1 A, SOT-223 | AP7361C-33E-13 (Diodes) | C500795 | Alternate: Board 1's AP2112K-3.3TRG1 C51118 (SOT-23-5, runs hotter — §6) |
 | U601 | Wi-Fi module | ESP32-S3-WROOM-1-N8 | C2913198 | Board 1 |
-| U701–U704 | Optocoupler, CTR rank C, SMD gull-wing | EL817S1(C)(TU)-F (Everlight) | C106900 | PC817C-class equivalents acceptable if the same package |
+| U701–U704 | Optocoupler, CTR rank C, SMD gull-wing, VDE option | EL817S1(C)(TU)-FV (Everlight) | C470884 | -F (C106900, 0 stock 2026-09-14) or Lite-On LTV-817S-TA1-C acceptable, same package |
 | BR201 | Bridge rectifier 2 A / 600 V, KBP through-hole | KBP206 (MDD) | C2494 | any KBP206 / KBP210 |
-| Q801, Q802 | NPN, SOT-23 | MMBT2222A (onsemi / Nexperia / Diodes) | (LCSC: pick a tier-one maker's listing) | hFE ≥ 100 at 150 mA; alt BC817-40 |
+| Q801, Q802 | NPN, SOT-23 | MMBT2222ALT1G (onsemi) | C82460 | hFE ≥ 100 at 150 mA; Nexperia / Diodes MMBT2222A or BC817-40 alternates |
 | Q901, Q902 | N-MOSFET 30 V logic-level, SOT-23 | AO3400A | C20917 | |
 | D201 | TVS 43 V standoff, 600 W, SMB | SMBJ43A (Littelfuse) | C315993 | |
 | D401 | TVS 5 V, SOD-123F | SMF5.0A | C2980403 | Board 1 |
 | D301, D402, D901, D902 | Schottky 1 A / 40 V, SMA | SS14 | C2480 | OR diodes + MOSFET flybacks |
 | D701–D704, D801, D802 | Switching diode, SOD-123 | 1N4148W | C81598 | opto anti-parallel, coil flyback |
 | D709–D712 | Zener 4.7 V 500 mW, SOD-123 | BZT52C4V7-7-F (Diodes) | C260907 | input threshold — IEC 61131-2 Type 1 |
-| D705–D708, D803, D804, D903, D904 | Red LED 0805 | (any high-efficiency red, Vf ≈ 1.9 V) | (verify) | 8 pcs |
+| D705–D708, D803, D804, D903, D904 | Red LED 0805 | LTST-C170KRKT (Lite-On) | — (DigiKey) | 8 pcs; Everlight 17-21SURC/S530-A2/TR8 (C131244) alternate |
 | D501, D602 | Yellow-green LED 0603 | KT-0603YG / XL-0603QYGC | C2289 | Board 1's chemistry rule: ≈ 2 V Vf for a 3.3 V rail |
-| D302 | Green LED 0805 | (any, on 5 V) | (verify) | FIELD PWR |
+| D302 | Green LED 0805 | LTST-C170KGKT (Lite-On) | — (DigiKey) | FIELD PWR; Everlight 17-21SYGC/S530-E3/TR8 (C142303) alternate |
 
 ### Electromechanical, connectors, magnetics
 
@@ -438,12 +438,12 @@ Verified-in-stock LCSC numbers are given where confirmed on 2026-09-07; **(verif
 |---|---|---|---|---|
 | K801, K802 | Relay 5 V SPDT 10 A, THT, AgSnO₂, UL/VDE | HF3FF/005-1ZTF (Hongfa) | C2764967 | −40…85 °C; the Songle SRD-05VDC-SL-C (C35449) fits the footprint but is not the part |
 | L301 | 15 µH shielded, Isat ≥ 3.8 A | SRR1260-150M (Bourns) | C2041333 | 12 × 12 × 6 mm; any equivalent ≥ 3.8 A Isat / ≤ 60 mΩ |
-| F201 | PPTC 1.1 A hold / 60 V, radial | 60R110 (Littelfuse) or MF-RX110 (Bourns) | (verify; DigiKey fallback) | **not MF-R110 (30 V)** |
+| F201 | PPTC 1.1 A hold / 60 V, radial | MF-RX110 (Bourns) | C208495 (0 stock — buy at DigiKey) | 60R110 (Littelfuse) alternate; **not MF-R110 (30 V)** |
 | F401 | PPTC 0.75 A / 16 V, 1206 | 1206L075/16WR | C371166 | Board 1 |
-| J201 | Screw terminal, 2 pos, UL/VDE | Degson DG128-5.0-02P-14-00A(H) | C711349 | 5.0 mm pitch family (or Phoenix MKDS 1.5/2-5.08 from DigiKey); ≥ 10 A, 0.5–2.5 mm² wire; one family for all five |
-| J701 | Screw terminal, 5 pos | Degson DG128-5.0-05P-14-00A(H) | (verify) | |
-| J801, J802 | Screw terminal, 3 pos | Degson DG128-5.0-03P-14-00A(H) | C691861 | |
-| J901 | Screw terminal, 4 pos | Degson DG128-5.0-04P-14-00A(H) | (verify) | |
+| J201 | Screw terminal, 2 pos, UL/VDE | Phoenix MKDS 1,5/ 2 (order 1715022) | — (DigiKey) | 5.0 mm pitch, 17.5 A, 0.14–1.5 mm² wire; **one family for all five**; Degson DG128-5.0-02P-14-00A(H) C711349 fits the same footprint |
+| J701 | Screw terminal, 5 pos | Phoenix MKDS 1,5/ 5 (order 1715187) | — (DigiKey) | Degson 5P exists but is not stocked at LCSC |
+| J801, J802 | Screw terminal, 3 pos | Phoenix MKDS 1,5/ 3 (order 1715035) | — (DigiKey) | Degson 3P (C691861) fits the same footprint |
+| J901 | Screw terminal, 4 pos | Phoenix MKDS 1,5/ 4 (order 1715048) | — (DigiKey) | Degson 4P exists but is not stocked at LCSC |
 | J401 | USB-C receptacle 16-pin | TYPE-C-31-M-12 | C165948 | Board 1 footprint |
 | J601 | 1 × 6 header 2.54 mm — **DNP** | — | — | footprint only |
 | SW601, SW602 | Tactile 5.1 mm | TS-1187A-B-A-B | C318884 | Board 1's 1/1/2/2 footprint |
@@ -524,7 +524,7 @@ None on the field side: probing IN1–IN4, COM or the contacts happens at the te
 |---|---|---|
 | Outputs at boot | All five drive pins are inputs (high-impedance) until firmware deliberately configures them; hardware pull-downs hold everything OFF. Configure outputs *after* reading VIN_SENSE. | §9, §10 — no relay chatter, ever |
 | Field-power gating | `V_bus = ADC volts × 21`; report "field power absent" and refuse output commands when V_bus < 7 V. | Relays cannot work without 5V_BUCK anyway; this makes the log say why |
-| Input debounce | An input changes state only after 3 consecutive samples 10 ms apart agree. Works identically for AC and DC sources. | §8 — the 4.7 µF makes AC a steady LOW; the debounce makes the edge clean |
+| Input debounce | An input changes state only after 3 consecutive samples 10 ms apart agree. Works identically for AC and DC sources. | §8 — the 47 kΩ + 1 µF filter makes AC a steady LOW; the debounce makes the edge clean |
 | Relay interlocks | Deployment config declares mutually exclusive relays (heat vs cool) and a minimum off-time (compressor short-cycle lockout, default 5 min). | Use cases 2–3 |
 | Supervisory, not primary | The condensate use case adds a trip and an alert *in series with* the OEM float-switch interlock; firmware and documentation never describe this board as the safety device. | Second review, item 10 — NC wiring is fail-operational, not fail-safe |
 | Safe state on link loss | Configurable per relay: hold / open / close after N minutes without the broker. Default hold. | An overflow guard must not stop guarding because Wi-Fi dropped |
@@ -551,7 +551,7 @@ Full procedure, expected voltages and record sheet: `BringUp_Guide.md`.
 
 - **JLCPCB order:** bare 2-layer PCB ×5 + **0.12 mm frameless stencil, top paste, ships in the same box**. No PCBA line, no part-tier fees. Order-number token on the bottom silk; "Remove Mark" if it is still free.
 - **Paste layer before ordering the stencil:** the LMR38020 exposed pad and the ESP32 module's centre pad get **windowpaned apertures at ≈ 50–60 % coverage** (four squares each); everything else 1:1. Check the paste layer in the fab preview — a stencil is only as good as its apertures.
-- **Parts:** LCSC, same checkout as the boards. Everything Sn63/Pb37-compatible (all standard). **MSL discipline (J-STD-033):** the ESP32-S3 module is MSL 3 — 168 h of floor life after the bag is opened; the buck and the optocouplers are typically MSL 3 too. Keep them sealed with their desiccant until assembly day, or bake (125 °C, 24 h for the module) before reflow. A "popcorned" module cracks under the pad nobody can see.
+- **Parts:** LCSC, same checkout as the boards, plus one small DigiKey line (the Phoenix terminals, the PPTC, the ERJ-P08 anti-surge resistors, the Lite-On indicator LEDs). Everything Sn63/Pb37-compatible (all standard). **MSL discipline (J-STD-033):** the ESP32-S3 module is MSL 3 — 168 h of floor life after the bag is opened; the buck and the optocouplers are typically MSL 3 too. Keep them sealed with their desiccant until assembly day, or bake (125 °C, 24 h for the module) before reflow. A "popcorned" module cracks under the pad nobody can see.
 - **Bench:** ESD mat and wrist strap (ANSI/ESD S20.20 practice — the plan's silicone mat is not an ESD mat); inspection to **IPC-A-610 Class 2** criteria (`Assembly_and_Stencil_Plan.md` §6).
 - **Reflow order on the plate:** all 0603/0805/1206 passives → SOD-123 / SMA / SOT-23 diodes and transistors → the four optos, USBLC6, the SOT-223 regulator → the buck IC → the 1210 capacitors → the shielded inductor → **the ESP32-S3 module last**. Single-sided, bottom heat, the paste manufacturer's profile, thermocouple on the board not the plate, board cools undisturbed.
 - **Iron afterwards, never the plate:** K801, K802, J201, J701, J801, J802, J901, BR201, C201, C901, F201, TP6/TP10/TP11.

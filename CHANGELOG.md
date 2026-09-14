@@ -4,6 +4,13 @@ All notable changes to this hardware project are recorded here. Format follows [
 
 ## [Unreleased] — Rev A, pre-capture
 
+### 2026-09-14 — pre-capture deep check; datasheet set completed; final part picks
+
+- **Deep check** (`docs/reviews/PreCapture_Deep_Check_2026-09-14.md`): every datasheet's contents verified against its part — one wrong file caught and replaced (the "KBP" bridge sheet was the 4 A KBJ document); pin map verified pin-by-pin against the WROOM-1 datasheet; reset-pull claims re-checked against the SoC datasheet v2.2; `board2_calcs.py` re-run clean; BOM cross-checked against live LCSC listings. **No design values changed.**
+- Eleven documents fetched into `references/` (EL817 series, Littelfuse SMBJ, Diodes BZT52C, MDD + Diodes KBP families, Bourns MF-RX110, Nichicon UPW, TDK SIOV S07K35, Degson DG128-5.0 drawing, ESP32-S3 SoC datasheet v2.2, LMR38020QEVM guide) plus the Phoenix MKDS 1,5 catalog sheet; index updated.
+- **Final part picks:** optos → EL817S1(C)(TU)-FV C470884 (VDE option; -F at 0 stock) · Q801/Q802 → onsemi MMBT2222ALT1G C82460 · terminals → Phoenix MKDS 1,5 family 5.0 mm, DigiKey (Degson DG128-5.0 same-footprint alternate) · F201 → Bourns MF-RX110 (DigiKey) · indicator LEDs → Lite-On LTST-C170KRKT / LTST-C170KGKT · R701–R708 → Panasonic ERJ-P08F1601V · 1 µF 0603 → Samsung CL10B105KA8NNNC C29936 (X7R; old X5R number stockless) · C201/C901 → Nichicon UPW series. One small DigiKey line joins the LCSC checkout.
+- Corrections: EL817 collector rating is 35 V (was written 80 V — the V in -FV is VDE, not a voltage); IO1/IO2 are no-pull at reset per SoC DS v2.2 (pin choices unchanged); firmware-contract table's stale "4.7 µF" → 47 kΩ + 1 µF; J201 wire range restated for the MKDS 1,5 (0.14–1.5 mm², 26–16 AWG).
+
 ### 2026-09-07 — specification verified, repository created
 
 - Repository skeleton mirroring Board 1 (`hardware/`, `docs/`, `fabrication/`, `firmware/`, `references/`, plus `mechanical/`).

@@ -12,7 +12,7 @@
 * **Buttons:** **SW601 = BOOT** (IO0) · **SW602 = RESET** (EN). Same convention as Board 1.
 * **Recovery UART:** TXD0 = IO43 → TP10 · RXD0 = IO44 → TP11 · GND → TP6 (all through-hole). 115200 baud, 3.3 V logic only.
 * **Expansion (DNP header J601):** 3V3 · GND · IO14 · IO16 · IO17 · IO18.
-* **Strapping pins** IO0 (pull-up, BOOT), IO3, IO45, IO46: nothing else on them. **IO1, IO2 unused on purpose** — pulled up at reset.
+* **Strapping pins** IO0 (pull-up, BOOT), IO3, IO45, IO46: nothing else on them. **IO1, IO2 unused on purpose** — kept free; SoC datasheet v2.2 lists them with no pull at reset (older revisions said pulled up), and pins with a disputed reset state get no job here.
 
 ## Module pins used (U601, ESP32-S3-WROOM-1-N8)
 

@@ -20,18 +20,20 @@ robots) and replaced one wrong file — see the pre-capture deep check in `../..
 | Q801, Q802 | **MMBT2222A** (buy: onsemi MMBT2222ALT1G) | **C82460** (onsemi, confirmed 2026-09-14) | [NPN_Nexperia_MMBT2222A](NPN_Nexperia_MMBT2222A_SOT23_Datasheet.pdf) (Nexperia sheet; onsemi / Diodes equivalent) |
 | Q901, Q902 | AO3400A N-MOSFET | C20917 | [MOSFET_AlphaOmega_AO3400A](MOSFET_AlphaOmega_AO3400A_NchannelMOSFET_Datasheet.pdf) |
 | D701–D704, D801, D802 | 1N4148W | C81598 | [DIODE_Diodes_1N4148W](DIODE_Diodes_1N4148W_SOD123_Datasheet.pdf) |
-| U701–U704 | EL817S1(C)(TU)-F optocoupler, rank C | C106900 — **0 stock 2026-09-14**; drop-in **EL817S1(C)(TU)-FV C470884** (VDE option, 4,410 in stock) | [OPTO_Everlight_EL817_Series](OPTO_Everlight_EL817_Series_SMD_RankC_Datasheet.pdf) (covers -F and -FV; note VCEO is **35 V**, not 80 — the V suffix is the VDE option, not a voltage) |
+| U701–U704 | **EL817S1(C)(TU)-FV** optocoupler, rank C, VDE option — chosen 2026-09-14 | **C470884** (the plain -F, C106900, was 0 stock) | [OPTO_Everlight_EL817_Series](OPTO_Everlight_EL817_Series_SMD_RankC_Datasheet.pdf) (covers -F and -FV; VCEO is **35 V** — the V suffix is VDE, not a voltage) |
 | D201 | SMBJ43A TVS | C315993 | [TVS_Littelfuse_SMBJ_Series](TVS_Littelfuse_SMBJ_Series_600W_Datasheet.pdf) (SMBJ43A: standoff 43 V, clamp 69.4 V @ 8.7 A) |
-| F201 | MF-RX110 (Bourns) / 60R110 (Littelfuse) 1.1 A 60 V PPTC | **C208495** (MF-RX110 — listed, 0 stock 2026-09-14; DigiKey fallback stands) | [FUSE_Bourns_MF-RX110](FUSE_Bourns_MF-RX110_Radial_PPTC_60V_C208495_Datasheet.pdf) · Littelfuse 60R sheet blocked to robots — fetch by hand from littelfuse.com only if the 60R110 is what gets bought |
+| F201 | **MF-RX110 (Bourns)** 1.1 A 60 V PPTC — chosen 2026-09-14, buy at DigiKey | C208495 (listed at LCSC, 0 stock) | [FUSE_Bourns_MF-RX110](FUSE_Bourns_MF-RX110_Radial_PPTC_60V_C208495_Datasheet.pdf) · 60R110 (Littelfuse) is the alternate; its sheet is blocked to robots — fetch by hand only if bought |
 | D709–D712 | BZT52C4V7-7-F Zener (Diodes) | C260907 | [ZENER_Diodes_BZT52C_Series](ZENER_Diodes_BZT52C_Series_SOD123_Datasheet.pdf) (DS30117; C4V7: 4.4–5.0 V @ 5 mA, 500 mW) |
 | C201, C901 | 470 µF 63 V / 100 µF 25 V, 105 °C long-life radial | verify at freeze | [CAP_Nichicon_UPW](CAP_Nichicon_UPW_LowImpedance_Radial_Electrolytic_Datasheet.pdf) (the first-named series; fetch ZLH/FR equivalents only if the buy changes) |
-| J201, J701, J801, J802, J901 | Degson DG128-5.0 screw terminals (UL/VDE) | C711349 (2P) · C691861 (3P) · **4P/5P not stocked at LCSC (checked 2026-09-14) — Phoenix MKDS 1.5/x-5.08 from DigiKey is the live fallback** | [CONN_Degson_DG128-5.0](CONN_Degson_DG128-5.0_ScrewTerminal_Drawing.pdf) (customer drawing, all pole counts, PCB layout — the footprint master) |
+| J201, J701, J801, J802, J901 | **Phoenix MKDS 1,5 family, 5.0 mm pitch — chosen 2026-09-14**: 1715022 (2P) · 1715035 (3P ×2) · 1715048 (4P) · 1715187 (5P), DigiKey | — | [CONN_Phoenix_MKDS_1-5_Catalog](CONN_Phoenix_MKDS_1-5_Catalog_1715048.pdf) · [CONN_Degson_DG128-5.0](CONN_Degson_DG128-5.0_ScrewTerminal_Drawing.pdf) — same 5.0 mm pitch, so the Degson (2P C711349, 3P C691861; 4P/5P not at LCSC) fits the same footprints; draw once, buy either |
 | RV801, RV802 | TDK/EPCOS S07K35 MOV (B72207S0350K101) — DNP | verify | [MOV_TDK_SIOV_StandarD](MOV_TDK_SIOV_Leaded_StandarD_S07K35_Datasheet.pdf) (SIOV leaded StandarD series) |
 | — (optional, Rev B) | TI ISO1211 isolated 24 V digital-input receiver | — | [REF_TI_ISO1211_OPTIONAL](REF_TI_ISO1211_Isolated_24V_Digital_Input_Datasheet_OPTIONAL.pdf) — the modern certified-Type-1/3 alternative, recorded by the audit |
 
-Still deferred to freeze on purpose: the named-maker red/green 0805 indicator LEDs (D705–D708, D803/D804,
-D903/D904, D302) and the anti-surge 1.6 kΩ family sheet (Yageo PA / Panasonic ERJ-P08 — both vendors
-block robot fetches; pull the sheet when the maker is picked).
+Indicator LEDs chosen 2026-09-14: **Lite-On LTST-C170KRKT** (red ×8) and **LTST-C170KGKT** (green,
+D302), DigiKey — the LTST-C170 sheet is a one-page standard, fetch alongside the DigiKey order;
+Everlight 17-21SURC/S530-A2/TR8 (C131244) / 17-21SYGC/S530-E3/TR8 (C142303) are the LCSC alternates.
+R701–R708 chosen: **Panasonic ERJ-P08F1601V** (DigiKey) — Panasonic blocks robot fetches, so pull the
+ERJ-P family PDF (AOA0000C331) by hand with that order; Yageo PA/AC1206 is the alternate.
 
 ## Carried over from Board 1 (same part, same document)
 
