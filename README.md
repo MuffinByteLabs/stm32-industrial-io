@@ -10,7 +10,7 @@ I’m developing a four-layer STM32 controller for industrial sensors and DC act
 
 I’m treating the interfaces as a complete system: power sequencing, field wiring, reset behavior, calibration, and fault recovery are part of the design alongside the signal paths.
 
-**Rev A is in development.** I have defined the architecture, interface requirements, component candidates, and engineering calculations. Schematic capture, PCB layout, application firmware, and prototype measurements are still ahead; the specifications below are my design targets.
+**Rev A is in development.** I have defined and reviewed the architecture, interface requirements, production component candidates, MCU resource allocation, and engineering calculations. Schematic capture, PCB layout, application firmware, and prototype measurements are still ahead; the specifications below are my design targets.
 
 ## My design at a glance
 
@@ -20,7 +20,7 @@ I’m treating the interfaces as a complete system: power sequencing, field wiri
 | Field power | Nominal 12/24 V DC; 9–30 V continuous operation; reverse-polarity, surge, and current protection |
 | Sensor inputs | Four group-isolated digital inputs, one with pulse counting; two 0–10 V inputs; two externally powered 4–20 mA loop receivers |
 | Load control | Four diagnosed high-side outputs at 0.5 A each simultaneously; two low-voltage SPDT dry-contact relays |
-| Analog control | One protected 0–10 V voltage-source output for loads of at least 10 kΩ |
+| Analog control | One default-off, fault-protected 0–10 V voltage-source output with terminal feedback; external loads at least 10 kΩ |
 | Communication | Separately isolated RS-485/Modbus and CAN; USB service and SWD |
 | Fault response | Hardware output permission, external watchdog, command timeout, and explicit rearming |
 | PCB | Four layers, with dedicated return paths and separate isolation domains |
@@ -53,6 +53,8 @@ I describe the power domains, component candidates, and isolation boundaries in 
 
 I’m designing for predictable behavior when a wire is disconnected, a rail disappears, or a command stream stops. My [design decisions](docs/Design_Decisions.md) explain the tradeoffs behind analog protection, output backfeed blocking, current diagnostics, and safe startup.
 
+My [pre-schematic engineering review](docs/Engineering_Review.md) records current component status, corrected current-loop protection, isolated-port power capacity, protected AO feedback, and the next design gates. My [capture checklist](docs/Schematic_Capture.md) records implementation details.
+
 I keep the calculations reproducible. My [power and measurement analysis](docs/calcs/README.md) covers input-current headroom, loop burden, quantization, fault dissipation, and output losses. For example, a 200 Ω loop shunt dissipates 80 mW at 20 mA, but 4.5 W if directly exposed to 30 V; that difference drives my active fault-protection strategy.
 
 I defined a [validation matrix](docs/Validation.md) for calibration, miswiring, short circuits, communication, thermal behavior, and repeatability across three units. I’ll publish measured results with the hardware and firmware revisions that produced them.
@@ -61,6 +63,8 @@ I defined a [validation matrix](docs/Validation.md) for calibration, miswiring, 
 
 | Document | What I explain |
 | --- | --- |
+| [Engineering review](docs/Engineering_Review.md) | Manufacturer status, compatibility checks, margins, and review limits |
+| [Schematic capture](docs/Schematic_Capture.md) | MCU resources, rail supervision, sequencing, and circuit checks |
 | [Architecture](docs/Architecture.md) | Functional blocks, power domains, isolation, and component selection |
 | [Design decisions](docs/Design_Decisions.md) | Circuit tradeoffs, failure modes, and layout rationale |
 | [Interfaces](docs/Interfaces.md) | Field connections, electrical limits, and command behavior |

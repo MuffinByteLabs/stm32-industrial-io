@@ -68,7 +68,7 @@ For a two-wire current transmitter, I use an external nominal 24 V loop:
 
 For an independently powered current-output transmitter, I will follow its specified output and reference topology. Rev A receives current and does not supply loop power.
 
-The 200 Ω Kelvin shunt develops 0.8–4 V over 4–20 mA and contributes 4 V of burden at 20 mA. Protection resistance and wiring add burden. I will check the complete transmitter compliance budget, particularly for a 12 V installation. The ADC's 0–5.12 V range corresponds to 25.6 mA before other circuit limits.
+The 200 Ω Kelvin shunt develops 0.8–4 V over 4–20 mA. A TPS26611 series protector precedes the permanent shunt; TMUX protection is only in the sense branch. Receiver burden is up to 4.25 V at 20 mA before wiring. I will check transmitter compliance, particularly at 12 V. I qualify an overrange goal up to 24 mA: the ADC's arithmetic 25.6 mA endpoint exceeds the protector's minimum current-limit bound.
 
 I will configure low/high current alarms for the selected transmitter. Starting thresholds such as 3.6 and 21 mA apply only where its specification supports them. The receivers share MAIN_GND and are not isolated from each other.
 
@@ -78,11 +78,11 @@ The ±30 V signal-terminal miswire requirement is a future fault qualification t
 
 AO1 is a sourced voltage-command signal. It connects to a compatible actuator's voltage input, with AO_RETURN connected to the actuator's command reference. The minimum load target is 10 kΩ. The actuator uses its own power supply.
 
-My planned path is DAC → amplifier → separately controlled default-off disconnect → protector drain D → protected source S → AO1. The terminal pulldown defines the disabled voltage for the supported high-impedance load. Analog-valid status, reset/watchdog supervision, and explicit arming qualify the disconnect.
+My path is DAC → local gain-four amplifier → unity driver → ADG5401F drain D → protected source S → AO1. A separate protected SFB/DFB path returns terminal voltage directly to the unity driver's inverting input. Powered disable/fault opens both field paths and closes local driver feedback. A permanent 100 kΩ pulldown and the selected POC behavior define the supported disabled state. Analog-valid status and hardware output permission qualify IN; an external pulldown makes it default off.
 
 I target 0–10 V with ±50 mV calibrated terminal accuracy, including zero. I will qualify loading, cable capacitance, shorts, and external faults. This is not a 4–20 mA transmitter or a guaranteed current-sinking lighting interface.
 
-The protected readback observes the amplifier before the disconnect. It cannot confirm terminal voltage, disconnect continuity, or every wiring fault. I will measure the terminal independently; any future terminal-sense path needs its own fault and unpowered-MCU protection.
+I require a separate protected, attenuated terminal-readback path with powered-off isolation into the MCU ADC. The driver-feedback node becomes an internal voltage while disabled or faulted and cannot substitute for this measurement. I will verify terminal voltage with an independent meter, and qualify the readback clamps and sequencing before relying on telemetry.
 
 ## High-side outputs and relays
 

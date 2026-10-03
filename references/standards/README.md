@@ -8,12 +8,14 @@ I will consult current primary publications and qualified test support for appli
 | --- | --- |
 | IPC-2221 and relevant sectional standards | General PCB design decisions, interpreted with the actual materials and application |
 | IPC-2152 | Current-carrying conductor thermal design alongside actual stack-up and measurements |
-| IPC-7351 or package-specific manufacturer land patterns | Surface-mount geometry; exact package drawings take priority in part verification |
+| IPC-7352 and package-specific manufacturer land patterns | Surface-mount geometry; exact package drawings take priority in part verification |
 | IPC-A-610 and J-STD-001 | Agreed assembly/workmanship criteria and process requirements |
 | J-STD-020 and J-STD-033 | Part-specific reflow/moisture handling requirements |
 | IEC 61131-2 | Reference for industrial-controller I/O behavior where applicable; isolated input IC ratings do not establish board compliance |
 | Applicable IEC 61000-4 immunity methods | Define specific ESD/EFT/surge fixtures and acceptance criteria when relevant to the intended application |
 | Applicable emissions regulations and test standards | Plan later EMC work for the actual equipment, cables, enclosure, and jurisdiction |
+
+I checked the [IPC document revision table](https://www.ipc.org/ipc-document-revision-table) on October 3, 2026: IPC-7351 is no longer maintained; IPC-7352 is my current generic land-pattern reference. For Modbus RTU, I use the application protocol V1.1b3 and serial implementation guide V1.02 identified for new implementations by the Modbus Organization, rather than its obsolete 1996 serial specification.
 
 Useful primary entry points: [IPC standards](https://www.ipc.org/standards), [IEC publications](https://webstore.iec.ch/), and the [Modbus Organization specifications](https://www.modbus.org/modbus-specifications).
 

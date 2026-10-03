@@ -8,15 +8,75 @@ import json
 
 def calculate(service_w: float, efficiency: float) -> dict:
     n, current, shunt = 4, 0.5, 200.0
+    service_reservations = {
+        "mcu_and_essential_logic_w": 0.75,
+        "external_adc_dac_and_field_logic_w": 0.20,
+        "analog_auxiliaries_w": 0.45,
+        "two_relay_coils_w": 1.10,
+        "two_isolated_bus_supplies_w": 2.75,
+    }
+    reserved_w = sum(service_reservations.values())
+    relay_upper_v = 5.25
+    relay_min_cold_ohm = 62.5 * 0.90 * (1 + 0.00393 * (0.0 - 23.0))
+    adc_input_ohm, adc_bias_v, example_series_ohm = 1_000_000.0, 2.5, 1000.0
+    limit_resistor_ohm = 5110.0
     return {
         "scope": "Design arithmetic; prototype measurements remain pending",
         "assumptions": {
             "service_power_delivered_w": service_w,
-            "aggregate_conversion_efficiency": efficiency,
+            "main_buck_conversion_efficiency_assumed": efficiency,
             "output_channels": n,
             "current_per_output_a": current,
             "input_continuous_budget_a": 3.0,
-            "excluded": "Extra protection losses, inrush, limit tolerances, transient peaks",
+            "excluded": "Extra input-protection losses, VFIELD overhead, inrush, limit tolerances, transient peaks",
+            "note": "Service power is referred to the delivered 5V_FIELD rail and includes downstream conversion losses. Efficiency is an assumption, not a guaranteed datasheet minimum.",
+        },
+        "service_reservations": {
+            "branches_w": service_reservations,
+            "total_reserved_w": reserved_w,
+            "margin_to_selected_ceiling_w": service_w - reserved_w,
+            "nominal_design_ceiling_w": 6.0,
+            "note": "Branch engineering allocations combine component limits and reserves; they are not a completed worst-case BOM maximum. Inrush and fault loading are separate.",
+        },
+        "isolation_budget": {
+            "converter_candidate": "UCC33421QDHARQ1, two independent 5 V outputs",
+            "each_converter_output_class_w": 1.5,
+            "isolated_output_upper_v": 5.15,
+            "iso1410_bus_dynamic_max_a": 0.160,
+            "iso1042_bus_dc_dominant_max_a": 0.0734,
+            "can_switching_cable_reserve_a": 0.020,
+            "combined_bus_bias_local_reserve_a": 0.010,
+            "isolated_efficiency_assumed": 0.50,
+            "total_output_with_reserves_w": 5.15 * (0.160 + 0.0734 + 0.020 + 0.010),
+            "estimated_primary_with_reserves_w": 5.15 * (0.160 + 0.0734 + 0.020 + 0.010) / 0.50,
+            "primary_reservation_w": service_reservations["two_isolated_bus_supplies_w"],
+            "note": "160 mA is specified at 500 kbps, 54 ohm/50 pF; 73.4 mA is DC dominant at 60 ohm, not a guaranteed dynamic FD maximum. Reserves and 50% efficiency require circuit and measured closure; the module's output class derates with temperature.",
+        },
+        "relay_coils": {
+            "coil_candidate": "G5Q-1 DC5, SPDT",
+            "nominal_current_per_coil_a": 0.080,
+            "resistance_at_23c_nominal_ohm": 62.5,
+            "resistance_tolerance_fraction": 0.10,
+            "copper_temperature_coefficient_per_c_assumed": 0.00393,
+            "upper_rail_v": relay_upper_v,
+            "minimum_resistance_at_0c_model_ohm": relay_min_cold_ohm,
+            "cold_upper_rail_total_current_a": 2 * relay_upper_v / relay_min_cold_ohm,
+            "cold_upper_rail_total_power_w": 2 * relay_upper_v**2 / relay_min_cold_ohm,
+            "reservation_w": service_reservations["two_relay_coils_w"],
+            "note": "Copper-temperature modeling is an engineering assumption; 80 mA is nominal, not a worst-case supply bound. Qualify the actual coils and rail envelope.",
+        },
+        "analog_auxiliary_budget": {
+            "positive_rail_v": 15.0,
+            "positive_rail_design_current_a": 0.015,
+            "positive_output_power_w": 15.0 * 0.015,
+            "boost_efficiency_assumed": 0.60,
+            "boost_primary_power_estimate_w": 15.0 * 0.015 / 0.60,
+            "lm7705_5v_primary_current_reserved_a": 0.004,
+            "lm7705_primary_power_reserved_w": 5.0 * 0.004,
+            "adg5401f_normal_positive_supply_max_a": 0.000240,
+            "adg5401f_positive_supply_reserved_a": 0.000300,
+            "branch_reservation_w": service_reservations["analog_auxiliaries_w"],
+            "note": "15 mA covers the two TPS26611 supplies, two TMUX groups, dual OPA2197, ADG5401F and supported AO load with reserve. The 60% boost efficiency and LM7705 current reserve are engineering assumptions. ADG5401F uses +15 V/MAIN_GND single-supply operation; only the amplifiers use the negative bias. Boost disable does not isolate its passive output path.",
         },
         "input_current": [
             {"supply_v": v,
@@ -24,16 +84,72 @@ def calculate(service_w: float, efficiency: float) -> dict:
              "remaining_3a_budget_a": 3.0 - n * current - service_w / (v * efficiency)}
             for v in (9.0, 12.0, 24.0, 30.0)
         ],
+        "efuse_current_limit_reference": {
+            "continuous_input_target_a": 3.0,
+            "candidate": "TPS26632RGER",
+            "initial_limit_resistor_ohm": limit_resistor_ohm,
+            "resistor_tolerance_fraction": 0.01,
+            "nominal_limit_a": 18000.0 / limit_resistor_ohm,
+            "illustrative_limit_tolerance_fraction": 0.07,
+            "illustrative_lower_limit_a": 18000.0 / (limit_resistor_ohm * 1.01) * 0.93,
+            "illustrative_upper_limit_a": 18000.0 / (limit_resistor_ohm * 0.99) * 1.07,
+            "note": "The datasheet's 4.5 A endpoint is +/-7%; verify the applicable tolerance at this setpoint. This reference does not freeze a guaranteed assembled limit or a fuse rating.",
+        },
+        "input_voltage_coordination": {
+            "continuous_window_v": [9.0, 30.0],
+            "initial_positive_dc_fault_v": 36.0,
+            "initial_positive_dc_fault_temperature_c": 25.0,
+            "tvs_candidate": "SMCJ33CA",
+            "catalog_tvs_breakdown_min_at_25c_v": 36.7,
+            "catalog_tvs_clamp_at_28_2a_10_1000us_v": 53.3,
+            "efuse_input_output_negative_10ms_stress_limit_v": -85.0,
+            "negative_clamp_plus_retained_30v_differential_v": -(53.3 + 30.0),
+            "negative_clamp_plus_retained_35v_differential_v": -(53.3 + 35.0),
+            "note": "36 V requires a bounded source, tolerance, duration, and TVS temperature; it is not a cold-corner or sustained +40 V guarantee. Catalog clamping is waveform-specific. Negative pulse coordination including initial retained output, temperature, parasitics and overshoot remains pending.",
+        },
         "current_receiver": {
             "shunt_ohm": shunt,
             "at_4ma_v": 0.004 * shunt,
             "at_20ma_v": 0.020 * shunt,
             "at_20ma_shunt_w": 0.020**2 * shunt,
+            "supported_overrange_goal_ma": 24.0,
+            "at_24ma_v": 0.024 * shunt,
+            "at_24ma_shunt_w": 0.024**2 * shunt,
             "at_25_6ma_shunt_w": 0.0256**2 * shunt,
             "5_12v_range_overrange_ma": 5.12 / shunt * 1000,
             "current_lsb_ua": 5.12 / 2**16 / shunt * 1e6,
             "200ohm_direct_30v_fault_w_without_protection": 30.0**2 / shunt,
-            "note": "Direct-fault power motivates active protection; this is not a permitted shunt operating point.",
+            "loop_protector_candidate": "TPS26611DDFR, supply 15 V and default-off enable",
+            "protector_maximum_ron_ohm": 12.5,
+            "20ma_shunt_plus_protector_burden_v": 0.020 * (shunt + 12.5),
+            "24ma_shunt_plus_protector_burden_v": 0.024 * (shunt + 12.5),
+            "fault_current_limit_range_ma": [25.0, 40.0],
+            "at_maximum_40ma_limit_shunt_v": 0.040 * shunt,
+            "at_maximum_40ma_limit_shunt_w": 0.040**2 * shunt,
+            "minimum_nominal_shunt_power_class_w": 1.0,
+            "note": "The ADC range alone gives 25.6 mA; the complete supported-overrange goal is 24 mA. 4.25 V burden at 20 mA includes only the shunt and maximum protector resistance, before terminals/wiring. Fault energy comes from the external loop, separate from service supply power. Verify resistor derating/pulse limits and protector tolerance; direct-fault power is not a permitted operating point.",
+        },
+        "adc_loading_example": {
+            "adc_input_impedance_reference_ohm": adc_input_ohm,
+            "adc_input_impedance_min_max_ohm": [850_000.0, 1_150_000.0],
+            "adc_equivalent_bias_v": adc_bias_v,
+            "illustrative_series_resistance_ohm": example_series_ohm,
+            "formula": "V_ADC = (V_source * R_ADC + V_bias * R_series) / (R_ADC + R_series)",
+            "points": [
+                {"source_v": v,
+                 "adc_v": (v * adc_input_ohm + adc_bias_v * example_series_ohm) / (adc_input_ohm + example_series_ohm),
+                 "loading_error_mv": (adc_bias_v - v) * example_series_ohm / (adc_input_ohm + example_series_ohm) * 1000,
+                 "loading_error_mv_with_minimum_850kohm": (adc_bias_v - v) * example_series_ohm / (850_000.0 + example_series_ohm) * 1000}
+                for v in (0.0, 2.5, 10.0)
+            ],
+            "current_shunt_model_formula": "V_shunt = (I_terminal + V_bias / R_ADC) / (1 / R_shunt + 1 / R_ADC)",
+            "current_shunt_points_without_additional_sense_series_r": [
+                {"terminal_current_ma": i * 1000,
+                 "shunt_voltage_v": (i + adc_bias_v / adc_input_ohm) / (1 / shunt + 1 / adc_input_ohm),
+                 "indicated_current_error_ua": ((i + adc_bias_v / adc_input_ohm) / (1 / shunt + 1 / adc_input_ohm) / shunt - i) * 1e6}
+                for i in (0.004, 0.020, 0.024)
+            ],
+            "note": "This nominal 1 Mohm/2.5 V equivalent model illustrates offset and loading, not a divider to ground. The 1 kohm example is not a frozen circuit value; verify impedance/bias tolerance, protector resistance, external source impedance, filtering and calibration.",
         },
         "accuracy_targets": {
             "voltage_room_temperature_mv": 10.0 * 0.002 * 1000,
@@ -45,16 +161,38 @@ def calculate(service_w: float, efficiency: float) -> dict:
             "note": "Quantization is only one error term; calibration and component/temperature errors remain.",
         },
         "output_path": {
-            "blocking_diode_w_per_channel_range": [current * 0.3, current * 0.5],
-            "four_blocking_diodes_total_w_range": [n * current * 0.3, n * current * 0.5],
-            "hs_switch_total_w_at_160mohm_typical": n * current**2 * 0.160,
-            "note": "160 milliohm is illustrative typical resistance; worst-case hot resistance and other losses remain.",
+            "high_side_candidate": "TPS4H160BQPWPRQ1",
+            "blocking_and_freewheel_diode_candidate": "STPS2H100A",
+            "diode_reverse_voltage_class_v": 100.0,
+            "diode_current_class_a": 2.0,
+            "diode_loss_model_125c_w_per_channel": 0.56 * current + 0.045 * current**2,
+            "four_blocking_diodes_loss_model_125c_w": n * (0.56 * current + 0.045 * current**2),
+            "hs_switch_four_channel_conduction_w_with_25c_max_ron": n * current**2 * 0.165,
+            "hs_switch_four_channel_conduction_w_with_150c_max_ron": n * current**2 * 0.280,
+            "reference_short_circuit_switch_w_at_24v_0_7a": 24.0 * 0.7,
+            "initial_current_limit_resistor_ohm": 2870.0,
+            "nominal_current_limit_a": 0.8 * 2500.0 / 2870.0,
+            "initial_sense_resistor_ohm": 1200.0,
+            "nominal_sense_ratio": 300.0,
+            "nominal_sense_v_at_0_5a": current / 300.0 * 1200.0,
+            "sense_fault_voltage_v": [4.5, 6.5],
+            "note": "The diode equation is the manufacturer's 125 C loss model, not a guaranteed maximum across production. Ron limits bound conduction only; operating current, diode leakage, fault energy, thermal coupling and layout remain. Sense/current-limit tolerance and an unpowered MCU require protection; thermal swing can precede latched thermal shutdown.",
+        },
+        "blocking_fet_reference": {
+            "candidate": "CSD19537Q3",
+            "fast_gate_discharge_candidate": "BSS138P,215",
+            "vds_rating_v": 100.0,
+            "gate_absolute_voltage_v": 20.0,
+            "rds_on_max_at_25c_vgs10v_ohm": 0.0145,
+            "conduction_w_at_3a_25c_vgs10v_reference": 3.0**2 * 0.0145,
+            "efuse_gate_drive_min_typ_max_v": [8.3, 10.23, 14.0],
+            "note": "The 10 V Rds maximum does not establish a maximum loss at the eFuse's 8.3 V minimum gate drive. Verify lower-drive/hot resistance and transient SOA. A 100 V FET alone does not resolve the IC's -85 V input/output pulse limit.",
         },
         "ao_loading": {
             "load_ohm": 10000.0,
             "at_10v_load_ma": 10.0 / 10000.0 * 1000,
             "50ohm_series_drop_mv_at_1ma": 0.001 * 50.0 * 1000,
-            "note": "This series drop consumes the entire AO error allowance before other errors.",
+            "note": "This is an uncompensated series-drop example. My selected unity driver uses protected terminal feedback to compensate DC path resistance; actual leakage, offset, endpoint headroom, cable stability and fault transitions still require circuit verification.",
         },
         "resistive_load_fixture": [
             {"supply_v": v,
@@ -73,7 +211,7 @@ def calculate(service_w: float, efficiency: float) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--service-w", type=float, default=5.0)
+    parser.add_argument("--service-w", type=float, default=6.0)
     parser.add_argument("--efficiency", type=float, default=0.85)
     args = parser.parse_args()
     if args.service_w < 0 or not 0 < args.efficiency <= 1:

@@ -1,0 +1,29 @@
+* I check static circuit principles using ideal amplifiers and resistive models.
+* These are not vendor IC macro-models, fault models, or a stability assessment.
+Vdac dac 0 DC 2.5
+Egain gainraw 0 dac gainfb 1e6
+Rgainout gainraw gain 1
+Rf gain gainfb 30k
+Rg gainfb 0 10k
+Edriver driverraw 0 gain feedback 1e6
+Rdriverout driverraw driver 1
+Rswitch driver terminal 12
+Rsafety terminal ao 40
+Rfeedback ao feedback 3.9k
+Rload ao 0 10k
+Rpulldown ao 0 100k
+Rfeedbackleak feedback 0 1e12
+* Comparison: same switch/series resistance without terminal feedback.
+Runcomp gain uncomp 52
+Ruload uncomp 0 10k
+Rupulldown uncomp 0 100k
+* Current input with the ADC's 2.5 V bias and minimum effective resistance.
+Iloop 0 shunt DC 20m
+Rshunt shunt 0 200
+Rsense shunt sense 8.3
+Rin sense bias 850k
+Vbias bias 0 DC 2.5
+.control
+op
+.endc
+.end

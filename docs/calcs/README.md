@@ -6,11 +6,23 @@ I run it with Python 3:
 
 ~~~text
 python docs/calcs/controller_budget.py
-python docs/calcs/controller_budget.py --service-w 5 --efficiency 0.85
+python docs/calcs/controller_budget.py --service-w 6 --efficiency 0.80
 ~~~
 
-My initial assumptions are 5 W delivered service power, 85% aggregate conversion efficiency, four 0.5 A loads, and a 3 A continuous input budget. At 9 V, the estimate is 2.654 A before extra protection losses, leaving approximately 0.346 A of budget.
+My corrected assumptions are 6 W delivered service power, 85% field-buck conversion efficiency, four 0.5 A loads, and a 3 A continuous input budget. Named service reservations total 5.25 W, including downstream conversion losses, leaving 0.75 W inside that ceiling. At 9 V, the estimate is 2.784 A before extra input-protection losses and overhead, leaving approximately 0.216 A. At assumed 80% efficiency it becomes 2.833 A. These efficiencies and reservations need circuit and measured closure.
 
 This arithmetic does not prove regulator suitability, inrush/fault tolerance, transient protection, thermal limits, analog settling, stability, EMC, or fixture ratings. I will replace assumptions with verified worst-case values during schematic design and measurements during qualification.
 
 At 30 V, four constant 0.5 A loads dissipate 60 W externally. Four fixed 48 Ω loads selected for 24 V instead draw 0.625 A/channel at 30 V. I will configure and thermally rate the fixture for each operating point.
+
+## Limited DC frontend simulation
+
+I also provide [dc_frontends.cir](dc_frontends.cir) and [spice_dc_check.py](spice_dc_check.py). I ran this operating-point model on October 3, 2026 using the ngspice shared library bundled with KiCad 10. The amplifiers are ideal high-gain sources and the switches are resistors; this model does not simulate actual IC faults, enable transitions, temperature, amplifier stability, or converter behavior.
+
+~~~text
+python docs/calcs/spice_dc_check.py --library "C:/Program Files/KiCad/10.0/bin/ngspice.dll"
+~~~
+
+I assumed 12 Ω main-switch resistance, 40 Ω additional series resistance, 3.9 kΩ feedback-path resistance, a 10 kΩ external load, and a 100 kΩ terminal pulldown. These are model inputs, not guaranteed limits at my selected +15 V operating point. The terminal-feedback topology produces 9.99995 V from a nominal 10 V command. The same resistive output path without terminal feedback gives 9.94309 V. I keep the gain divider local to the first amplifier so the feedback-switch resistance does not change the gain.
+
+For a 20 mA receiver with a 200 Ω shunt, 8.3 Ω sense-path resistance, and the ADC's 0.85 MΩ/2.5 V equivalent input model, I obtain 3.999647 V at the shunt and 3.999633 V at the ADC sense node. The script checks this against an independent loading equation. This verifies connectivity and the static compensation principle; I will simulate the actual amplifier/cable circuit and qualify measured accuracy after schematic capture.

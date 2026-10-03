@@ -12,11 +12,11 @@ I address external output backfeed separately. Each high-side channel gets a ser
 
 ## Separate operating voltage from fault survival
 
-I specify 9–30 V continuous operation for nominal 12/24 V equipment. I treat −30 V reverse connection and +40 V input overvoltage as defined fault tests, with outputs disarmed outside the valid window.
+I specify 9–30 V continuous operation for nominal 12/24 V equipment. I treat −30 V reverse connection and an initial +36 V positive fault at 25 °C as defined fault tests, with outputs disarmed outside the valid window.
 
 I chose TPS26632 as an input-protection starting point, accounting for its fixed 35 V maximum output clamp and timeout. This variant does not have an adjustable overvoltage-cutoff pin. I will coordinate its external blocking FET, fast gate-discharge support, startup capacitance, fuse, and TVS against safe operating area and tolerance.
 
-I use SMCJ33CA only as a provisional TVS class. Its 33 V stand-off number does not describe its pulse clamp voltage, and a wattage label does not establish immunity of the board. I will define waveform, source impedance, coupling, repetition, temperature, and pass criteria before final transient selection. I also keep returned inductive energy out of the main rail through the load-side freewheel path. [TPS2663](../references/datasheets/TPS2663.pdf), [reference revision status](../references/datasheets/README.md)
+I use SMCJ33CA as a provisional TVS and limit the initial positive DC fault to 36 V at 25 °C with a defined source and duration. A 40 V sustained source can heat this TVS independently of eFuse shutdown. I also calculate negative differential stress with charged output capacitance; the eFuse's −85 V/10 ms condition cannot be inferred from a 100 V FET alone. Its 33 V stand-off number does not describe its pulse clamp voltage, and a wattage label does not establish immunity of the board. I will define waveform, source impedance, coupling, repetition, temperature, and pass criteria before final transient selection. I also keep returned inductive energy out of the main rail through the load-side freewheel path. [TPS2663](../references/datasheets/TPS2663.pdf), [reference revision status](../references/datasheets/README.md)
 
 ## Use a shared analog reference deliberately
 
@@ -24,25 +24,27 @@ I keep analog inputs/output, MCU, USB, and main DC return in one ground domain. 
 
 I do not treat the ADS8684A input-ground pins as floating negative inputs. I will use an external isolated transmitter where the sensor return potential is incompatible with MAIN_GND. I keep LOAD_RETURN and AI_RETURN physically arranged so actuator current does not flow through the local ADC reference connection. Separate terminal names describe current routing, not galvanic separation. [ADS8684A](../references/datasheets/ADS8684A.pdf)
 
-## Protect current shunts before relying on ADC clamps
+## Preserve current-loop loading through protection
 
-I chose 200 Ω shunts because 4–20 mA becomes a useful 0.8–4 V signal, with room for overrange on a 5.12 V ADC range. I accept the 4 V shunt burden at 20 mA and will include series/protector drops in the loop-compliance calculation. I use an external nominal 24 V loop for the demonstration.
+I chose 200 Ω shunts because 4–20 mA becomes 0.8–4 V. Each terminal passes through a TPS26611DDFR to a permanently connected shunt. I put TMUX7462F only in the high-impedance measurement branch. This avoids letting an open fault switch drive an external current source to its compliance voltage and prevent normal recovery. I use an external nominal 24 V loop for the demonstration.
 
-I place active fault protection ahead of the shunt because a directly applied 24 V fault could dissipate 2.88 W in 200 Ω. I still need to calculate energy before the protector opens, secondary-clamp current, and resistor pulse limits. I separate voltage/AO and current channels into two protector groups because their normal voltage ranges need different shared thresholds.
+The TPS26611 limit is 25–40 mA, not a guaranteed 30 mA. I rate the precision shunt at least 1 W against 0.32 W at 40 mA and separately verify fast-trip pulse energy. The protector adds up to 0.25 V at 20 mA, making the receiver burden 4.25 V before wiring. I qualify up to 24 mA overrange; the ADC endpoint corresponds arithmetically to 25.6 mA but the series protector can limit sooner. EN defaults low through an external pulldown; qualified field/analog power enables measurement without requiring actuator arming. I will define explicit negative-fault recovery and safely interface any status outputs. [TPS2661](../references/datasheets/TPS2661.pdf)
 
-I select high-impedance drain behavior on TMUX7462F. Its `DR` control selects drain response during a fault; it is not a commanded channel enable. I also require an ADC_AVDD discharge path that remains connected when the protector is alive and the ADC supply is absent. I start that review with a 10 kΩ bleeder against the ADC's specified low-impedance supply condition, then check complete sequencing and transient stress. [TMUX7462F](../references/datasheets/TMUX7462F.pdf), [ADS8684A](../references/datasheets/ADS8684A.pdf)
+I select high-impedance drain response on the TMUX sense branches. Its DR pin selects fault response, not channel enable. I keep separate voltage and current threshold groups, and include the ADC's 2.5 V-biased effective input loading in calibration. ADC_AVDD has a permanent starting 10 kΩ bleeder to meet its powered-off low-impedance supply condition; I still check complete sequencing and transient stress. [TMUX7462F](../references/datasheets/TMUX7462F.pdf), [ADS8684A](../references/datasheets/ADS8684A.pdf)
 
-## Define AO as a sourced voltage command
+## Control and sense the actual voltage-command terminal
 
-I selected a voltage-source 0–10 V output for compatible high-impedance actuator inputs. I will verify the receiving device's electrical requirements rather than infer compatibility from a “0–10 V” label. Current-sinking lighting controls and 4–20 mA transmitters would require different interfaces.
+I selected a sourced 0–10 V output for compatible high-impedance actuator inputs. I verify the receiving device's electrical requirements; current-sinking lighting controls and current transmitters require different interfaces.
 
-I use the zero-scale POR DAC80501Z, an amplifier gain near four, and a small negative supply to give the zero-volt endpoint headroom. I add a separately controlled default-off disconnect because the fault protector does not supply that function. I will qualify disable leakage, startup, rail loss, cable capacitance, and output stability as well as steady accuracy.
+I use DAC80501Z followed by OPA2197IDR: one local gain-four stage and one unity driver. ADG5401F switches the output and a separate protected terminal-feedback path. Its powered disabled/fault state opens both field paths and reconnects local driver feedback. I hold enable low through initialization and use qualified analog power plus hardware output permission to enable it.
 
-I include resistance through the disconnect and protector in the terminal error budget. At 10 V into 10 kΩ, 1 mA flowing through 50 Ω loses 50 mV, already consuming the entire target allowance. I will resolve the signal path against that limit before freezing the circuit. I use protected amplifier-side readback before the disconnect; it cannot establish terminal voltage or external wiring continuity. Any future terminal feedback needs independent fault and unpowered-MCU protection. [DAC80501](../references/datasheets/DAC80501.pdf), [OPA197](../references/datasheets/OPA197.pdf)
+I keep the switch's secondary feedback resistance out of the gain-setting divider. At 10 V into 10 kΩ, uncompensated 50 Ω series resistance loses the entire 50 mV allowance. The unity driver's terminal feedback instead compensates the main-switch and reviewed series-impedance drop; the remaining error budget includes DAC/reference error, gain ratio, amplifier offsets, drift, and feedback leakage. I use +15 V/GND for the switch and +15 V/LM7705 bias for both amplifiers. My ideal DC model demonstrates the feedback principle, while actual amplifier compensation and cable capacitance remain to be validated.
+
+I ground POC for the switch's weak powered disabled pulldown and add a permanent 100 kΩ terminal pulldown. Independently protected terminal readback has its own attenuation and unpowered-MCU isolation. The switch's internal feedback node cannot prove the terminal value when disabled or faulted. [DAC80501](../references/datasheets/DAC80501.pdf), [OPAx197](../references/datasheets/OPA197.pdf), [ADG5401F](https://www.analog.com/media/en/technical-documentation/data-sheets/adg5401f.pdf), [Engineering review](Engineering_Review.md)
 
 ## Accept diode losses and qualify diagnostics
 
-I chose series blocking and freewheel diodes for the initial on/off load stage. At 0.5 A and an estimated 0.3–0.5 V drop, a blocking diode dissipates 0.15–0.25 W. The freewheel path gives slow inductive decay, so I will characterize release time for the selected load. Faster release or proportional PWM would require a revised energy/clamp design.
+I chose series blocking and freewheel diodes for the initial on/off load stage. I selected STPS2H100A as the starting diode. Its manufacturer 125 °C conduction-loss model gives about 0.291 W/channel at 0.5 A; this is a model, not a guaranteed maximum over production and temperature. I still close the complete loss and leakage budget. The freewheel path gives slow inductive decay, so I will characterize release time for the selected load. Faster release or proportional PWM would require a revised energy/clamp design.
 
 I expect the series diode to alter off-state/open-load diagnostics. I will use on-state current and the actual load to establish useful detection thresholds rather than assume the IC's unmodified diagnostic behavior survives the added diode. I also protect the MCU sense input from fault-level voltage and unpowered states.
 
@@ -50,7 +52,7 @@ I accept one multiplexed current-sense output for four channels. Firmware must s
 
 ## Remove output permission independently of application software
 
-I combine field validity, reset status, external watchdog status, and explicit arming in hardware. I gate the high-side command inputs, relay drivers, and AO disconnect; diagnostic enable is not an output-power inhibit. I require analog rail validity for AO as well.
+I combine field validity, reset status, external watchdog status, and an asynchronously cleared ARM latch in hardware. A stale GPIO cannot restore permission when field power returns; a fresh valid arm transition is required. I gate the high-side command inputs, relay drivers, and AO disconnect; diagnostic enable is not an output-power inhibit. I require analog rail validity for AO as well.
 
 I service the watchdog only after application health checks, so a stalled program cannot remain healthy through a free-running timer output. I clear arming on owner changes and global faults and require fresh commands after recovery. I define the relay's deenergized state electrically: COM–NO opens and COM–NC closes. Coil-command telemetry alone does not prove contact position. [TPS3431](../references/datasheets/TPS3431.pdf), [G5Q reference status](../references/datasheets/README.md)
 

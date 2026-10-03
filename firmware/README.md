@@ -18,7 +18,7 @@ The [architecture](../docs/Architecture.md) defines the power and permission dom
 
 The command owner is Modbus, CAN, or local control. Owner changes disarm the board. The default lease is 1 s; unrelated traffic, invalid frames, and read-only requests do not renew it. Commands are validated centrally and multi-output updates applied atomically.
 
-Hardware permission gates the high-side commands, relay coils, and analog-output disconnect. Reset, watchdog failure, invalid field power, and update/recovery modes remove permission independently of the application. The external watchdog is serviced only after application health checks; a free-running timer must not conceal a stalled control loop.
+Hardware permission gates the high-side commands, relay coils, and analog-output disconnect through an asynchronously cleared ARM latch. A persistent GPIO state cannot rearm outputs after field-power loss; firmware must pass checks and issue a fresh arm transition. Reset, watchdog failure, invalid field power, and update/recovery modes remove permission independently of the application. The external watchdog is serviced only after application health checks; a free-running timer must not conceal a stalled control loop.
 
 ## Acquisition and diagnostics
 
@@ -33,7 +33,7 @@ Hardware permission gates the high-side commands, relay coils, and analog-output
 
 FIELD_ANALOG_VALID qualifies external ADC/DAC communication, acquisition validity, and analog-output enable. USB-only operation reports unavailable field measurements as invalid. Powered-off interface protection and rail sequencing require electrical verification on the board.
 
-Analog-output readback is taken before the hardware disconnect, on the amplifier side. It reports the internal command voltage rather than proving the terminal voltage. Relay telemetry reports coil commands; a deenergized SPDT relay opens COM–NO and closes COM–NC. High-side current readings are sequential rather than simultaneous.
+I require independently protected AO terminal readback, distinct from the protected-feedback switch's internal node. I qualify its divider/clamps and receiving-domain isolation before using it for diagnostics. I discard the first MCU ADC result after an idle interval over 1 ms where required by STM32G474 errata. Relay telemetry reports coil commands; a deenergized SPDT relay opens COM–NO and closes COM–NC. High-side current readings are sequential rather than simultaneous.
 
 Calibration retains raw samples, coefficients, units, hardware/firmware identity, date, and reference uncertainty. Two-point calibration is checked at independent verification points and does not arm outputs.
 
@@ -46,4 +46,4 @@ Calibration retains raw samples, coefficients, units, hardware/firmware identity
 
 I will freeze register addresses and CAN identifiers with the data model, keeping units, signedness, byte/register order, rollover, atomic snapshots, and validity meanings consistent across interfaces. My CAN protocol is a custom application protocol; CANopen support is outside the Rev A scope.
 
-I will implement the software alongside hardware bring-up: controller/service functions, input acquisition, guarded output control, wired protocols, then fault and endurance tests. My software release will include exact toolchain versions, build/programming instructions, host test tools, and recorded results for resets, command loss, malformed traffic, corrupted settings, and interrupted writes.
+I record the provisional 144 MHz/48 MHz clock plan, pin allocation, peripheral timing, and silicon errata in my [capture checklist](../docs/Schematic_Capture.md). I will implement the software alongside hardware bring-up: controller/service functions, input acquisition, guarded output control, wired protocols, then fault and endurance tests. My software release will include exact toolchain versions, build/programming instructions, host test tools, and recorded results for resets, command loss, malformed traffic, corrupted settings, and interrupted writes.

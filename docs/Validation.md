@@ -2,7 +2,7 @@
 
 I use this plan to define the evidence needed to release Rev A. Schematic capture, PCB layout, firmware implementation, and bench qualification are still pending. The values below are acceptance targets, not measured performance.
 
-My [architecture](Architecture.md), [design decisions](Design_Decisions.md), and [interface contract](Interfaces.md) define the design under test. Before first power, I will freeze the exact schematic, BOM, assembly variant, firmware build, instrument setup, and pass/fail limits.
+My [pre-schematic review](Engineering_Review.md), [capture checklist](Schematic_Capture.md), [architecture](Architecture.md), [design decisions](Design_Decisions.md), and [interface contract](Interfaces.md) define the design under test. Before first power, I will freeze the exact schematic, BOM, assembly variant, firmware build, instrument setup, and pass/fail limits.
 
 ## Design review before assembly
 
@@ -47,7 +47,7 @@ I will calibrate each input at two points, then verify independent points with t
 
 I will repeat analog checks with outputs inactive, switching, and fully loaded. I will record settled errors and switching transients separately, together with filter settings and useful bandwidth. ADC resolution does not establish system accuracy.
 
-AO readback is measured before the output disconnect. I will use an independent meter at the terminal to verify output voltage, disabled behavior, and loading effects. For current inputs, I will include the 200 Ω shunt's 4 V burden at 20 mA plus protection and wiring drops in the loop-compliance calculation.
+I will compare the independently protected AO terminal readback against a calibrated meter; the switch's internal feedback node is not terminal proof when disabled. I will check enabled accuracy, disabled behavior, load and cable effects, and local-feedback transfer during faults. For current inputs, I budget up to 4.25 V receiver burden at 20 mA plus wiring and verify startup with the current source already connected, recovery from compliance, and any negative-fault reset.
 
 ## Fault and recovery qualification
 
@@ -56,7 +56,7 @@ I will define source impedance, current limits, duration, fixture energy, measur
 | Planned test | Condition and required behavior |
 | --- | --- |
 | Supply range | 9, 12, 24, and 30 V under combined rated loading; valid operation and acceptable temperatures |
-| Main supply faults | −30 V reverse input and +40 V positive fault under documented source limits; protected behavior and fresh rearming |
+| Main supply faults | −30 V reverse input and initial +36 V positive fault at 25 °C under documented source limits/duration; TVS current/temperature, protected behavior, and fresh rearming; other temperatures require a separate reviewed limit |
 | Analog miswire | ±30 V at each signal terminal, powered and unpowered, for 60 s; no damage/backpower and accurate recovery |
 | Analog output faults | Open circuit, return short, reviewed cable capacitance, and external ±30 V; stable protection and explicit recovery |
 | Load short/overload | Controlled fixture per channel; hardware current limiting followed by a latched fault and explicit recovery |

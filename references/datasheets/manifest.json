@@ -1,7 +1,7 @@
 {
   "project": "STM32 Industrial I/O Controller",
-  "selection_status": "candidate families; exact ordering suffixes and pin verification pending",
-  "checked_date": "2026-10-02",
+  "selection_status": "Reviewed architecture and production candidates; exact suffixes, package pins, passives, footprints and complete circuits require schematic capture review",
+  "checked_date": "2026-10-03",
   "parts": {
     "STM32G474VET6": {
       "manufacturer": "STMicroelectronics",
@@ -13,16 +13,17 @@
       "bytes": 3062163,
       "sha256": "b018e20dbe34b63a43e49365518b186ef0e0e8e899deeabc1c9f53a3a10c1add",
       "checked_utc": "2026-10-02T22:26:34-04:00",
-      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending",
+      "verification_scope": "PDF identity and provisional package-specific peripheral allocation checked against current manufacturer documentation; every physical pin and footprint still requires capture cross-check",
       "source_host": "DigiKey",
       "source_kind": "authorized_distributor_mirror",
-      "manufacturer_datasheet_url": "https://www.st.com/resource/en/datasheet/stm32g474vc.pdf",
+      "manufacturer_datasheet_url": "https://www.st.com/resource/en/datasheet/stm32g474ve.pdf",
       "provenance_note": "ST-authored STM32G474xB/xC/xE family PDF publicly hosted by authorized distributor DigiKey.",
       "document_revision": "DS12288 Rev 6",
       "document_date": "2021-11",
-      "age_note": "Cached manufacturer-authored family datasheet is November 2021; check the current manufacturer revision and errata before schematic/package verification.",
+      "age_note": "Current ST product documentation still lists DS12288 Rev6 (November2021); revision checked October3,2026. Review current errata and actual package pins before capture approval.",
       "family_scope_note": "STM32G474xB/xC/xE family includes LQFP100; exact orderable code and every package pin still require verification.",
-      "latest_revision_check_required": true
+      "latest_revision_check_required": false,
+      "current_revision_checked_date": "2026-10-03"
     },
     "ADS8684A": {
       "manufacturer": "Texas Instruments",
@@ -156,18 +157,6 @@
       "checked_utc": "2026-10-02T22:12:10-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
-    "OPA197": {
-      "manufacturer": "Texas Instruments",
-      "file": "OPA197.pdf",
-      "datasheet_url": "https://www.ti.com/lit/ds/symlink/opa197.pdf",
-      "title_token": "OPA197",
-      "status": "downloaded_identity_checked",
-      "pages": 56,
-      "bytes": 2174683,
-      "sha256": "27653a7d5e965cbb2d23f7998919ebd774efd5cd3e126b8f0881469ae91166fd",
-      "checked_utc": "2026-10-02T22:12:10-04:00",
-      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
-    },
     "TPS4H160B-Q1": {
       "manufacturer": "Texas Instruments",
       "file": "TPS4H160-Q1.pdf",
@@ -204,18 +193,6 @@
       "checked_utc": "2026-10-02T22:12:11-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
-    "UCC12050": {
-      "manufacturer": "Texas Instruments",
-      "file": "UCC12050.pdf",
-      "datasheet_url": "https://www.ti.com/lit/ds/symlink/ucc12050.pdf",
-      "title_token": "UCC12050",
-      "status": "downloaded_identity_checked",
-      "pages": 35,
-      "bytes": 1916915,
-      "sha256": "8177b5a841a3fec83aae52df85a016a6f042f4b49cabb52ffe1ae039e1420801",
-      "checked_utc": "2026-10-02T22:12:11-04:00",
-      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
-    },
     "TPS3431": {
       "manufacturer": "Texas Instruments",
       "file": "TPS3431.pdf",
@@ -229,7 +206,7 @@
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "G5Q-1-DC5": {
-      "manufacturer": "Omron",
+      "manufacturer": "Aratas (formerly Omron Electronic Components)",
       "file": "G5Q.pdf",
       "datasheet_url": "https://omronfs.omron.com/en_US/ecb/products/pdf/en-g5q.pdf",
       "title_token": "G5Q",
@@ -244,8 +221,13 @@
       "source_host": "Omron",
       "document_revision": "J155-E1-16 (0621)",
       "document_date": "2021-06",
-      "age_note": "Official Omron archive PDF is the June 2021 revision; newer manufacturer references exist and should be checked before relay selection freeze.",
-      "latest_revision_check_required": true
+      "age_note": "Current manufacturer lists the family In Production and April7,2026 documentation. Local PDF remains June2021 because current direct download is blocked; confirm exact regional code/drawing before freeze.",
+      "latest_revision_check_required": true,
+      "lifecycle_status": "In Production",
+      "lifecycle_checked_date": "2026-10-03",
+      "manufacturer_product_url": "https://www.aratas.com/us-en/products/relays/G5Q",
+      "current_manufacturer_datasheet_url": "https://www.aratas.com/us-en/asset/53891",
+      "current_document_date": "2026-04-07"
     },
     "24LC64": {
       "manufacturer": "Microchip Technology",
@@ -278,8 +260,202 @@
       "pdf_metadata_creation_date": "2005-05-12",
       "age_note": "DigiKey-hosted Littelfuse catalog excerpt has 2005 PDF metadata. Keep as archival family reference only; do not treat it as the current protection-design authority.",
       "newer_manufacturer_reference_url": "https://www.littelfuse.com/assetdocs/littelfuse_tvs_diode_smcj_datasheet.pdf?assetguid=37388813-0d6d-4329-969b-1aa8b7614ac1",
-      "newer_revision_access_note": "Newer JC. 02/27/25 v.2 manufacturer PDF is indexed online, but direct retrieval returned HTTP 403 and Mouser mirror retrieval did not return a PDF.",
-      "latest_revision_check_required": true
+      "newer_revision_access_note": "Current manufacturer six-page PDF reviewed through web tool; direct local download blocked. Local four-page historical PDF remains archival, not protection-design authority.",
+      "latest_revision_check_required": true,
+      "current_manufacturer_revision_web_checked": "JC.02/27/25 v.2",
+      "current_revision_checked_date": "2026-10-03"
+    },
+    "TPS3808": {
+      "manufacturer": "Texas Instruments",
+      "file": "TPS3808.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tps3808.pdf",
+      "title_token": "TPS3808",
+      "status": "downloaded_identity_checked",
+      "pages": 39,
+      "bytes": 2046179,
+      "sha256": "74d889c0f68af88032f1633c26381817cc03e10d9fd3b4c177a044ad3ed86eed",
+      "checked_utc": "2026-10-03T11:58:46.933652+00:00",
+      "verification_scope": "PDF identity checked; selected electrical constraints reviewed in Engineering_Review.md/Schematic_Capture.md; complete pin/footprint and circuit review pending",
+      "source_kind": "manufacturer"
+    },
+    "SN74LVC2G125": {
+      "manufacturer": "Texas Instruments",
+      "file": "SN74LVC2G125.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/sn74lvc2g125.pdf",
+      "title_token": "SN74LVC2G125",
+      "status": "downloaded_identity_checked",
+      "pages": 30,
+      "bytes": 813455,
+      "sha256": "15dab14095892f561bc7407dde6c7fb2fb75d92c6bdafc34e949e5dca1fed340",
+      "checked_utc": "2026-10-03T11:58:46.673995+00:00",
+      "verification_scope": "PDF identity checked; selected electrical constraints reviewed in Engineering_Review.md/Schematic_Capture.md; complete pin/footprint and circuit review pending",
+      "source_kind": "manufacturer"
+    },
+    "SN74LVC2G08": {
+      "manufacturer": "Texas Instruments",
+      "file": "SN74LVC2G08.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/sn74lvc2g08.pdf",
+      "title_token": "SN74LVC2G08",
+      "status": "downloaded_identity_checked",
+      "pages": 26,
+      "bytes": 784167,
+      "sha256": "75dff6a7b9ba988865b776e0f7c5dd2855f13f64f05bfcda3b1baec886007199",
+      "checked_utc": "2026-10-03T11:58:46.622537+00:00",
+      "verification_scope": "PDF identity checked; selected electrical constraints reviewed in Engineering_Review.md/Schematic_Capture.md; complete pin/footprint and circuit review pending",
+      "source_kind": "manufacturer"
+    },
+    "SN74LVC1G74": {
+      "manufacturer": "Texas Instruments",
+      "file": "SN74LVC1G74.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/sn74lvc1g74.pdf",
+      "title_token": "SN74LVC1G74",
+      "status": "downloaded_identity_checked",
+      "pages": 31,
+      "bytes": 1427201,
+      "sha256": "e46a5a867fec742290000dca5ed3b291535f3c4418ef2ae267acc4ab51b26d8a",
+      "checked_utc": "2026-10-03T11:58:46.763124+00:00",
+      "verification_scope": "PDF identity checked; selected electrical constraints reviewed in Engineering_Review.md/Schematic_Capture.md; complete pin/footprint and circuit review pending",
+      "source_kind": "manufacturer"
+    },
+    "TMUX1511": {
+      "manufacturer": "Texas Instruments",
+      "file": "TMUX1511.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tmux1511.pdf",
+      "title_token": "TMUX1511",
+      "status": "downloaded_identity_checked",
+      "pages": 45,
+      "bytes": 2548188,
+      "sha256": "c32b83722e3717c554dc8f68da05d9e02aa44087043d7b820f5e113713adbfcb",
+      "checked_utc": "2026-10-03T11:58:46.864657+00:00",
+      "verification_scope": "PDF identity checked; selected electrical constraints reviewed in Engineering_Review.md/Schematic_Capture.md; complete pin/footprint and circuit review pending",
+      "source_kind": "manufacturer"
+    },
+    "TPS3702": {
+      "manufacturer": "Texas Instruments",
+      "file": "TPS3702.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tps3702.pdf",
+      "title_token": "TPS3702",
+      "status": "downloaded_identity_checked",
+      "pages": 33,
+      "bytes": 1274887,
+      "sha256": "3f1fb9255cfa9b220938447e903cc6d72eae2abe228393bcb8f1afcb4adb52c8",
+      "checked_utc": "2026-10-03T11:58:47.072514+00:00",
+      "verification_scope": "PDF identity checked; selected electrical constraints reviewed in Engineering_Review.md/Schematic_Capture.md; complete pin/footprint and circuit review pending",
+      "source_kind": "manufacturer"
+    },
+    "TPS3700": {
+      "manufacturer": "Texas Instruments",
+      "file": "TPS3700.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tps3700.pdf",
+      "title_token": "TPS3700",
+      "status": "downloaded_identity_checked",
+      "pages": 27,
+      "bytes": 682718,
+      "sha256": "3bb7daed20b154bf22ded78e23269c6437eb587400b89bce0f543813df94ebf0",
+      "checked_utc": "2026-10-03T11:58:47.006243+00:00",
+      "verification_scope": "PDF identity checked; selected electrical constraints reviewed in Engineering_Review.md/Schematic_Capture.md; complete pin/footprint and circuit review pending",
+      "source_kind": "manufacturer"
+    },
+    "CSD19537Q3": {
+      "manufacturer": "Texas Instruments",
+      "file": "CSD19537Q3.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/csd19537q3.pdf",
+      "title_token": "CSD19537Q3",
+      "status": "downloaded_identity_checked",
+      "pages": 12,
+      "bytes": 979540,
+      "sha256": "d74d65b7815d46d642a11c89834ee71245ae6d3541595df2b4fcfa21dfbd4903",
+      "checked_utc": "2026-10-03T11:58:47.206115+00:00",
+      "verification_scope": "PDF identity checked; selected electrical constraints reviewed in Engineering_Review.md/Schematic_Capture.md; complete pin/footprint and circuit review pending",
+      "source_kind": "manufacturer"
+    },
+    "ADG5401F": {
+      "manufacturer": "Analog Devices",
+      "file": "ADG5401F.pdf",
+      "datasheet_url": "https://www.analog.com/media/en/technical-documentation/data-sheets/adg5401f.pdf",
+      "title_token": "ADG5401F",
+      "status": "manufacturer_web_reviewed_local_pdf_unavailable",
+      "verification_scope": "Primary manufacturer web/PDF content reviewed; local download unavailable; exact pins/footprint require capture review",
+      "download_note": "RemoteDisconnected: Remote end closed connection without response",
+      "checked_utc": "2026-10-03T11:59:06.108730+00:00"
+    },
+    "TPS26611DDFR": {
+      "manufacturer": "Texas Instruments",
+      "file": "TPS2661.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tps2661.pdf",
+      "title_token": "TPS2661",
+      "status": "downloaded_identity_checked",
+      "pages": 45,
+      "bytes": 3194328,
+      "sha256": "d7602fcda1d74f8182c91d89982d51e719ab9d87e32f2040518ff38c482a6ee0",
+      "checked_utc": "2026-10-03T11:59:06.250537+00:00",
+      "source_kind": "manufacturer",
+      "verification_scope": "Identity and selected electrical constraints reviewed; complete schematic/package/pin/footprint review pending"
+    },
+    "UCC33421QDHARQ1": {
+      "manufacturer": "Texas Instruments",
+      "file": "UCC33421-Q1.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/ucc33421-q1.pdf",
+      "title_token": "UCC33421",
+      "status": "downloaded_identity_checked",
+      "pages": 34,
+      "bytes": 1892583,
+      "sha256": "27107e766c5ecf018e17ad01b177fd3df7ecf20269298c0cec94de94a902d8a8",
+      "checked_utc": "2026-10-03T11:59:06.372725+00:00",
+      "source_kind": "manufacturer",
+      "verification_scope": "Identity and selected electrical constraints reviewed; complete schematic/package/pin/footprint review pending"
+    },
+    "OPA2197IDR": {
+      "manufacturer": "Texas Instruments",
+      "file": "OPA197.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/opa197.pdf",
+      "title_token": "OPA2197",
+      "status": "downloaded_identity_checked",
+      "pages": 56,
+      "bytes": 2174683,
+      "sha256": "27653a7d5e965cbb2d23f7998919ebd774efd5cd3e126b8f0881469ae91166fd",
+      "checked_utc": "2026-10-02T22:12:10-04:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending",
+      "family_scope_note": "OPAx197 family PDF covers dual OPA2197; selected SOIC-8 IDR still requires pin/footprint cross-check."
+    },
+    "REF3325AIDBZR": {
+      "manufacturer": "Texas Instruments",
+      "file": "REF33.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/ref33.pdf",
+      "title_token": "REF33",
+      "status": "downloaded_identity_checked",
+      "pages": 36,
+      "bytes": 1512901,
+      "sha256": "39839abc9bf09417d0a4b446c6e922679f6dc63b19072e284169dd23007e65fe",
+      "checked_utc": "2026-10-03T12:04:13.318642+00:00",
+      "source_kind": "manufacturer",
+      "verification_scope": "Selected electrical constraints reviewed; exact pins, footprints and complete circuits require capture review"
+    },
+    "SN74LVC2G17DBVR": {
+      "manufacturer": "Texas Instruments",
+      "file": "SN74LVC2G17.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/sn74lvc2g17.pdf",
+      "title_token": "SN74LVC2G17",
+      "status": "downloaded_identity_checked",
+      "pages": 36,
+      "bytes": 1888823,
+      "sha256": "624dbe55679d2fed4123b0d7708cd0d295efcc78de395e71a0caf5cd13cbc216",
+      "checked_utc": "2026-10-03T12:04:13.231587+00:00",
+      "source_kind": "manufacturer",
+      "verification_scope": "Selected electrical constraints reviewed; exact pins, footprints and complete circuits require capture review"
+    },
+    "BSS138P,215": {
+      "manufacturer": "Nexperia",
+      "file": "BSS138P.pdf",
+      "datasheet_url": "https://assets.nexperia.com/documents/data-sheet/BSS138P.pdf",
+      "title_token": "BSS138P",
+      "status": "downloaded_identity_checked",
+      "pages": 16,
+      "bytes": 754928,
+      "sha256": "7b331782f1ce0ef8c6298a692c67145538af80e364163dd9fcb602cf321c772c",
+      "checked_utc": "2026-10-03T12:04:13.927382+00:00",
+      "source_kind": "manufacturer",
+      "verification_scope": "Selected electrical constraints reviewed; exact pins, footprints and complete circuits require capture review"
     }
   }
 }

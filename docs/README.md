@@ -4,6 +4,8 @@ I document the controller from requirements through validation, with enough deta
 
 | Document | My focus |
 | --- | --- |
+| [Engineering review](Engineering_Review.md) | Current component status, compatibility, corrections, and review scope |
+| [Schematic capture](Schematic_Capture.md) | Pin/clock allocation, supervision, sequencing, and capture checks |
 | [Architecture](Architecture.md) | Power, signal paths, component candidates, and isolation |
 | [Design decisions](Design_Decisions.md) | Protection, measurement, output behavior, and layout tradeoffs |
 | [Interfaces](Interfaces.md) | Electrical contracts, wiring, and communication behavior |
