@@ -1,8 +1,8 @@
 # Standards and qualification references
 
-This board is an indoor low-voltage prototype. No standard compliance or certification has been established. The [canonical plan](../../docs/STM32_Industrial_IO_Controller_RevA_Plan.md) defines the engineering tests to complete; the final product application determines which formal requirements apply.
+I am designing an indoor low-voltage prototype. I have not established standards compliance or certification. My [validation plan](../../docs/Validation.md) defines the engineering evidence I intend to collect; the final product application determines which formal requirements apply.
 
-Consult current primary publications and qualified test support when needed. Do not derive universal creepage, clearance, trace width, surge levels, or assembly acceptance from a copied quick-sheet.
+I will consult current primary publications and qualified test support for application-specific requirements. Creepage, clearance, trace width, surge severity, and assembly acceptance depend on the materials, installation, and agreed test conditions.
 
 | Reference family | Use during implementation |
 | --- | --- |
@@ -17,4 +17,4 @@ Consult current primary publications and qualified test support when needed. Do 
 
 Useful primary entry points: [IPC standards](https://www.ipc.org/standards), [IEC publications](https://webstore.iec.ch/), and the [Modbus Organization specifications](https://www.modbus.org/modbus-specifications).
 
-Maintain a dated test plan that identifies edition, setup, waveform, source impedance, coupling, cables, severity, monitoring, pass criteria, and results for each test. The analog ±30 V miswire goal is separate from an IEC surge/EFT claim. The CAN transceiver's grade does not establish automotive qualification.
+For each formal test, I will record the edition, setup, waveform, source impedance, coupling, cables, severity, monitoring, pass criteria, and results. My ±30 V analog miswire target is separate from an IEC surge/EFT claim. The CAN transceiver's grade does not establish automotive qualification for this board.

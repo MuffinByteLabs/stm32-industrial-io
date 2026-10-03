@@ -1,18 +1,18 @@
 # Project workflow
 
-MuffinByteLabs maintains this controller project. The [board plan](docs/STM32_Industrial_IO_Controller_RevA_Plan.md) defines the architecture and acceptance targets; [project status](docs/PROJECT_STATUS.md) records implementation progress. Start engineering work from the [open items](docs/Open_Engineering_Items.md).
+I maintain this controller as Ray Malik / MuffinByteLabs. My [architecture](docs/Architecture.md), [design decisions](docs/Design_Decisions.md), [interfaces](docs/Interfaces.md), and [validation plan](docs/Validation.md) define the engineering baseline.
 
 ## Track a change
 
-Use an engineering task for a design decision, implementation milestone, or qualification test. Use a problem report for a reproducible issue. Include the affected revision, requirement, operating conditions, and evidence needed to close the work.
+I use engineering tasks for design decisions, implementation milestones, and qualification tests. For a reproducible issue, I use a problem report with the affected revision, requirement, operating conditions, and evidence.
 
-Keep a change focused enough to review. When a requirement changes, update the board plan, affected interface or implementation guides, and status together. Store calculations and review evidence with the design so the decision can be reproduced.
+I keep changes focused enough to review. A requirement change includes the affected architecture, interface contract, implementation, and validation criteria. I save calculations and review evidence with the design so the decision can be reproduced.
 
-The current repository contains planning material and candidate references. Do not describe a circuit, board, or firmware feature as implemented until its source exists. Distinguish manufacturer component ratings, design targets, simulations, and measured board results.
+The current repository contains design requirements and candidate references; schematic, PCB, firmware, and bench implementation remain pending. I distinguish component ratings, engineering targets, simulations, and measured board results in the project records.
 
 ## Run repository checks
 
-Use Python 3.12 and the pinned development dependency in [requirements-dev.txt](requirements-dev.txt):
+I run the repository tools with Python 3.12 and the pinned dependency in [requirements-dev.txt](requirements-dev.txt):
 
 ~~~text
 python -m pip install -r requirements-dev.txt
@@ -20,14 +20,14 @@ python scripts/audit_project.py
 python docs/calcs/controller_budget.py
 ~~~
 
-The [project audit](.github/workflows/project-audit.yml) runs these document and planning checks on pushes and pull requests. It checks local links, saved PDF identity and hashes, library paths, and selected planning arithmetic. It does not validate electrical behavior.
+My [project audit](.github/workflows/project-audit.yml) checks local links, saved PDF identity and hashes, library paths, and selected engineering arithmetic on pushes and pull requests. These checks do not validate electrical behavior.
 
-The separate [KiCad workflow](.github/workflows/kicad-ci.yml) runs ERC and DRC when the new native design files exist. Missing files produce an explicit report that those checks were not run. A successful document check does not replace schematic review, layout review, simulation, or bench testing.
+My separate [KiCad workflow](.github/workflows/kicad-ci.yml) runs ERC and DRC when the native design files exist. Missing files produce an explicit report that those checks were not run. I also require schematic/layout review and the applicable simulation and bench evidence.
 
 ## Review hardware and release it
 
-Use the [layout rules](docs/Hard_Rules_Layout_RevA.md), [assembly plan](docs/Assembly_and_Stencil_Plan.md), and [bring-up guide](docs/BringUp_Guide.md) at the appropriate stage. Identify the exact board and firmware revision in every test report. Save the test setup, acceptance limit, observations, and unresolved concerns.
+I identify the exact hardware and firmware revision in every review and test report. My [validation plan](docs/Validation.md) requires the setup, acceptance limits, observations, uncertainty, and unresolved concerns.
 
-Publish a hardware release only after the matching native design, review evidence, and manufacturing package meet the [fabrication requirements](fabrication/README.md). Tags beginning with rev request the KiCad release checks and fabrication exports; they are reserved for complete hardware revisions.
+I reserve tags beginning with rev for complete hardware revisions. Before publishing one, I require the matching native design, review evidence, and manufacturing package to meet my [fabrication requirements](fabrication/README.md). These tags request the KiCad release checks and fabrication exports.
 
-Automated workflows produce reports and artifacts. They do not commit changes or update design sources.
+My automated workflows produce reports and artifacts without committing changes to design sources.

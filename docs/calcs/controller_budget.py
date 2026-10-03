@@ -1,4 +1,4 @@
-"""Reproduce selected Rev A planning calculations; no hardware qualification."""
+"""I reproduce selected Rev A design calculations independently of bench tests."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import json
 def calculate(service_w: float, efficiency: float) -> dict:
     n, current, shunt = 4, 0.5, 200.0
     return {
-        "scope": "Planning arithmetic only; hardware qualification remains pending",
+        "scope": "Design arithmetic; prototype measurements remain pending",
         "assumptions": {
             "service_power_delivered_w": service_w,
             "aggregate_conversion_efficiency": efficiency,

@@ -5,8 +5,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Use the board plan and open engineering items as the requirements baseline.
-        Record goals separately from measured results; implementation is still in progress.
+        I track the requirements baseline in Architecture.md and Interfaces.md.
+        I record targets separately from measured results; implementation is still in progress.
   - type: dropdown
     id: area
     attributes:
@@ -26,7 +26,7 @@ body:
     id: objective
     attributes:
       label: Objective and requirement
-      description: Describe the resulting behavior and link the applicable plan section or open item.
+      description: Describe the resulting behavior and link the applicable architecture, interface, or design decision.
       placeholder: What must this task make true, and which acceptance target applies?
     validations:
       required: true

@@ -1,60 +1,77 @@
-# STM32 Industrial I/O Controller — Rev A
+# STM32 Industrial I/O Controller
 
-**Ray Malik** · [muffinbytelabs.com](https://muffinbytelabs.com) · [muffinbytelabs@gmail.com](mailto:muffinbytelabs@gmail.com)
+**Ray Malik · MuffinByteLabs**
 
-[![Project audit](https://github.com/MuffinByteLabs/stm32-industrial-io/actions/workflows/project-audit.yml/badge.svg)](https://github.com/MuffinByteLabs/stm32-industrial-io/actions/workflows/project-audit.yml)
-[![KiCad checks](https://github.com/MuffinByteLabs/stm32-industrial-io/actions/workflows/kicad-ci.yml/badge.svg)](https://github.com/MuffinByteLabs/stm32-industrial-io/actions/workflows/kicad-ci.yml)
+[Website](https://muffinbytelabs.com) · [Contact](mailto:muffinbytelabs@gmail.com)
 
-A second portfolio project after the [ESP32 plant monitor](https://github.com/MuffinByteLabs/esp32s3-plant-monitor): a four-layer controller that measures industrial sensors, switches DC actuators, communicates over wired buses, and reports faults.
+[![Documentation checks](https://github.com/MuffinByteLabs/stm32-industrial-io/actions/workflows/project-audit.yml/badge.svg)](https://github.com/MuffinByteLabs/stm32-industrial-io/actions/workflows/project-audit.yml)
 
-**Status, October 2, 2026: planning and reference preparation.** The new plan and supporting guides are in place. The new schematic, PCB, firmware, enclosure, and measured qualification have not been completed. All ratings below are engineering targets.
+I’m developing a four-layer STM32 controller for industrial sensors and DC actuators. My design brings protected 12/24 V power, precision analog measurement, load diagnostics, and isolated wired communication onto one board.
 
-The project audit checks documents and planning arithmetic. At this stage the KiCad workflow reports native hardware checks as not run.
+I’m treating the interfaces as a complete system: power sequencing, field wiring, reset behavior, calibration, and fault recovery are part of the design alongside the signal paths.
 
-| Function | Planned Rev A |
+**Rev A is in development.** I have defined the architecture, interface requirements, component candidates, and engineering calculations. Schematic capture, PCB layout, application firmware, and prototype measurements are still ahead; the specifications below are my design targets.
+
+## My design at a glance
+
+| Area | Rev A design target |
 | --- | --- |
-| Controller | STM32G474VET6 directly on the PCB, LQFP100 |
-| Field supply | Nominal 12/24 V DC; 9–30 V operating target; reverse-polarity, surge, and current protection |
-| Sensor inputs | Four group-isolated DC digital inputs, including one pulse input; two 0–10 V inputs; two externally powered 4–20 mA loop receivers |
-| Actuator outputs | Four diagnosed high-side outputs, 0.5 A each simultaneously; two SPDT dry-contact relays; one protected 0–10 V voltage-source output |
+| Controller | STM32G474VET6, integrated directly on the PCB |
+| Field power | Nominal 12/24 V DC; 9–30 V continuous operation; reverse-polarity, surge, and current protection |
+| Sensor inputs | Four group-isolated digital inputs, one with pulse counting; two 0–10 V inputs; two externally powered 4–20 mA loop receivers |
+| Load control | Four diagnosed high-side outputs at 0.5 A each simultaneously; two low-voltage SPDT dry-contact relays |
+| Analog control | One protected 0–10 V voltage-source output for loads of at least 10 kΩ |
 | Communication | Separately isolated RS-485/Modbus and CAN; USB service and SWD |
-| Reliability | Hardware output permission, reset supervision, external watchdog, command timeout, and recoverable calibration |
-| PCB and enclosure | Four layers; approximately 140 × 100 mm starting envelope; insulated mounting and labeled pluggable terminals |
-| Completion evidence | At least three working units, calibration, fault tests, thermal results, firmware, and a reproducible manufacturing handoff |
+| Fault response | Hardware output permission, external watchdog, command timeout, and explicit rearming |
+| PCB | Four layers, with dedicated return paths and separate isolation domains |
 
-The [job-fit review](docs/Upwork_Job_Fit.md) checks the scope against the supplied listings and connects each capability to finished evidence. It also records the gaps: proportional solenoids, ten-channel precision current sensing, wireless products, automotive qualification, and high-voltage ignition need additional work.
+## System architecture
 
-## Start here
+I organized the design around a protected field supply and a serviceable logic domain. USB supports configuration and debugging without powering field loads.
 
-1. Read the [complete board plan](docs/STM32_Industrial_IO_Controller_RevA_Plan.md), the source of truth for architecture and acceptance targets.
-2. Read the [project status](docs/PROJECT_STATUS.md) and [open engineering items](docs/Open_Engineering_Items.md) before starting schematic capture.
-3. Use the [resource reservations](docs/PinMap_CheatSheet.md), [wiring guide](docs/Interface_and_Wiring_Guide.md), and [firmware contract](firmware/README.md) to keep hardware and software aligned.
-4. Complete the [layout rules](docs/Hard_Rules_Layout_RevA.md), [KiCad setup](docs/KiCad_Settings_RevA.md), [assembly plan](docs/Assembly_and_Stencil_Plan.md), and [bring-up guide](docs/BringUp_Guide.md) in that order.
+```mermaid
+flowchart LR
+    FIELD["12/24 V DC"] --> PROTECT["Input protection"]
+    PROTECT --> POWER["Field power rails"]
+    USB["USB service power"] --> LOGIC["Logic supply selection"]
+    POWER --> LOGIC
+    LOGIC --> MCU["STM32G474"]
+    SENSORS["0–10 V / 4–20 mA"] --> ANALOG["Fault protection + external ADC"]
+    ANALOG --> MCU
+    DI["4 digital inputs"] --> DIN["Group isolation"]
+    DIN --> MCU
+    MCU --> GATE["Hardware output permission"]
+    GATE --> OUTPUTS["High-side outputs / relays / 0–10 V"]
+    POWER --> OUTPUTS
+    MCU <--> RS["Isolated RS-485 / Modbus"]
+    MCU <--> CAN["Separately isolated CAN"]
+```
 
-## Repository map
+I describe the power domains, component candidates, and isolation boundaries in my [architecture notes](docs/Architecture.md).
 
-| Location | Purpose |
+## Engineering decisions
+
+I’m designing for predictable behavior when a wire is disconnected, a rail disappears, or a command stream stops. My [design decisions](docs/Design_Decisions.md) explain the tradeoffs behind analog protection, output backfeed blocking, current diagnostics, and safe startup.
+
+I keep the calculations reproducible. My [power and measurement analysis](docs/calcs/README.md) covers input-current headroom, loop burden, quantization, fault dissipation, and output losses. For example, a 200 Ω loop shunt dissipates 80 mW at 20 mA, but 4.5 W if directly exposed to 30 V; that difference drives my active fault-protection strategy.
+
+I defined a [validation matrix](docs/Validation.md) for calibration, miswiring, short circuits, communication, thermal behavior, and repeatability across three units. I’ll publish measured results with the hardware and firmware revisions that produced them.
+
+## Explore my work
+
+| Document | What I explain |
 | --- | --- |
-| [docs/](docs/PROJECT_STATUS.md) | Requirements, engineering decisions, implementation guides, and status |
-| [docs/calcs/](docs/calcs/README.md) | Executable planning arithmetic with explicit assumptions |
-| [docs/reviews/](docs/reviews/README.md) | Migration record and future design-review evidence |
-| [hardware/](hardware/README.md) | Future KiCad project, retained candidate footprints, models, and branding |
-| [firmware/](firmware/README.md) | Implementation contract; application source is pending |
-| [mechanical/](mechanical/README.md) | Enclosure, terminals, mounting, and thermal integration plan |
-| [fabrication/](fabrication/README.md) | Release-package requirements; no ordered revision yet |
-| [references/datasheets/](references/datasheets/README.md) | Candidate-family manufacturer PDFs and identity/hash manifest |
-| [references/reference-designs/](references/reference-designs/README.md) | Manufacturer guidance and relevant reference designs |
-| [references/standards/](references/standards/README.md) | Standards applicable to later design and qualification decisions |
-| [references/upwork/](references/upwork/README.md) | Saved job excerpts and exact source locations |
-| [scripts/](scripts/README.md) | Reference maintenance and repository checks |
-| [.github/workflows/kicad-ci.yml](.github/workflows/kicad-ci.yml) | Future native-design checks and four-layer release exports |
-| [CHANGELOG.md](CHANGELOG.md) | Revision history |
-| [GitHub project guide](docs/GitHub_Project_Guide.md) | Repository, roadmap, checks, and release process |
+| [Architecture](docs/Architecture.md) | Functional blocks, power domains, isolation, and component selection |
+| [Design decisions](docs/Design_Decisions.md) | Circuit tradeoffs, failure modes, and layout rationale |
+| [Interfaces](docs/Interfaces.md) | Field connections, electrical limits, and command behavior |
+| [Validation](docs/Validation.md) | Acceptance targets, test conditions, and evidence requirements |
+| [Hardware](hardware/README.md) | KiCad organization, layer strategy, and library attribution |
+| [Firmware](firmware/README.md) | Acquisition, communications, output state management, and calibration |
+| [Mechanical integration](mechanical/README.md) | Terminals, mounting, enclosure, and heat |
+| [Manufacturing](fabrication/README.md) | Revision control and reproducible fabrication handoff |
 
-The previous design, empty KiCad placeholders, obsolete sourcing draft, and superseded references were removed from the active project. A verified recovery archive was saved outside this folder; its location and hash are recorded in the [migration review](docs/reviews/Folder_Migration_2026-10-02.md).
+I maintain [manufacturer references](references/datasheets/README.md) alongside my calculations. My automated checks verify documentation links, reference identity, and local library paths. Native KiCad checks will run when design files are present.
 
-Keep performance claims tied to measurements from the finished hardware. Manufacturer ratings and successful document checks alone do not qualify a board.
+## License
 
-## License and third-party material
-
-Original project design sources and documentation use [CERN-OHL-P-2.0](LICENSE). Manufacturer datasheets, job excerpts, and imported CAD/library assets remain attributed to their respective owners and retain their original terms. See the [local library notices](hardware/libs/README.md) for KiCad-derived assets.
+I publish my original project sources and documentation under [CERN-OHL-P-2.0](LICENSE). I retain the original attribution and terms for manufacturer documents and imported library assets; my [library notes](hardware/libs/README.md) identify that material.

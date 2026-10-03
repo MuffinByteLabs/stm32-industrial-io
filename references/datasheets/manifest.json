@@ -9,27 +9,10 @@
       "datasheet_url": "https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/6455/STM32G474QBT6_DS.pdf",
       "title_token": "STM32G474",
       "status": "downloaded_identity_checked",
-      "download_attempts": [
-        {
-          "url": "https://www.st.com/resource/en/datasheet/stm32g474vc.pdf",
-          "status": "download_failed",
-          "error": "TimeoutError: The read operation timed out"
-        },
-        {
-          "url": "https://www.mouser.com/datasheet/2/389/stm32g474ce-1600812.pdf",
-          "status": "download_failed",
-          "error": "ValueError: response is not a PDF"
-        },
-        {
-          "url": "https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/6455/STM32G474QBT6_DS.pdf",
-          "status": "downloaded_identity_checked",
-          "error": null
-        }
-      ],
       "pages": 236,
       "bytes": 3062163,
       "sha256": "b018e20dbe34b63a43e49365518b186ef0e0e8e899deeabc1c9f53a3a10c1add",
-      "checked_utc": "2026-10-03T02:26:34+00:00",
+      "checked_utc": "2026-10-02T22:26:34-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending",
       "source_host": "DigiKey",
       "source_kind": "authorized_distributor_mirror",
@@ -50,7 +33,7 @@
       "pages": 82,
       "bytes": 3273387,
       "sha256": "f39bc8e676285e2b583d6f2e7b50e36bc96418ab7c4f5173f48fab5a9e74809d",
-      "checked_utc": "2026-10-03T02:12:09+00:00",
+      "checked_utc": "2026-10-02T22:12:09-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "TPS26632": {
@@ -62,7 +45,7 @@
       "pages": 59,
       "bytes": 5728602,
       "sha256": "bb61314ace65ed37684bd07f541fc676081d7cf81cb24020e7c5c2065bfe16b2",
-      "checked_utc": "2026-10-03T02:12:09+00:00",
+      "checked_utc": "2026-10-02T22:12:09-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "LMR38020": {
@@ -74,7 +57,7 @@
       "pages": 40,
       "bytes": 1704329,
       "sha256": "da2ed000a8525ec9794e943e4cda8e6e3433515b2be24d5ead1d4478916b1585",
-      "checked_utc": "2026-10-03T02:12:09+00:00",
+      "checked_utc": "2026-10-02T22:12:09-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "TPS62160": {
@@ -86,7 +69,7 @@
       "pages": 42,
       "bytes": 2784747,
       "sha256": "abc824ca04ee985ede3a513172ccdd2a42c8e1fdcfc3af5acdbe2c1af31aaa72",
-      "checked_utc": "2026-10-03T02:12:09+00:00",
+      "checked_utc": "2026-10-02T22:12:09-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "TPS7A20": {
@@ -98,7 +81,7 @@
       "pages": 63,
       "bytes": 8989493,
       "sha256": "663a9ff5bca608643e711652cba00e7b8bf955c0993a9b86fa108d24d58b8ddc",
-      "checked_utc": "2026-10-03T02:12:09+00:00",
+      "checked_utc": "2026-10-02T22:12:09-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "TPS2121": {
@@ -110,7 +93,7 @@
       "pages": 45,
       "bytes": 3341505,
       "sha256": "b2f5950f596dc2c4ca33e4ebac27fd35e4dcc68ea63e173466123e1118e91a06",
-      "checked_utc": "2026-10-03T02:12:09+00:00",
+      "checked_utc": "2026-10-02T22:12:09-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "TPS55340": {
@@ -122,7 +105,7 @@
       "pages": 44,
       "bytes": 2932213,
       "sha256": "e579aa4fcb549eab29e889f7f6dcbd0fd88cac2647082c65f102e411c3f666ca",
-      "checked_utc": "2026-10-03T02:12:09+00:00",
+      "checked_utc": "2026-10-02T22:12:09-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "LM7705": {
@@ -134,7 +117,7 @@
       "pages": 28,
       "bytes": 1159152,
       "sha256": "90c1104b9b42bc575fdc05425e77af07049ba802f6cb02d598be835bc19a3050",
-      "checked_utc": "2026-10-03T02:12:09+00:00",
+      "checked_utc": "2026-10-02T22:12:09-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "ISO1212": {
@@ -146,7 +129,7 @@
       "pages": 47,
       "bytes": 1725243,
       "sha256": "41e0bc7308dd4e0cc8c7f30efb6a2cd87bcc865d9195095ff849be6036cb2328",
-      "checked_utc": "2026-10-03T02:12:09+00:00",
+      "checked_utc": "2026-10-02T22:12:09-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "TMUX7462F": {
@@ -158,7 +141,7 @@
       "pages": 43,
       "bytes": 1854336,
       "sha256": "62c57abf3394c86e6e6ff8fb25760ae9a7f65709c9bb485d521edcf9186d7f5d",
-      "checked_utc": "2026-10-03T02:12:10+00:00",
+      "checked_utc": "2026-10-02T22:12:10-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "DAC80501Z": {
@@ -170,7 +153,7 @@
       "pages": 52,
       "bytes": 3518337,
       "sha256": "51dcb60423765d2521c62af621e2d6c7f4d38c9aa48deec4b4044d49decbbc20",
-      "checked_utc": "2026-10-03T02:12:10+00:00",
+      "checked_utc": "2026-10-02T22:12:10-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "OPA197": {
@@ -182,7 +165,7 @@
       "pages": 56,
       "bytes": 2174683,
       "sha256": "27653a7d5e965cbb2d23f7998919ebd774efd5cd3e126b8f0881469ae91166fd",
-      "checked_utc": "2026-10-03T02:12:10+00:00",
+      "checked_utc": "2026-10-02T22:12:10-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "TPS4H160B-Q1": {
@@ -194,7 +177,7 @@
       "pages": 41,
       "bytes": 2173411,
       "sha256": "7cdecb3650ed6ff5ff720b5e5b85b7b1b7255fd355ae6ea0e3ee3aeffc3ad702",
-      "checked_utc": "2026-10-03T02:12:10+00:00",
+      "checked_utc": "2026-10-02T22:12:10-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "ISO1410": {
@@ -206,7 +189,7 @@
       "pages": 48,
       "bytes": 2345405,
       "sha256": "82abfbcca01cb38301afa22717bd25cf16a2a37b1e609bb66a75fde72b14b7eb",
-      "checked_utc": "2026-10-03T02:12:10+00:00",
+      "checked_utc": "2026-10-02T22:12:10-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "ISO1042": {
@@ -218,7 +201,7 @@
       "pages": 48,
       "bytes": 2508181,
       "sha256": "6b8f06c3db2e7bd8f5febd6b1b60b94614f3bc1571528be9dcc6df7a7fd6623e",
-      "checked_utc": "2026-10-03T02:12:11+00:00",
+      "checked_utc": "2026-10-02T22:12:11-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "UCC12050": {
@@ -230,7 +213,7 @@
       "pages": 35,
       "bytes": 1916915,
       "sha256": "8177b5a841a3fec83aae52df85a016a6f042f4b49cabb52ffe1ae039e1420801",
-      "checked_utc": "2026-10-03T02:12:11+00:00",
+      "checked_utc": "2026-10-02T22:12:11-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "TPS3431": {
@@ -242,7 +225,7 @@
       "pages": 31,
       "bytes": 1774216,
       "sha256": "99bf5dbfffe06e8f85d9a86cfb777a0151e85b4a103033bc025f4897a0bdc6f3",
-      "checked_utc": "2026-10-03T02:12:11+00:00",
+      "checked_utc": "2026-10-02T22:12:11-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "G5Q-1-DC5": {
@@ -254,23 +237,11 @@
       "pages": 6,
       "bytes": 852845,
       "sha256": "af0b5c1666d6c7d89e0a43ac790304fadcacafb5d215d556098cb918a2e2b4c4",
-      "checked_utc": "2026-10-03T02:26:34+00:00",
+      "checked_utc": "2026-10-02T22:26:34-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending",
       "manufacturer_datasheet_url": "https://components.omron.com/sites/default/files/datasheet_pdf/J155-E1.pdf",
       "source_kind": "manufacturer",
       "source_host": "Omron",
-      "download_attempts": [
-        {
-          "url": "https://components.omron.com/eu-en/datasheet_pdf/J155-E1.pdf",
-          "status": "download_failed",
-          "error": "HTTPError: HTTP Error 403: Forbidden"
-        },
-        {
-          "url": "https://omronfs.omron.com/en_US/ecb/products/pdf/en-g5q.pdf",
-          "status": "downloaded_identity_checked",
-          "error": null
-        }
-      ],
       "document_revision": "J155-E1-16 (0621)",
       "document_date": "2021-06",
       "age_note": "Official Omron archive PDF is the June 2021 revision; newer manufacturer references exist and should be checked before relay selection freeze.",
@@ -285,7 +256,7 @@
       "pages": 48,
       "bytes": 759636,
       "sha256": "0a67ae4a9a3c06791540107b866e7c28a3e4e0514b61c0fff264b416243bc409",
-      "checked_utc": "2026-10-03T02:12:11+00:00",
+      "checked_utc": "2026-10-02T22:12:11-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
     },
     "SMCJ33CA": {
@@ -297,29 +268,12 @@
       "pages": 4,
       "bytes": 173671,
       "sha256": "04c55b5c1641bd74c012ef8b3116444aab9f5f9c6a11c497bd255ba910c2e172",
-      "checked_utc": "2026-10-03T02:26:34+00:00",
+      "checked_utc": "2026-10-02T22:26:34-04:00",
       "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending",
       "manufacturer_datasheet_url": "https://www.littelfuse.com/assetdocs/littelfuse_tvs_diode_smcj_datasheet?assetguid=37388813-0d6d-4329-969b-1aa8b7614ac1",
       "source_kind": "authorized_distributor_mirror",
       "source_host": "DigiKey",
       "provenance_note": "Littelfuse-authored SMCJ family PDF publicly hosted by authorized distributor DigiKey; not a distributor-created specification.",
-      "download_attempts": [
-        {
-          "url": "https://media.digikey.com/pdf/Data%20Sheets/Littelfuse%20PDFs/SMCJ%20Series.pdf",
-          "status": "downloaded_identity_checked",
-          "error": null
-        },
-        {
-          "url": "https://www.littelfuse.com/assetdocs/littelfuse_tvs_diode_smcj_datasheet.pdf?assetguid=37388813-0d6d-4329-969b-1aa8b7614ac1",
-          "status": "download_failed",
-          "error": "HTTPError: HTTP Error 403: Forbidden"
-        },
-        {
-          "url": "https://www.mouser.com/datasheet/2/240/media-3320072.pdf",
-          "status": "download_failed",
-          "error": "ValueError: response is not a PDF"
-        }
-      ],
       "document_revision": "Catalog excerpt; no printed revision identified",
       "pdf_metadata_creation_date": "2005-05-12",
       "age_note": "DigiKey-hosted Littelfuse catalog excerpt has 2005 PDF metadata. Keep as archival family reference only; do not treat it as the current protection-design authority.",

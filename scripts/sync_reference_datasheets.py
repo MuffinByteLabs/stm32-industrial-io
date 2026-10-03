@@ -1,7 +1,7 @@
 """Maintain the candidate-family PDFs listed in the project manifest.
 
-Uses the installed DigiKey skill's direct-URL downloader when requested, or
-standard-library HTTPS otherwise. A valid PDF and first-page family match
+I use standard-library HTTPS to retrieve manufacturer reference documents.
+A valid PDF and first-page family match
 establish document identity only, never schematic or package correctness.
 Run with a Python runtime containing pypdf for identity verification.
 """
@@ -12,7 +12,6 @@ import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 import hashlib
-import importlib.util
 import json
 from pathlib import Path
 import urllib.request
@@ -24,26 +23,19 @@ DIRECTORY = ROOT / "references" / "datasheets"
 MANIFEST = DIRECTORY / "manifest.json"
 
 
-def retrieve(item: tuple[str, dict], skill_downloader: Path | None, refresh: bool) -> tuple[str, dict]:
+def retrieve(item: tuple[str, dict], refresh: bool) -> tuple[str, dict]:
     mpn, part = item
     result = dict(part)
     target = DIRECTORY / part["file"]
     temporary = target.with_suffix(".download.tmp")
     try:
         if refresh or not target.exists():
-            if skill_downloader is not None:
-                spec = importlib.util.spec_from_file_location("datasheet_producer", skill_downloader)
-                module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(module)
-                if not module.download_pdf(part["datasheet_url"], str(temporary)):
-                    raise RuntimeError("manufacturer download failed")
-            else:
-                request = urllib.request.Request(
-                    part["datasheet_url"],
-                    headers={"User-Agent": "Mozilla/5.0"},
-                )
-                with urllib.request.urlopen(request, timeout=20) as response:
-                    temporary.write_bytes(response.read())
+            request = urllib.request.Request(
+                part["datasheet_url"],
+                headers={"User-Agent": "Mozilla/5.0"},
+            )
+            with urllib.request.urlopen(request, timeout=20) as response:
+                temporary.write_bytes(response.read())
             if not temporary.read_bytes().startswith(b"%PDF"):
                 raise ValueError("response is not a PDF")
             candidate = temporary
@@ -74,13 +66,12 @@ def retrieve(item: tuple[str, dict], skill_downloader: Path | None, refresh: boo
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--skill-downloader", type=Path, help="Path to fetch_datasheet_digikey.py")
     parser.add_argument("--refresh", action="store_true")
     args = parser.parse_args()
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     items = list(manifest["parts"].items())
     with ThreadPoolExecutor(max_workers=4) as pool:
-        pending = [pool.submit(retrieve, item, args.skill_downloader, args.refresh) for item in items]
+        pending = [pool.submit(retrieve, item, args.refresh) for item in items]
         for future in as_completed(pending):
             mpn, result = future.result()
             manifest["parts"][mpn] = result

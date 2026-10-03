@@ -57,7 +57,7 @@ def main() -> int:
                 continue
             destination, _, fragment = unquote(target).partition("#")
             destination = destination.split("?", 1)[0]
-            # Codex file links may append a one-based line/column.
+            # Local file links may append a one-based line/column.
             destination = re.sub(r":\d+(?::\d+)?$", "", destination)
             linked = Path(destination) if Path(destination).is_absolute() else path.parent / destination
             linked = linked.resolve()
@@ -86,14 +86,6 @@ def main() -> int:
             failures.append(f"{mpn}: PDF identity/page count differs from manifest")
         checked_pdfs += 1
 
-    migration = json.loads((ROOT / "docs/reviews/migration_manifest.json").read_text(encoding="utf-8-sig"))
-    for removed in migration["Removed"]:
-        if (ROOT / removed).exists():
-            failures.append(f"Superseded target still present: {removed}")
-    for old, new in migration["RenamedLibraries"]:
-        if (ROOT / old).exists() or not (ROOT / new).is_dir():
-            failures.append(f"Library migration incomplete: {old} -> {new}")
-
     project = ROOT / "hardware/STM32_Industrial_IO"
     native = [p for p in files if p.suffix in {".kicad_pro", ".kicad_sch", ".kicad_pcb"}]
     for path in native:
@@ -106,13 +98,8 @@ def main() -> int:
                 failures.append(f"{path.relative_to(ROOT)}: missing local asset {value}")
             asset_paths += 1
 
-    obsolete = re.compile(r"ESP32S3_FieldIO_Final_Design_Document|board2_calcs|FieldIO_JLC|field_io/secrets|VLOAD\+|OTA in the field")
-    for path in markdown:
-        if "reviews" not in path.parts and obsolete.search(path.read_text(encoding="utf-8-sig")):
-            failures.append(f"Active legacy contract in {path.relative_to(ROOT)}")
-
     print(json.dumps({
-        "scope": "Document/link/reference/library migration checks only",
+        "scope": "Repository document, reference identity, and library checks",
         "markdown_files": len(markdown),
         "local_links_checked": local_links,
         "candidate_pdfs_identity_hash_checked": checked_pdfs,

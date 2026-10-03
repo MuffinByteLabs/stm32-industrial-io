@@ -1,4 +1,4 @@
-name: Project audit
+name: Documentation checks
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  documents-and-planning:
+  documentation-and-calculations:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -34,12 +34,12 @@ jobs:
           python scripts/audit_project.py > out/project-audit.json
           cat out/project-audit.json
 
-      - name: Reproduce planning calculations
+      - name: Reproduce engineering calculations
         if: always() && steps.python.outcome == 'success'
         run: |
           mkdir -p out
-          python docs/calcs/controller_budget.py > out/planning-budget.json
-          cat out/planning-budget.json
+          python docs/calcs/controller_budget.py > out/engineering-calculations.json
+          cat out/engineering-calculations.json
 
       - name: Summarize check scope
         if: always() && steps.python.outcome == 'success'
@@ -50,10 +50,10 @@ jobs:
           from pathlib import Path
 
           lines = [
-              '### Document and planning checks',
+              '### Engineering documentation checks',
               '',
-              'These checks cover repository documents, saved reference identity, library paths, and planning arithmetic.',
-              'They do not establish electrical correctness, ERC/DRC success, or measured hardware performance.',
+              'I use these checks to verify documentation links, saved reference identity, library paths, and engineering arithmetic.',
+              'I verify electrical performance separately through schematic review and prototype measurements.',
               '',
           ]
           report = Path('out/project-audit.json')
@@ -64,9 +64,9 @@ jobs:
               lines.append(f'- Audit failures: {len(result["failures"])}')
               lines.append(f'- Audit warnings: {len(result["warnings"])}')
           else:
-              lines.append('The document audit did not produce a report; inspect the job failure.')
+              lines.append('My document audit did not produce a report; details are recorded in the job log.')
           lines.append('')
-          lines.append('Available audit and calculation reports are attached to this run.')
+          lines.append('I retain the available audit and calculation reports as artifacts of this run.')
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
               summary.write('\n'.join(lines) + '\n')
           PY

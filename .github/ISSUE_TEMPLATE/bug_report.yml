@@ -5,8 +5,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Identify the exact revision and evidence. For a planned circuit, describe the conflicting
-        requirements or calculation rather than reporting an untested hardware failure as measured.
+        I record the exact revision and evidence for a reproducible problem. For a proposed circuit,
+        I identify the conflicting requirement or calculation and keep it separate from bench observations.
   - type: dropdown
     id: area
     attributes:

@@ -1,13 +1,15 @@
-# Future KiCad project
+# KiCad project
 
-Create the fresh project here after completing the circuit and resource decisions.
+This directory is the designated location for the STM32 controller's native design. Library tables are present; the schematic, PCB, and project settings have not yet been captured.
 
-Canonical file names:
+| File | Purpose |
+| --- | --- |
+| STM32_Industrial_IO.kicad_pro | Project settings and electrical/layout rules |
+| STM32_Industrial_IO.kicad_sch | Hierarchical schematic and component properties |
+| STM32_Industrial_IO.kicad_pcb | Four-layer board layout |
+| fp-lib-table | Project-relative candidate footprint collections |
+| sym-lib-table | Local symbol registration; currently empty |
 
-- STM32_Industrial_IO.kicad_pro
-- STM32_Industrial_IO.kicad_sch
-- STM32_Industrial_IO.kicad_pcb
+The project-relative footprint paths resolve through the adjacent [libs](../libs/README.md) directory. Stock KiCad model paths use the installed library variable.
 
-There are no empty native-design placeholders. The [hardware overview](../README.md) defines the planned schematic hierarchy, and the [KiCad guide](../../docs/KiCad_Settings_RevA.md) defines starting setup decisions.
-
-The local footprint table resolves retained candidate assets through the project directory. The local symbol table is empty; use verified installed symbols or add new project symbols after checking the exact part. No retained asset is approved for fabrication merely because its library loads.
+The [hardware overview](../README.md) describes the circuit organization. [Architecture](../../docs/Architecture.md), [interfaces](../../docs/Interfaces.md), and [validation](../../docs/Validation.md) define the design contract and acceptance evidence.

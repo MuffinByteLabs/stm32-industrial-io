@@ -1,6 +1,5 @@
-# Missing fresh design files mean checks not run, never passed validation.
-# Real design files require ERC/DRC before release exports.
-name: kicad-ci
+# I report unavailable checks explicitly and require ERC/DRC before release exports.
+name: KiCad checks
 
 on:
   push:
@@ -24,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Detect fresh design and record validation availability
+      - name: Detect native design and record check availability
         id: files
         run: |
           mkdir -p out
@@ -41,12 +40,12 @@ jobs:
             echo "Schematic present: $sch"
             echo "PCB present: $pcb"
             if [ "$sch" = no ]; then
-              echo "ERC not run: the fresh schematic does not exist."
+              echo "ERC not run: my schematic is not captured yet."
             fi
             if [ "$pcb" = no ]; then
-              echo "DRC not run: the fresh PCB does not exist."
+              echo "DRC not run: my PCB layout is not implemented yet."
             fi
-            echo "CI does not establish package suitability, assembly quality, or measured qualification."
+            echo "I verify package suitability, assembly quality, and measured performance separately."
           } > out/validation-availability.txt
           cat out/validation-availability.txt >> "$GITHUB_STEP_SUMMARY"
           kicad-cli version > out/kicad-version.txt
@@ -121,7 +120,7 @@ jobs:
           {
             echo "ERC step: ${{ steps.erc.outcome }}"
             echo "DRC step: ${{ steps.drc.outcome }}"
-            echo "Skipped means not run, not passed hardware validation."
+            echo "I report skipped checks as not run; measured validation is recorded separately."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload available reports and release exports

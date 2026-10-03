@@ -1,8 +1,8 @@
 # Candidate component references
 
-Prepared October 2, 2026. These references support the [canonical plan](../../docs/STM32_Industrial_IO_Controller_RevA_Plan.md) and [procurement process](../../docs/Procurement_Plan.md).
+I keep these candidate references with my [architecture](../../docs/Architecture.md) and [design decisions](../../docs/Design_Decisions.md). This reference set was prepared on October 2, 2026; exact part and package approval remain pending.
 
-All 21 candidate-family PDFs are available locally and have passed PDF parsing, early-page family identity, byte-length, and SHA-256 checks. These checks do not establish exact-package pin correctness, current document revision, part availability, or board performance. The [manifest](manifest.json) records sources, hashes, check times, and limitations.
+I have saved all 21 candidate-family PDFs and checked parsing, early-page family identity, byte length, and SHA-256. These checks do not establish exact-package pin correctness, current document revision, part availability, or board performance. My [manifest](manifest.json) records the source, hash, check time, and limitations of each file.
 
 ## Family index
 
@@ -32,11 +32,11 @@ All 21 candidate-family PDFs are available locally and have passed PDF parsing, 
 
 ## Archival-reference limits
 
-- **STM32G474:** ST-authored DS12288 Rev 6, November 2021, obtained from an authorized DigiKey mirror after the official download timed out. Obtain current datasheet, errata, reference manual, and boot guidance from [ST product documentation](https://www.st.com/en/microcontrollers-microprocessors/stm32g474ve.html) before pin/resource and schematic approval.
-- **G5Q:** official Omron J155-E1-16, June 2021. Confirm the current regional ordering code, coil/contact tables, drawings, and applicable approval information before selection.
-- **SMCJ:** Littelfuse-authored historical catalog excerpt with 2005 metadata, obtained from DigiKey. It is retained for provenance, not as current surge-design authority. Obtain the current [Littelfuse SMCJ datasheet](https://www.littelfuse.com/assetdocs/littelfuse_tvs_diode_smcj_datasheet?assetguid=37388813-0d6d-4329-969b-1aa8b7614ac1) and verify the exact SMCJ33CA row and worst-case pulse conditions before protection approval. Direct current-document retrieval failed; see manifest provenance.
+- **STM32G474:** I retained ST-authored DS12288 Rev 6, November 2021, from an authorized DigiKey mirror after the official download timed out. Before pin/resource and schematic approval, I will obtain current datasheet, errata, reference manual, and boot guidance from [ST product documentation](https://www.st.com/en/microcontrollers-microprocessors/stm32g474ve.html).
+- **G5Q:** I retained official Omron J155-E1-16, June 2021. I will confirm the current regional ordering code, coil/contact tables, drawings, and applicable approval information before selection.
+- **SMCJ:** I retained a Littelfuse-authored historical catalog excerpt with 2005 metadata from DigiKey. I will obtain the current [Littelfuse SMCJ datasheet](https://www.littelfuse.com/assetdocs/littelfuse_tvs_diode_smcj_datasheet?assetguid=37388813-0d6d-4329-969b-1aa8b7614ac1) and verify the exact SMCJ33CA row and worst-case pulse conditions before protection approval. The current-document download failed; the manifest preserves that provenance.
 
-The manifest marks latest-revision verification as required for these three references. Other PDFs were downloaded from manufacturer sources during this migration, but their applicability and revisions still need checking during exact-part review.
+I have marked latest-revision verification as required for those three references. The other family PDFs came from manufacturer sources, but I will still check applicability and revision during exact-part review.
 
 ## Retained support references
 
@@ -44,10 +44,10 @@ The manifest marks latest-revision verification as required for these three refe
 - [Tactile-switch datasheet](SWITCH_XKB_TS-1187A_Tactile_SMD_5.1x5.1_H1.5_C318884_Datasheet.pdf): possible retained switch footprint support.
 - [USBLC6-2SC6 USB protection](ESD_ST_USBLC6-2SC6_USB2_DataLine_Protection_Datasheet.pdf): optional protection candidate; no final assignment yet.
 
-These assets are outside the 21-family identity manifest and do not force their legacy distributor identifiers into the new BOM.
+I keep these support drawings outside the 21-family identity manifest. They are unassigned candidates; their presence does not select a part for the BOM. Manufacturer documents retain their original attribution.
 
 ## Implementation verification
 
-For every selected exact MPN, verify supply/absolute-maximum conditions, startup/shutdown behavior, operating range, pinout, package drawing, land pattern, exposed pad, and required external components. Extract structured specifications when the actual schematic is captured, then cross-check critical values manually.
+For each selected exact MPN, I will verify supply/absolute-maximum conditions, startup/shutdown behavior, operating range, pinout, package drawing, land pattern, exposed pad, and required external components. I will record critical specifications with the schematic and cross-check them against the current source document.
 
-Use [the sync script](../../scripts/sync_reference_datasheets.py) to maintain local identities. A successful download is reference preparation, not a passed schematic review.
+I maintain local file identities with [the sync script](../../scripts/sync_reference_datasheets.py). A successful download does not replace schematic review.
