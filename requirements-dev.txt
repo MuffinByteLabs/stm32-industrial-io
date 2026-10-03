@@ -1,0 +1,2 @@
+# PDF identity/hash audits are tested with this version.
+pypdf==6.10.0

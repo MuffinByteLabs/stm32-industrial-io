@@ -1,0 +1,331 @@
+{
+  "project": "STM32 Industrial I/O Controller",
+  "selection_status": "candidate families; exact ordering suffixes and pin verification pending",
+  "checked_date": "2026-10-02",
+  "parts": {
+    "STM32G474VET6": {
+      "manufacturer": "STMicroelectronics",
+      "file": "STM32G474VE.pdf",
+      "datasheet_url": "https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/6455/STM32G474QBT6_DS.pdf",
+      "title_token": "STM32G474",
+      "status": "downloaded_identity_checked",
+      "download_attempts": [
+        {
+          "url": "https://www.st.com/resource/en/datasheet/stm32g474vc.pdf",
+          "status": "download_failed",
+          "error": "TimeoutError: The read operation timed out"
+        },
+        {
+          "url": "https://www.mouser.com/datasheet/2/389/stm32g474ce-1600812.pdf",
+          "status": "download_failed",
+          "error": "ValueError: response is not a PDF"
+        },
+        {
+          "url": "https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/6455/STM32G474QBT6_DS.pdf",
+          "status": "downloaded_identity_checked",
+          "error": null
+        }
+      ],
+      "pages": 236,
+      "bytes": 3062163,
+      "sha256": "b018e20dbe34b63a43e49365518b186ef0e0e8e899deeabc1c9f53a3a10c1add",
+      "checked_utc": "2026-10-03T02:26:34+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending",
+      "source_host": "DigiKey",
+      "source_kind": "authorized_distributor_mirror",
+      "manufacturer_datasheet_url": "https://www.st.com/resource/en/datasheet/stm32g474vc.pdf",
+      "provenance_note": "ST-authored STM32G474xB/xC/xE family PDF publicly hosted by authorized distributor DigiKey.",
+      "document_revision": "DS12288 Rev 6",
+      "document_date": "2021-11",
+      "age_note": "Cached manufacturer-authored family datasheet is November 2021; check the current manufacturer revision and errata before schematic/package verification.",
+      "family_scope_note": "STM32G474xB/xC/xE family includes LQFP100; exact orderable code and every package pin still require verification.",
+      "latest_revision_check_required": true
+    },
+    "ADS8684A": {
+      "manufacturer": "Texas Instruments",
+      "file": "ADS8684A.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/ads8684a.pdf",
+      "title_token": "ADS8684A",
+      "status": "downloaded_identity_checked",
+      "pages": 82,
+      "bytes": 3273387,
+      "sha256": "f39bc8e676285e2b583d6f2e7b50e36bc96418ab7c4f5173f48fab5a9e74809d",
+      "checked_utc": "2026-10-03T02:12:09+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
+    },
+    "TPS26632": {
+      "manufacturer": "Texas Instruments",
+      "file": "TPS2663.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tps2663.pdf",
+      "title_token": "TPS2663",
+      "status": "downloaded_identity_checked",
+      "pages": 59,
+      "bytes": 5728602,
+      "sha256": "bb61314ace65ed37684bd07f541fc676081d7cf81cb24020e7c5c2065bfe16b2",
+      "checked_utc": "2026-10-03T02:12:09+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
+    },
+    "LMR38020": {
+      "manufacturer": "Texas Instruments",
+      "file": "LMR38020.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/lmr38020.pdf",
+      "title_token": "LMR38020",
+      "status": "downloaded_identity_checked",
+      "pages": 40,
+      "bytes": 1704329,
+      "sha256": "da2ed000a8525ec9794e943e4cda8e6e3433515b2be24d5ead1d4478916b1585",
+      "checked_utc": "2026-10-03T02:12:09+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
+    },
+    "TPS62160": {
+      "manufacturer": "Texas Instruments",
+      "file": "TPS62160.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tps62160.pdf",
+      "title_token": "TPS62160",
+      "status": "downloaded_identity_checked",
+      "pages": 42,
+      "bytes": 2784747,
+      "sha256": "abc824ca04ee985ede3a513172ccdd2a42c8e1fdcfc3af5acdbe2c1af31aaa72",
+      "checked_utc": "2026-10-03T02:12:09+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
+    },
+    "TPS7A20": {
+      "manufacturer": "Texas Instruments",
+      "file": "TPS7A20.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tps7a20.pdf",
+      "title_token": "TPS7A20",
+      "status": "downloaded_identity_checked",
+      "pages": 63,
+      "bytes": 8989493,
+      "sha256": "663a9ff5bca608643e711652cba00e7b8bf955c0993a9b86fa108d24d58b8ddc",
+      "checked_utc": "2026-10-03T02:12:09+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
+    },
+    "TPS2121": {
+      "manufacturer": "Texas Instruments",
+      "file": "TPS2121.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tps2121.pdf",
+      "title_token": "TPS2121",
+      "status": "downloaded_identity_checked",
+      "pages": 45,
+      "bytes": 3341505,
+      "sha256": "b2f5950f596dc2c4ca33e4ebac27fd35e4dcc68ea63e173466123e1118e91a06",
+      "checked_utc": "2026-10-03T02:12:09+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
+    },
+    "TPS55340": {
+      "manufacturer": "Texas Instruments",
+      "file": "TPS55340.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tps55340.pdf",
+      "title_token": "TPS55340",
+      "status": "downloaded_identity_checked",
+      "pages": 44,
+      "bytes": 2932213,
+      "sha256": "e579aa4fcb549eab29e889f7f6dcbd0fd88cac2647082c65f102e411c3f666ca",
+      "checked_utc": "2026-10-03T02:12:09+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
+    },
+    "LM7705": {
+      "manufacturer": "Texas Instruments",
+      "file": "LM7705.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/lm7705.pdf",
+      "title_token": "LM7705",
+      "status": "downloaded_identity_checked",
+      "pages": 28,
+      "bytes": 1159152,
+      "sha256": "90c1104b9b42bc575fdc05425e77af07049ba802f6cb02d598be835bc19a3050",
+      "checked_utc": "2026-10-03T02:12:09+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
+    },
+    "ISO1212": {
+      "manufacturer": "Texas Instruments",
+      "file": "ISO1212.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/iso1212.pdf",
+      "title_token": "ISO1212",
+      "status": "downloaded_identity_checked",
+      "pages": 47,
+      "bytes": 1725243,
+      "sha256": "41e0bc7308dd4e0cc8c7f30efb6a2cd87bcc865d9195095ff849be6036cb2328",
+      "checked_utc": "2026-10-03T02:12:09+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
+    },
+    "TMUX7462F": {
+      "manufacturer": "Texas Instruments",
+      "file": "TMUX7462F.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tmux7462f.pdf",
+      "title_token": "TMUX7462F",
+      "status": "downloaded_identity_checked",
+      "pages": 43,
+      "bytes": 1854336,
+      "sha256": "62c57abf3394c86e6e6ff8fb25760ae9a7f65709c9bb485d521edcf9186d7f5d",
+      "checked_utc": "2026-10-03T02:12:10+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
+    },
+    "DAC80501Z": {
+      "manufacturer": "Texas Instruments",
+      "file": "DAC80501.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/dac80501.pdf",
+      "title_token": "DAC80501",
+      "status": "downloaded_identity_checked",
+      "pages": 52,
+      "bytes": 3518337,
+      "sha256": "51dcb60423765d2521c62af621e2d6c7f4d38c9aa48deec4b4044d49decbbc20",
+      "checked_utc": "2026-10-03T02:12:10+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
+    },
+    "OPA197": {
+      "manufacturer": "Texas Instruments",
+      "file": "OPA197.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/opa197.pdf",
+      "title_token": "OPA197",
+      "status": "downloaded_identity_checked",
+      "pages": 56,
+      "bytes": 2174683,
+      "sha256": "27653a7d5e965cbb2d23f7998919ebd774efd5cd3e126b8f0881469ae91166fd",
+      "checked_utc": "2026-10-03T02:12:10+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
+    },
+    "TPS4H160B-Q1": {
+      "manufacturer": "Texas Instruments",
+      "file": "TPS4H160-Q1.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tps4h160-q1.pdf",
+      "title_token": "TPS4H160",
+      "status": "downloaded_identity_checked",
+      "pages": 41,
+      "bytes": 2173411,
+      "sha256": "7cdecb3650ed6ff5ff720b5e5b85b7b1b7255fd355ae6ea0e3ee3aeffc3ad702",
+      "checked_utc": "2026-10-03T02:12:10+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
+    },
+    "ISO1410": {
+      "manufacturer": "Texas Instruments",
+      "file": "ISO1410.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/iso1410.pdf",
+      "title_token": "ISO1410",
+      "status": "downloaded_identity_checked",
+      "pages": 48,
+      "bytes": 2345405,
+      "sha256": "82abfbcca01cb38301afa22717bd25cf16a2a37b1e609bb66a75fde72b14b7eb",
+      "checked_utc": "2026-10-03T02:12:10+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
+    },
+    "ISO1042": {
+      "manufacturer": "Texas Instruments",
+      "file": "ISO1042.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/iso1042.pdf",
+      "title_token": "ISO1042",
+      "status": "downloaded_identity_checked",
+      "pages": 48,
+      "bytes": 2508181,
+      "sha256": "6b8f06c3db2e7bd8f5febd6b1b60b94614f3bc1571528be9dcc6df7a7fd6623e",
+      "checked_utc": "2026-10-03T02:12:11+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
+    },
+    "UCC12050": {
+      "manufacturer": "Texas Instruments",
+      "file": "UCC12050.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/ucc12050.pdf",
+      "title_token": "UCC12050",
+      "status": "downloaded_identity_checked",
+      "pages": 35,
+      "bytes": 1916915,
+      "sha256": "8177b5a841a3fec83aae52df85a016a6f042f4b49cabb52ffe1ae039e1420801",
+      "checked_utc": "2026-10-03T02:12:11+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
+    },
+    "TPS3431": {
+      "manufacturer": "Texas Instruments",
+      "file": "TPS3431.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tps3431.pdf",
+      "title_token": "TPS3431",
+      "status": "downloaded_identity_checked",
+      "pages": 31,
+      "bytes": 1774216,
+      "sha256": "99bf5dbfffe06e8f85d9a86cfb777a0151e85b4a103033bc025f4897a0bdc6f3",
+      "checked_utc": "2026-10-03T02:12:11+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
+    },
+    "G5Q-1-DC5": {
+      "manufacturer": "Omron",
+      "file": "G5Q.pdf",
+      "datasheet_url": "https://omronfs.omron.com/en_US/ecb/products/pdf/en-g5q.pdf",
+      "title_token": "G5Q",
+      "status": "downloaded_identity_checked",
+      "pages": 6,
+      "bytes": 852845,
+      "sha256": "af0b5c1666d6c7d89e0a43ac790304fadcacafb5d215d556098cb918a2e2b4c4",
+      "checked_utc": "2026-10-03T02:26:34+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending",
+      "manufacturer_datasheet_url": "https://components.omron.com/sites/default/files/datasheet_pdf/J155-E1.pdf",
+      "source_kind": "manufacturer",
+      "source_host": "Omron",
+      "download_attempts": [
+        {
+          "url": "https://components.omron.com/eu-en/datasheet_pdf/J155-E1.pdf",
+          "status": "download_failed",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "url": "https://omronfs.omron.com/en_US/ecb/products/pdf/en-g5q.pdf",
+          "status": "downloaded_identity_checked",
+          "error": null
+        }
+      ],
+      "document_revision": "J155-E1-16 (0621)",
+      "document_date": "2021-06",
+      "age_note": "Official Omron archive PDF is the June 2021 revision; newer manufacturer references exist and should be checked before relay selection freeze.",
+      "latest_revision_check_required": true
+    },
+    "24LC64": {
+      "manufacturer": "Microchip Technology",
+      "file": "24LC64.pdf",
+      "datasheet_url": "https://ww1.microchip.com/downloads/aemDocuments/documents/MPD/ProductDocuments/DataSheets/24AA64-24FC64-24LC64-64-Kbit-I2C-Serial-EEPROM-DS20001189.pdf",
+      "title_token": "24LC64",
+      "status": "downloaded_identity_checked",
+      "pages": 48,
+      "bytes": 759636,
+      "sha256": "0a67ae4a9a3c06791540107b866e7c28a3e4e0514b61c0fff264b416243bc409",
+      "checked_utc": "2026-10-03T02:12:11+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending"
+    },
+    "SMCJ33CA": {
+      "manufacturer": "Littelfuse",
+      "file": "SMCJ.pdf",
+      "datasheet_url": "https://media.digikey.com/pdf/Data%20Sheets/Littelfuse%20PDFs/SMCJ%20Series.pdf",
+      "title_token": "SMCJ",
+      "status": "downloaded_identity_checked",
+      "pages": 4,
+      "bytes": 173671,
+      "sha256": "04c55b5c1641bd74c012ef8b3116444aab9f5f9c6a11c497bd255ba910c2e172",
+      "checked_utc": "2026-10-03T02:26:34+00:00",
+      "verification_scope": "PDF parses and family token appears in first three pages; electrical/pin extraction pending",
+      "manufacturer_datasheet_url": "https://www.littelfuse.com/assetdocs/littelfuse_tvs_diode_smcj_datasheet?assetguid=37388813-0d6d-4329-969b-1aa8b7614ac1",
+      "source_kind": "authorized_distributor_mirror",
+      "source_host": "DigiKey",
+      "provenance_note": "Littelfuse-authored SMCJ family PDF publicly hosted by authorized distributor DigiKey; not a distributor-created specification.",
+      "download_attempts": [
+        {
+          "url": "https://media.digikey.com/pdf/Data%20Sheets/Littelfuse%20PDFs/SMCJ%20Series.pdf",
+          "status": "downloaded_identity_checked",
+          "error": null
+        },
+        {
+          "url": "https://www.littelfuse.com/assetdocs/littelfuse_tvs_diode_smcj_datasheet.pdf?assetguid=37388813-0d6d-4329-969b-1aa8b7614ac1",
+          "status": "download_failed",
+          "error": "HTTPError: HTTP Error 403: Forbidden"
+        },
+        {
+          "url": "https://www.mouser.com/datasheet/2/240/media-3320072.pdf",
+          "status": "download_failed",
+          "error": "ValueError: response is not a PDF"
+        }
+      ],
+      "document_revision": "Catalog excerpt; no printed revision identified",
+      "pdf_metadata_creation_date": "2005-05-12",
+      "age_note": "DigiKey-hosted Littelfuse catalog excerpt has 2005 PDF metadata. Keep as archival family reference only; do not treat it as the current protection-design authority.",
+      "newer_manufacturer_reference_url": "https://www.littelfuse.com/assetdocs/littelfuse_tvs_diode_smcj_datasheet.pdf?assetguid=37388813-0d6d-4329-969b-1aa8b7614ac1",
+      "newer_revision_access_note": "Newer JC. 02/27/25 v.2 manufacturer PDF is indexed online, but direct retrieval returned HTTP 403 and Mouser mirror retrieval did not return a PDF.",
+      "latest_revision_check_required": true
+    }
+  }
+}

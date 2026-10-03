@@ -1,39 +1,41 @@
-# hardware/ — KiCad 10 project (to be created)
+# Hardware — STM32 Industrial I O Controller
 
-Create the project **in this folder** as `ESP32S3_FieldIO` (File → New Project → `hardware/ESP32S3_FieldIO.kicad_pro`). The project-local library tables are already here and point at `${KIPRJMOD}/libs/`, so KiCad picks up the libraries the moment the project exists.
+The active specification is [STM32 Industrial I O Controller Rev A Plan](../docs/STM32_Industrial_IO_Controller_RevA_Plan.md). This is a fresh four-layer STM32 design. Schematic, PCB, exact library validation, and fabrication release remain implementation work.
 
-## Sheet plan (one sheet per design-document section; designators = sheet × 100)
+## Future native project
 
-| Sheet file | Design doc | Designators |
-|---|---|---|
-| `ESP32S3_FieldIO.kicad_sch` (root, 01_System) | §2 | — (hierarchy only) |
-| `02_Field_Power_Entry.kicad_sch` | §3 | 2xx |
-| `03_Buck_5V.kicad_sch` | §4 | 3xx |
-| `04_USB_C_Input.kicad_sch` | §5 | 4xx |
-| `05_3V3_Power.kicad_sch` | §6 | 5xx |
-| `06_ESP32S3_Core.kicad_sch` | §7 | 6xx |
-| `07_Opto_Inputs.kicad_sch` | §8 | 7xx |
-| `08_Relay_Outputs.kicad_sch` | §9 | 8xx |
-| `09_MOSFET_Outputs.kicad_sch` | §10 | 9xx |
-| `10_Mechanical.kicad_sch` | §11 | H1–H4, G1 |
+Create the real KiCad project in `hardware/STM32_Industrial_IO/`:
 
-Set *Annotate → Use first free number after* per sheet (200, 300, …) **before** placing the first symbol.
+- `STM32_Industrial_IO.kicad_pro`
+- `STM32_Industrial_IO.kicad_sch`
+- `STM32_Industrial_IO.kicad_pcb`
+- Project-local library tables/resources and `.kicad_dru` when needed
 
-## `libs/` — carried over from Board 1, renamed
+The automated workflow uses these exact schematic/PCB paths. An absent design means checks not run; empty hardware placeholders do not establish capture/validation.
 
-`FieldIO_JLC.pretty`, `FieldIO_JLC.kicad_sym` and `FieldIO_JLC.3dshapes` are Board 1's `PlantMonitor_JLC` library with the name changed and the VEML7700 files dropped. What is in it and why it matters:
+## Planned hierarchy
 
-| Footprint / symbol | Verified on Board 1 | Note |
-|---|---|---|
-| `USB_C_Receptacle_HRO_TYPE-C-31-M-12` + STEP | assembled, 5 boards | shell overhang ≈ 1 mm per the HRO drawing |
-| `SW-SMD_4P-L5.1-W5.1-P3.70-LS6.5-TL_H1.5` + symbol `TS-1187A-B-A-B` | assembled | **pads renumbered 1/1/2/2** — the 4-pad pairing trap is already solved |
-| `D_SMA`, `D_SOD-123F`, `Fuse_1206_3216Metric` | assembled | SS14, SMF5.0A, 1206L075 |
-| `logos/logos.pretty` (`muffinByteLogo`, `_2x`) | on Board 1's silk | use the 2× |
+| Sheet | Scope |
+| --- | --- |
+| System | Domains, connectors, hierarchy and permission signals |
+| Input power | Fuse, TVS, blocking FET/eFuse, bulk and sensing |
+| Service power | Field 5 V buck, logic selection, digital/analog 3.3 V |
+| Auxiliary power | Analog positive/negative rails and two independent isolated supplies |
+| MCU and debug | STM32G474VET6, power, clock, reset, boot, USB and SWD |
+| Digital inputs | Four group-isolated receivers, thresholds, filters and protection |
+| Analog inputs | Two 0–10 V and two 4–20 mA paths, protectors, ADC and calibration |
+| Analog output | DAC, amplifier, hardware disconnect, protector and readback |
+| Switched outputs | Four diagnosed high-side channels, sensing, blocking/freewheel diodes |
+| Relays | Two gated coil drivers and independent SPDT contact circuits |
+| Communications | Separate isolated RS-485/CAN FD, protection and termination |
+| Permission and service | Hardware gating, watchdog, storage, indicators and test access |
 
-New footprints for this board (draw or import, then check each against its datasheet drawing per Board 1's `Footprint_Check` method): LMR38020 HSOIC-8 (TI DDA), SRR1260, KBP, Hongfa HF3FF (from the Hongfa drawing), EL817S1 SMD-4, Degson DG128 terminals ×4 sizes, radial PPTC, Ø 12.5 mm radial electrolytic, 07D MOV; from KiCad stock: SOT-223-3_TabPin2 (AP7361C), **SolderJumper_2_Open** (JP901 ships open), TestPoint pads.
+Use stable sheet filenames and unique references during capture. Labels should show direction/domain. Candidate MPNs are not yet a verified pin map or frozen purchasable BOM.
 
-## Housekeeping (Board 1 lessons)
+## Libraries and evidence
 
-- `.gitignore` already excludes backups, autosaves, `fp-info-cache`, `hardware/jlcpcb/` and `hardware/.history/`.
-- Keep 3D model paths `${KIPRJMOD}`-relative.
-- Save (Ctrl-S) before every check — git, scripts and the fab read the disk, not the editor.
+Check every selected symbol/footprint against the exact manufacturer package pin/mechanical drawing. Reuse previous resources only after that check; another board's assembly does not validate this design. Keep models portable and record custom-library sources, modifications, and validation.
+
+Store exact MPN, manufacturer, datasheet, footprint, distributor references, and assembly/substitution notes in schematic properties. The real schematic becomes the BOM source of truth. Do not generate final manufacturing outputs from a placeholder design.
+
+Follow [KiCad setup](../docs/KiCad_Settings_RevA.md), [layout rules](../docs/Hard_Rules_Layout_RevA.md), and [assembly planning](../docs/Assembly_and_Stencil_Plan.md). Readiness requires package/schematic review, calculations, routing/DRC/parity, manufacturing-file inspection, physical bring-up, and measured qualification.

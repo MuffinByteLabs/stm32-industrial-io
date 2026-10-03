@@ -1,0 +1,81 @@
+name: Project audit
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  documents-and-planning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        id: python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Install audit dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements-dev.txt
+
+      - name: Check documents, references, and library paths
+        run: |
+          mkdir -p out
+          python scripts/audit_project.py > out/project-audit.json
+          cat out/project-audit.json
+
+      - name: Reproduce planning calculations
+        if: always() && steps.python.outcome == 'success'
+        run: |
+          mkdir -p out
+          python docs/calcs/controller_budget.py > out/planning-budget.json
+          cat out/planning-budget.json
+
+      - name: Summarize check scope
+        if: always() && steps.python.outcome == 'success'
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          lines = [
+              '### Document and planning checks',
+              '',
+              'These checks cover repository documents, saved reference identity, library paths, and planning arithmetic.',
+              'They do not establish electrical correctness, ERC/DRC success, or measured hardware performance.',
+              '',
+          ]
+          report = Path('out/project-audit.json')
+          if report.exists() and report.stat().st_size:
+              result = json.loads(report.read_text())
+              for key in ('markdown_files', 'local_links_checked', 'candidate_pdfs_identity_hash_checked', 'native_design_files'):
+                  lines.append(f'- {key}: {result[key]}')
+              lines.append(f'- Audit failures: {len(result["failures"])}')
+              lines.append(f'- Audit warnings: {len(result["warnings"])}')
+          else:
+              lines.append('The document audit did not produce a report; inspect the job failure.')
+          lines.append('')
+          lines.append('Available audit and calculation reports are attached to this run.')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
+              summary.write('\n'.join(lines) + '\n')
+          PY
+
+      - name: Save check reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: project-audit-reports
+          path: out/*.json
+          if-no-files-found: ignore
+          retention-days: 14

@@ -1,14 +1,20 @@
-# Standards & reference texts
+# Standards and qualification references
 
-These are **deliberately not in the repository** — they are copyrighted works that cannot be
-redistributed. They are listed here so the sources behind this board's rules are on the record, and
-kept locally outside the repo tree (`PCB_Design/references_local/`).
+This board is an indoor low-voltage prototype. No standard compliance or certification has been established. The [canonical plan](../../docs/STM32_Industrial_IO_Controller_RevA_Plan.md) defines the engineering tests to complete; the final product application determines which formal requirements apply.
 
-| Work | What this project uses it for |
-|---|---|
-| **IPC-2221** — Generic Standard on Printed Board Design | Conductor sizing (the 2 A relay-contact paths at ≥ 1.5 mm, the 0.8 mm power traces) and the clearance figure the ≥ 2.5 mm moat is measured against (0.6 mm for uncoated external conductors ≤ 100 V) |
-| **Ritchey, *Right the First Time*, Vol. 1** (Speeding Edge) | Return-current reasoning behind "bottom copper unbroken under the converter" and the single star point for the rectifier return |
-| **TI SNVA021 / buck-layout application notes; Phil's Lab buck-converter layout video** | The hot-loop, SW-node and FB-routing rules in `docs/Hard_Rules_Layout_RevA.md` §5–§9 |
+Consult current primary publications and qualified test support when needed. Do not derive universal creepage, clearance, trace width, surge levels, or assembly acceptance from a copied quick-sheet.
 
-Vendor datasheets, which *are* freely redistributable, live in
-[`../datasheets/`](../datasheets/) and are indexed there.
+| Reference family | Use during implementation |
+| --- | --- |
+| IPC-2221 and relevant sectional standards | General PCB design decisions, interpreted with the actual materials and application |
+| IPC-2152 | Current-carrying conductor thermal design alongside actual stack-up and measurements |
+| IPC-7351 or package-specific manufacturer land patterns | Surface-mount geometry; exact package drawings take priority in part verification |
+| IPC-A-610 and J-STD-001 | Agreed assembly/workmanship criteria and process requirements |
+| J-STD-020 and J-STD-033 | Part-specific reflow/moisture handling requirements |
+| IEC 61131-2 | Reference for industrial-controller I/O behavior where applicable; isolated input IC ratings do not establish board compliance |
+| Applicable IEC 61000-4 immunity methods | Define specific ESD/EFT/surge fixtures and acceptance criteria when relevant to the intended application |
+| Applicable emissions regulations and test standards | Plan later EMC work for the actual equipment, cables, enclosure, and jurisdiction |
+
+Useful primary entry points: [IPC standards](https://www.ipc.org/standards), [IEC publications](https://webstore.iec.ch/), and the [Modbus Organization specifications](https://www.modbus.org/modbus-specifications).
+
+Maintain a dated test plan that identifies edition, setup, waveform, source impedance, coupling, cables, severity, monitoring, pass criteria, and results for each test. The analog ±30 V miswire goal is separate from an IEC surge/EFT claim. The CAN transceiver's grade does not establish automotive qualification.

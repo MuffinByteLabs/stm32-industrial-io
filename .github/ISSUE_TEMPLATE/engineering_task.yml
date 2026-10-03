@@ -1,0 +1,53 @@
+name: Engineering task
+description: Track a design decision, implementation milestone, or qualification task.
+title: '[Engineering] '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use the board plan and open engineering items as the requirements baseline.
+        Record goals separately from measured results; implementation is still in progress.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Power and protection
+        - Analog measurement and output
+        - Digital inputs and load outputs
+        - MCU, firmware, and communication
+        - PCB layout and manufacturing
+        - Enclosure and mechanical integration
+        - Bring-up and qualification
+        - Documentation and tooling
+    validations:
+      required: true
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective and requirement
+      description: Describe the resulting behavior and link the applicable plan section or open item.
+      placeholder: What must this task make true, and which acceptance target applies?
+    validations:
+      required: true
+  - type: input
+    id: revision
+    attributes:
+      label: Revision or commit
+      description: Name the affected design revision or commit; use planning if no implementation exists yet.
+      placeholder: Rev A planning / commit SHA
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: Proposed approach and unresolved decisions
+      description: Include circuit blocks, candidate parts, calculations, dependencies, or alternatives that affect the decision.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Completion evidence
+      description: Specify the review, calculation, simulation, or bench test and the acceptance limit needed to close this task.
+      placeholder: Include operating conditions, equipment, saved report location, and what remains unverified.
+    validations:
+      required: true

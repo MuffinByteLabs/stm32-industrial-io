@@ -1,32 +1,43 @@
+# KiCad editor state and recovery files
 *-backups/
 *.kicad_prl
 *.kicad_sch-bak
 *.kicad_pcb-bak
 _autosave-*
-*.bak
-*.tmp
 fp-info-cache
 ~*.lck
 *.lck
-*-bak
+
+# Local editor, operating-system, and temporary files
 .DS_Store
 Thumbs.db
-
-# local work/backup folders (Board 1 lesson: the .history folder is 1,500 files of noise)
-_gitwork/
-hardware/_restore_backup*/
-hardware/jlcpcb/
-hardware/.history/
-
-# Office temp files
 ~$*
-
-# generated/temporary
-tmp*.rpt
-*.rpt
+*.bak
+*.tmp
+*-bak
 _tmp_*
-__pycache__/
+_gitwork/
+.history/
+hardware/.history/
+hardware/_restore_backup*/
 
-# firmware credentials - never commit
-firmware/field_io/secrets.h
+# Python/runtime state
+__pycache__/
+*.py[cod]
+.venv/
+
+# Generated local build and CI output
+firmware/build/
+firmware/.pio/
+out/
+tmp*.rpt
+
+# Local secrets; no credentials belong in the project
+.env
+.env.*
+!.env.example
 secrets.h
+credentials.json
+
+# Frozen fabrication packages, signed-off reports, and measurement records
+# should be committed deliberately rather than excluded by blanket patterns.

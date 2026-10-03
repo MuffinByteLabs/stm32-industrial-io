@@ -1,25 +1,25 @@
-# Fabrication packages
+# Fabrication releases — STM32 Industrial I/O Controller
 
-Factory output files, one folder per ordered revision. Each folder will hold the **exact files uploaded
-to the fab** — never a regenerated copy — so what is in here is what was manufactured.
+No STM32 fabrication package has been generated or ordered. The intended first batch is five four-layer PCBs with staged assembly and at least three fully working units, as defined in the [canonical plan](../docs/STM32_Industrial_IO_Controller_RevA_Plan.md).
 
-**Nothing is ordered yet.** `revA/` is created when the Rev A order is placed.
+Use [KiCad settings](../docs/KiCad_Settings_RevA.md), [layout rules](../docs/Hard_Rules_Layout_RevA.md), and the [assembly plan](../docs/Assembly_and_Stencil_Plan.md) before preparing a release.
 
-## What `revA/` will contain (the Board 1 recipe, plus the stencil)
+## Freeze one coherent revision
 
-| File | What |
-|---|---|
-| `GERBER-ESP32S3_FieldIO.zip` | The uploaded gerber set: F.Cu, B.Cu, F.Mask, B.Mask, **F.Paste** (with the two windowpaned pads), F.Silkscreen, B.Silkscreen, Edge.Cuts + Excellon PTH/NPTH |
-| `STENCIL_NOTES.md` | Stencil order settings: frameless, top only, **0.12 mm**, custom size, and the paste-preview screenshot |
-| `BOM-ESP32S3_FieldIO.csv` | The BOM with LCSC numbers as ordered from LCSC (no PCBA line) |
-| `LCSC_ORDER.csv` | The LCSC cart as checked out (quantities for 6–7 boards) |
-| `ORDER_NOTES.md` | Every setting the board was ordered with, the pre-upload gate and how each item closed, the cost record |
-| `production_check/` | Screenshots of the fab preview: copper, paste, silk, outline |
+Create a dated revision directory only when the implementation is ready. Include:
 
-5 boards · 2-layer · lead-free HASL · **bare PCB + stencil — assembled on the bench.**
+- Native KiCad project, complete schematic hierarchy, PCB, local libraries, and the tool version used.
+- Schematic PDF and assembly/fabrication drawings.
+- Gerbers for F.Cu, In1.Cu, In2.Cu, B.Cu, solder masks, required paste layers, silkscreen, and Edge.Cuts; drill files with plated/nonplated interpretation.
+- Exact stack-up, thickness, copper weights, finish, tolerances, and any controlled-impedance requirement agreed with the fabricator.
+- Exact exported BOM with DNP/substitution instructions and placement/CPL files appropriate to the selected assembler.
+- Paste/stencil requirements, exposed-pad decisions, assembly notes, polarity markings, inspection access, and package handling.
+- ERC, DRC, and schematic/PCB parity reports with reviewed exceptions, plus electrical/thermal/EMC/mechanical review records.
+- A first-article test procedure and a revision-specific acceptance checklist.
+- Checksums, hardware revision, issue log, and ordering/quote record.
 
-## Recipe
+Use a Gerber viewer to check all four copper layers, outline, hole registration, masks, paste, and text. Confirm assembly orientation against the real footprints and BOM. CI exports alone do not establish manufacturability.
 
-Freeze the exact uploaded zip + BOM, the LCSC order export, the stencil settings, the order confirmation, and
-the git tag that produced them (`revA`). Tag the commit the fab files were generated from so the package can
-always be traced back to a board file. Board 1's `fabrication/revA/ORDER_NOTES.md` is the template.
+Choose the vendor after obtaining current quotes for the actual design. No old two-layer price, size limit, assembly catalog, or copied capability sheet applies automatically.
+
+Release tags must not be used before the matching native design exists and required checks pass. Keep ordered files immutable; place corrected designs in a new revision directory and update the changelog.

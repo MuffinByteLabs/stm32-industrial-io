@@ -1,25 +1,23 @@
-# mechanical/ — enclosure, outline, 3D
+# Mechanical integration — STM32 Industrial I/O Controller
 
-A field I/O controller lives on **DIN rail** inside a modular enclosure with terminal windows along its two long edges. That decision shapes the board outline, the terminal positions, the LED positions (they must show through the lid) and the USB/button access — so it is made **before layout**, and the board is drawn to the enclosure's PCB drawing, not the other way round.
+The [canonical plan](../docs/STM32_Industrial_IO_Controller_RevA_Plan.md) starts with a **140 × 100 mm** four-layer board envelope. This is provisional. No enclosure model, production outline, mounting drawing, or verified terminal arrangement exists yet.
 
-## Decision to make (before the first footprint is placed)
+Select the enclosure and pluggable terminals together before final placement. A suitable insulated enclosure with an optional DIN-rail mount should leave room for field wiring, debug access, inspection, and heat removal.
 
-| Option | Size (W × H × D) | PCB it takes | Notes |
-|---|---|---|---|
-| **Camdenboss CNMB/6/KIT** (reference class) | 106 × 90 × 58 mm, 6 modules | per its datasheet PCB drawing (≈ 100 × 85 mm class; take the exact outline from the drawing) | polycarbonate, IP20, terminal windows both long edges, vented-lid variant CNMB/6V; Farnell/Newark/RS/CPC |
-| Phoenix Contact ME / UM-PRO series | 6-module equivalents | per drawing | the industrial reference; DigiKey/Mouser; dearer |
-| OKW Railtec B/C, Italtronic Modulbox XTS, generic "DIN rail PCB enclosure 6M" (AliExpress/Amazon) | ≈ 106 × 90 | per drawing | cheaper; check that a PCB drawing exists before trusting the size |
+## Geometry to settle before routing
 
-Whichever is chosen: put its PCB drawing (DXF/PDF) in this folder, import the outline into KiCad (`File → Import → Graphics` onto `Edge.Cuts`), and place the five terminals at the window positions. Keep the board inside JLC's ≤ 100 × 100 mm tier; a 6-module enclosure's PCB is inside it.
+- Actual inside width, depth, height, PCB supports, screw positions, and tool access from the enclosure drawing.
+- Terminal body/mating-plug height and wire exit, including screwdriver clearance, wire bend radius, connector retention, and strain relief.
+- Clearance around relays, power magnetics, isolated power/transceivers, USB, and SWD cable.
+- Insulating supports and hardware placement that preserve each isolation boundary and prevent a metal DIN rail or mounting screw from shorting separate domains.
+- Field-input common, shared analog/load returns, and separate RS-485/CAN references marked consistently with the [wiring guide](../docs/Interface_and_Wiring_Guide.md).
+- Access to fuses and configuration/termination links without exposing unintended conductors.
+- Ventilation and hot-component placement for simultaneous load tests in the intended mounting orientation.
 
-## Layout consequences (feed into `docs/Hard_Rules_Layout_RevA.md`)
+Choose a compatible voltage-input actuator for AO. An enclosure demonstration does not establish compatibility with every lighting or HVAC controller.
 
-- Field terminals (J201, J701, J801, J802) on one long edge; J901 (VLOAD, logic-referenced) and the USB-C on the other — the enclosure's two windows are the plan's "at most two edges" rule made physical. Antenna end of the module toward a plastic wall, ≥ 15 mm from any terminal or wire.
-- LEDs (3V3, FIELD PWR, STATUS, four input LEDs, two relay LEDs, two output LEDs) in a row under the lid's window or behind light pipes; the input LEDs are on the field side of the moat by design, so the moat runs parallel to the LED row.
-- BOOT / RESET buttons and the USB-C reachable with the lid on, on the logic-side edge.
-- Mounting: the enclosure's PCB slots replace the four M3 holes for the enclosed build; keep the holes anyway for the bench and the demo (rule: no hole in the antenna region, Ø 6.5 mm keep-out).
-- Heat: the buck, the bridge and the relays are the warm parts — they go toward the vented end if the vented-lid variant is used.
+## Deliverables
 
-## Files this folder will hold
+Save the selected enclosure's manufacturer drawing and ordering code, a dimensioned board outline, terminal/wire-access drawing, assembled STEP model, and a fit-check record. Include maximum component height and an actual first-article fit test.
 
-`<enclosure>_PCB_drawing.pdf` · `board_outline.dxf` (exported from KiCad after layout) · `ESP32S3_FieldIO_RevA.step` (KiCad 3D export, for the enclosure fit check) · photos of the fit.
+Thermal qualification must use the assembled enclosure and stated ambient conditions. A successful bare-board bench test alone cannot establish enclosed continuous-load ratings.

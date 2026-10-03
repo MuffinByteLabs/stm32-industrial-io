@@ -1,7 +1,17 @@
-# Reference designs
+# Manufacturer guidance and reference designs
 
-| Design | Used for | Where |
-|---|---|---|
-| Espressif ESP32-S3-DevKitC-1 schematic v1.1 | The core, reset and USB blocks (same as Board 1) | copy from `ESP32S3_PlantMonitor_RevA/references/reference-designs/` |
-| TI LMR38020 EVM (LMR38020QEVM user guide, SNVU817) | The buck's reference layout: input-capacitor placement, SW copper, FB routing, thermal vias | [ti.com/lit/ug/snvu817](https://www.ti.com/lit/ug/snvu817/snvu817.pdf) — fetch before layout |
-| Board 1 (ESP32S3_PlantMonitor_RevA) | The USB-C block, the 3.3 V stage, the module footprint, the switch footprint — copied, not redrawn | `../../../ESP32S3_PlantMonitor_RevA/hardware/` |
+Use reference designs to understand implementation details, then verify them against the exact selected device, package, load, and board geometry.
+
+## Retained local reference
+
+[TI LMR38020 evaluation-module guide](REF_TI_LMR38020QEVM_UserGuide_SNVU817.pdf) supports the selected buck-family study. Its component values and layout are examples, rather than a finished design for this board. Primary source: [TI SNVU817](https://www.ti.com/lit/ug/snvu817/snvu817.pdf).
+
+## Guidance to consult during capture
+
+- [STM32G474VE product documentation](https://www.st.com/en/microcontrollers-microprocessors/stm32g474ve.html): exact package datasheet, reference manual, errata, and hardware-development guidance.
+- [STM32 system-memory boot guidance, AN2606](https://www.st.com/resource/en/application_note/an2606-stm32microcontroller-system-memory-boot-mode-stmicroelectronics.pdf): verify recovery interfaces and entry requirements for the exact device.
+- Candidate-family [local datasheet index](../datasheets/README.md): regulator layout, analog protection orientation/thresholds, isolated-power constraints, and peripheral timing.
+
+Before adopting any reference circuit, record the document revision, applicable ordering code, differences from its conditions, recalculated values, and schematic/layout evidence. Add actual evaluated circuits or fixture records here as they become available.
+
+The previous radio development-board reference was removed from the active project because the new board integrates an STM32 directly.

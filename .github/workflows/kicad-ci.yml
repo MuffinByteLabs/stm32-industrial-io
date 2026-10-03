@@ -1,14 +1,5 @@
-# KiCad ERC / DRC on every push — the modern hardware-repo baseline.
-#
-# Runs once hardware/ESP32S3_FieldIO.kicad_sch / .kicad_pcb exist; until then the
-# steps are skipped rather than failing. Uses kicad-cli from the official KiCad
-# container. Adjust the image tag to the KiCad major version the project is saved in
-# (the project is being drawn in KiCad 10).
-#
-# What it produces: ERC and DRC reports as build artifacts, and a failed build on
-# any ERC/DRC *error* (warnings are reported, not fatal). Schematic PDF and gerbers
-# are exported on tags only (revA, revB ...) so the frozen package can be reproduced.
-
+# Missing fresh design files mean checks not run, never passed validation.
+# Real design files require ERC/DRC before release exports.
 name: kicad-ci
 
 on:
@@ -17,51 +8,126 @@ on:
     tags: ['rev*']
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   erc-drc:
     runs-on: ubuntu-latest
     container:
-      image: kicad/kicad:10.0
+      image: kicad/kicad:10.0-full
       options: --user root
+    env:
+      PRO: hardware/STM32_Industrial_IO/STM32_Industrial_IO.kicad_pro
+      SCH: hardware/STM32_Industrial_IO/STM32_Industrial_IO.kicad_sch
+      PCB: hardware/STM32_Industrial_IO/STM32_Industrial_IO.kicad_pcb
     steps:
       - uses: actions/checkout@v4
 
-      - name: Detect project files
+      - name: Detect fresh design and record validation availability
         id: files
         run: |
-          echo "sch=$([ -f hardware/ESP32S3_FieldIO.kicad_sch ] && echo yes || echo no)" >> "$GITHUB_OUTPUT"
-          echo "pcb=$([ -f hardware/ESP32S3_FieldIO.kicad_pcb ] && echo yes || echo no)" >> "$GITHUB_OUTPUT"
+          mkdir -p out
+          pro=no
+          sch=no
+          pcb=no
+          if [ -f "$PRO" ]; then pro=yes; fi
+          if [ -f "$SCH" ]; then sch=yes; fi
+          if [ -f "$PCB" ]; then pcb=yes; fi
+          echo "sch=$sch" >> "$GITHUB_OUTPUT"
+          echo "pcb=$pcb" >> "$GITHUB_OUTPUT"
+          {
+            echo "Project settings present: $pro"
+            echo "Schematic present: $sch"
+            echo "PCB present: $pcb"
+            if [ "$sch" = no ]; then
+              echo "ERC not run: the fresh schematic does not exist."
+            fi
+            if [ "$pcb" = no ]; then
+              echo "DRC not run: the fresh PCB does not exist."
+            fi
+            echo "CI does not establish package suitability, assembly quality, or measured qualification."
+          } > out/validation-availability.txt
+          cat out/validation-availability.txt >> "$GITHUB_STEP_SUMMARY"
+          kicad-cli version > out/kicad-version.txt
 
-      - name: ERC
+      - name: ERC — fail on reportable warnings and errors
+        id: erc
         if: steps.files.outputs.sch == 'yes'
         run: |
-          mkdir -p out
-          kicad-cli sch erc --severity-all --exit-code-violations \
-            --output out/erc.rpt hardware/ESP32S3_FieldIO.kicad_sch || { cat out/erc.rpt; exit 1; }
-          cat out/erc.rpt
+          if [ ! -f "$PRO" ]; then
+            echo "::error::The native schematic requires its matching project settings."
+            exit 1
+          fi
+          status=0
+          kicad-cli sch erc --severity-error --severity-warning --exit-code-violations \
+            --output out/erc.rpt "$SCH" || status=$?
+          if [ -f out/erc.rpt ]; then cat out/erc.rpt; fi
+          exit "$status"
 
-      - name: DRC (with zone refill and schematic parity)
-        if: steps.files.outputs.pcb == 'yes'
+      - name: DRC — refill zones and require schematic parity
+        id: drc
+        if: always() && steps.files.outputs.pcb == 'yes'
         run: |
           mkdir -p out
-          kicad-cli pcb drc --severity-all --schematic-parity --exit-code-violations \
-            --output out/drc.rpt hardware/ESP32S3_FieldIO.kicad_pcb || { cat out/drc.rpt; exit 1; }
-          cat out/drc.rpt
+          if [ ! -f "$PRO" ]; then
+            echo "::error::The native PCB requires its matching project settings."
+            exit 1
+          fi
+          status=0
+          kicad-cli pcb drc --severity-error --severity-warning --refill-zones \
+            --schematic-parity --exit-code-violations \
+            --output out/drc.rpt "$PCB" || status=$?
+          if [ -f out/drc.rpt ]; then cat out/drc.rpt; fi
+          if [ ! -f "$SCH" ]; then
+            echo "::error::PCB exists without its matching schematic; parity cannot be accepted."
+            exit 1
+          fi
+          exit "$status"
 
-      - name: Export schematic PDF and gerbers (tags only)
-        if: startsWith(github.ref, 'refs/tags/rev') && steps.files.outputs.pcb == 'yes'
+      - name: Require complete native design and four copper layers for a release tag
+        if: startsWith(github.ref, 'refs/tags/rev')
+        run: |
+          if [ ! -f "$PRO" ] || [ ! -f "$SCH" ] || [ ! -f "$PCB" ]; then
+            echo "::error::A hardware release requires matching project settings, schematic, and PCB."
+            exit 1
+          fi
+          # Check native layer declarations, not the list of requested exports.
+          for layer in 'F[.]Cu' 'In1[.]Cu' 'In2[.]Cu' 'B[.]Cu'; do
+            if ! grep -Eq "^[[:space:]]*\\([0-9]+[[:space:]]+\"?$layer\"?[[:space:]]+(signal|power|mixed|jumper)([[:space:]]|\\))" "$PCB"; then
+              echo "::error::The native board is missing required copper layer $layer."
+              exit 1
+            fi
+          done
+          copper_count=$(grep -Ec '^[[:space:]]*\([0-9]+[[:space:]]+("[^"]+"|[^[:space:]()]+)[[:space:]]+(signal|power|mixed|jumper)([[:space:]]|\))' "$PCB")
+          if [ "$copper_count" -ne 4 ]; then
+            echo "::error::Rev A requires exactly four native copper layers; found $copper_count."
+            exit 1
+          fi
+
+      - name: Export schematic PDF and four-layer fabrication files on release tags
+        if: startsWith(github.ref, 'refs/tags/rev') && steps.files.outputs.sch == 'yes' && steps.files.outputs.pcb == 'yes'
         run: |
           mkdir -p out/gerbers
-          kicad-cli sch export pdf --output out/ESP32S3_FieldIO_Schematic.pdf hardware/ESP32S3_FieldIO.kicad_sch
-          kicad-cli pcb export gerbers --output out/gerbers/ \
-            --layers F.Cu,B.Cu,F.Mask,B.Mask,F.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts \
-            hardware/ESP32S3_FieldIO.kicad_pcb
-          kicad-cli pcb export drill --output out/gerbers/ hardware/ESP32S3_FieldIO.kicad_pcb
+          kicad-cli sch export pdf --output out/STM32_Industrial_IO_Schematic.pdf "$SCH"
+          kicad-cli pcb export gerbers --check-zones --output out/gerbers/ \
+            --layers F.Cu,In1.Cu,In2.Cu,B.Cu,F.Mask,B.Mask,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,Edge.Cuts \
+            "$PCB"
+          kicad-cli pcb export drill --output out/gerbers/ "$PCB"
 
-      - name: Upload reports
+      - name: Record actual check outcomes
+        if: always()
+        run: |
+          {
+            echo "ERC step: ${{ steps.erc.outcome }}"
+            echo "DRC step: ${{ steps.drc.outcome }}"
+            echo "Skipped means not run, not passed hardware validation."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload available reports and release exports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: kicad-reports
+          name: stm32-industrial-io-checks
           path: out/
           if-no-files-found: ignore

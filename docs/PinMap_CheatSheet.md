@@ -1,81 +1,86 @@
-# Pin Map Cheat Sheet — ESP32-S3 Protected Field I/O Controller Rev A
-*Written 2026-09-07 from the design document, before capture. Designators use per-sheet numbering (2xx = sheet 02 …). If capture changes a pin, change it here the same day — this file is what the firmware is written against.*
+# STM32 Industrial I/O Controller Rev A — Resource Reservations
 
-## At a glance
+Status: provisional allocation before schematic capture. No final MCU port names, package pin numbers, connector pin order, component designators, or numbered test points are assigned here.
 
-* **Inputs (active LOW at the GPIO):** IN1 = **IO4** · IN2 = **IO5** · IN3 = **IO6** · IN4 = **IO7**. Opto collector nodes `IN1_L`…`IN4_L`, 47 k pull-up + 1 µF (τ = 47 ms). Field side: Zener + 2 × 1.6 k + LED + opto — IEC 61131-2 Type 1 thresholds. Debounce in firmware: 3 samples 10 ms apart.
-* **Relays (active HIGH):** K1 = **IO9** (`RLY1`) · K2 = **IO10** (`RLY2`). 680 Ω base, 10 k pull-down → OFF at boot.
-* **MOSFETs (active HIGH):** OUT1 = **IO11** · OUT2 = **IO12**. 100 Ω gate, 10 k pull-down → OFF at boot.
-* **Status LED:** **IO13** (`STATUS_LED`, 1 k, yellow-green).
-* **Input-voltage sense:** **IO8 = ADC1_CH7**, `VIN_SENSE` = VBUS_DC × 10 / 210 (**÷ 21**). 9 V → 0.43 V · 24 V → 1.14 V · 39 V → 1.86 V · 69 V clamp → 3.29 V (pin safe). Attenuation 3 (0–2.9 V), 100 nF at the pin. "Field power present" = VBUS_DC > 7 V, i.e. VIN_SENSE > 0.33 V.
-* **USB (native):** IO19 = D− (`USB_DN`) · IO20 = D+ (`USB_DP`). No bridge chip.
-* **Buttons:** **SW601 = BOOT** (IO0) · **SW602 = RESET** (EN). Same convention as Board 1.
-* **Recovery UART:** TXD0 = IO43 → TP10 · RXD0 = IO44 → TP11 · GND → TP6 (all through-hole). 115200 baud, 3.3 V logic only.
-* **Expansion (DNP header J601):** 3V3 · GND · IO14 · IO16 · IO17 · IO18.
-* **Strapping pins** IO0 (pull-up, BOOT), IO3, IO45, IO46: nothing else on them. **IO1, IO2 unused on purpose** — kept free; SoC datasheet v2.2 lists them with no pull at reset (older revisions said pulled up), and pins with a disputed reset state get no job here.
+Use [the canonical plan](STM32_Industrial_IO_Controller_RevA_Plan.md) for requirements. STM32G474VET6 in LQFP100 is the base MCU. The larger package supports diagnostics and a goal of at least ten spare usable GPIO after allocation.
 
-## Module pins used (U601, ESP32-S3-WROOM-1-N8)
+## Resources to reserve
 
-| Pin | Name | Net | Role | Pull at reset |
-|---|---|---|---|---|
-| 1, 40, 41 | GND / EPAD | GND | Ground + thermal | — |
-| 2 | 3V3 | +3V3 | Power (C601 22 µF + C602 100 nF at the pin) | — |
-| 3 | EN | EN | R601 10 k up, C603 1 µF, SW602 | — |
-| 4 | IO4 | IN1_L | Opto 1 | none |
-| 5 | IO5 | IN2_L | Opto 2 | none |
-| 6 | IO6 | IN3_L | Opto 3 | none |
-| 7 | IO7 | IN4_L | Opto 4 | none |
-| 9 | IO16 | EXP2 | J601 (DNP) | none |
-| 10 | IO17 | EXP3 | J601 (DNP) | none |
-| 11 | IO18 | EXP4 | J601 (DNP) | none |
-| 12 | IO8 | VIN_SENSE | ADC1_CH7 | none |
-| 13 | IO19 | USB_DN | USB D− (22 Ω R401 in line) | USB |
-| 14 | IO20 | USB_DP | USB D+ (22 Ω R402 in line) | USB |
-| 17 | IO9 | RLY1 | K1 driver | none |
-| 18 | IO10 | RLY2 | K2 driver | none |
-| 19 | IO11 | OUT1 | Q901 gate | none |
-| 20 | IO12 | OUT2 | Q902 gate | none |
-| 21 | IO13 | STATUS_LED | D602 | none |
-| 22 | IO14 | EXP1 | J601 (DNP) | none |
-| 27 | IO0 | IO0 | Boot strap, R602 10 k up, SW601 | pull-up |
-| 36 | RXD0 (IO44) | RXD0 | TP11 | pull-up |
-| 37 | TXD0 (IO43) | TXD0 | TP10 | pull-up |
-| 8, 15, 16, 23–26, 28–35, 38, 39 | IO15, IO3, IO46, IO21, IO47, IO48, IO45, IO35–IO42, IO2, IO1 | — | Unconnected | see datasheet |
+| Function | Reservation | Constraint to resolve before freeze |
+| --- | --- | --- |
+| MCU supplies | Every VDD/VSS, analog/reference, backup, and required support pin | Package-specific datasheet; each decoupling/return connection |
+| System clock | HSE crystal/oscillator pins; optional LSE footprint | Clock tree, load capacitance, startup, USB and CAN tolerances |
+| Debug | SWDIO, SWCLK, optional SWO, NRST, target voltage reference, grounds | Keyed 10-pin header and access with outputs inhibited |
+| Recovery | Reviewed boot selection and recovery UART; USB ROM DFU provision | Package, alternate functions, option bytes, and ROM clock requirements |
+| USB device | D+/D−, VBUS detection, CC pull-downs and service-power control | Reserved USB pins, differential routing, enumeration/suspend limits |
+| ADC acquisition | SPI SCLK/MOSI/MISO/CS, reset, alarm if used | ADC protocol, timing, DMA-accessible memory and powered-off buffering |
+| DAC | SPI instance preferred, CS/control as required | DAC80501Z interface/range; shared SPI only after mode/timing review |
+| Field analog validity | FIELD_ANALOG_VALID and relevant rail/fault monitors | Hardware qualification of ADC/DAC access and AO enable |
+| Digital inputs | DI1 timer count/capture; DI2–DI4 GPIO/interrupt inputs | Receiver polarity, debounce and pulse filtering |
+| High-side commands | Four GPIO routed through hardware permission gates | Off at reset; no bypass via peripheral/alternate function |
+| High-side diagnostics | Shared sense ADC input plus channel selection/enable/control | Multiplexed settling and protected fault/unpowered behavior |
+| Relay commands | Two GPIO through permission gates | Coil drivers and pull-down defaults |
+| Analog output | DAC control; independent default-off disconnect control | AO also qualified by FIELD_ANALOG_VALID |
+| AO readback | Protected MCU ADC channel before commanded disconnect | Amplifier-side value only; no terminal-voltage claim |
+| RS-485 | USART TX/RX and driver-enable | Half-duplex turnaround, reset driver-disable, bus-side supply |
+| CAN | One FDCAN RX/TX pair | USB/boot/debug conflicts; bit timing and bus-off policy |
+| Rail monitoring | Raw/protected field, service, analog and isolated-supply status as required | Divider/clamp/current injection under all power states |
+| Other monitoring | Temperature, status/fault inputs, external watchdog | Measurement/diagnostic limitations |
+| Service controls | User button, inhibit switch/status, indicators | Hardware inhibit independent of firmware |
+| Configuration | I2C EEPROM bus and write protection as selected | Pull-up domain, boot recovery, interrupted-write behavior |
+| Expansion | At least ten usable reserved GPIO goal | Confirm no restricted/special pins counted as freely available |
 
-*Verify pin numbers against the module datasheet in `references/datasheets/` during capture — the table follows Board 1's verified numbering for the pins it shares (2, 3, 13, 14, 27, 36, 37) and the datasheet's order for the rest.*
+Budget roughly 45–60 signal pins until allocation is complete. Peripheral counts do not prove that the chosen functions fit simultaneously on the package. Complete CubeMX allocation, then manually cross-check the datasheet alternate-function and pin tables, reset states, timer/DMA resources, analog channels, and package bonding.
 
-## Net glossary
+## Proposed net names and domains
 
-| Net | Meaning |
-|---|---|
-| FLD_PWR_A / FLD_PWR_B | Power terminal pins, before F201 and the bridge; either polarity, or AC |
-| VBUS_DC | Rectified bus, 7–39 V; TP1 |
-| VIN_SENSE | VBUS_DC ÷ 21 → IO8; TP13 |
-| 5V_BUCK | Buck output 5.02 V — relay coils, JP901/VLOAD, FIELD PWR LED; TP2 |
-| 5V_SYS | Logic rail ≈ 4.6 V, OR of 5V_BUCK (D301) and USB_5V_PROT (D402); TP3 |
-| USB_VBUS / USB_5V_PROT | USB 5 V before / after F401 + D401 |
-| +3V3 | AP7361C output; TP4 |
-| VLOAD | Load supply terminal: 5V_BUCK via JP901 (open by default), or external 8–12 V; TP12 |
-| SW / BOOT / FB / EN_BUCK / RT / PG | Buck nodes; SW → TP7 (small pad), PG → TP14 |
-| IN1–IN4, FLD_COM | Field-side input nets (isolated) |
-| IN1_L–IN4_L | Logic-side opto collector nodes (active LOW) |
-| RLY1 / RLY2, K1_COIL / K2_COIL | GPIO drives / transistor collectors |
-| K1_NO / K1_COM / K1_NC, K2_… | Relay contact nets (isolated, field side) |
-| OUT1 / OUT2, OUT1_D / OUT2_D | GPIO drives / MOSFET drains (terminal pins) |
-| EN / IO0 / TXD0 / RXD0 / USB_DP / USB_DN | Board 1's names, unchanged |
+These are functional names to use consistently in the schematic and firmware board support. They are not finalized pin assignments.
 
-## Terminals (all 5.08 mm screw terminals)
+| Name | Meaning/domain |
+| --- | --- |
+| VIN_RAW / VIN_RETURN | Main DC terminal supply before protection |
+| VFIELD | Protected 9–30 V operating field rail |
+| MAIN_GND | Common DC negative, MCU, analog returns, load returns, USB ground |
+| 5V_FIELD | Field-only service power for relays, isolated converters, ADC/DAC and analog conversion |
+| 5V_SYS | USB/field-selected essential logic supply |
+| 3V3_DIG | MCU digital/interface rail from 5V_SYS |
+| 3V3_MCU_ANA | MCU analog support rail from 5V_SYS |
+| 3V3_FIELD_LOGIC | External ADC digital/field-buffer rail from 5V_FIELD |
+| ADC_AVDD | Qualified filtered field 5 V with permanent reviewed discharge impedance |
+| 15V_ANA / NEG_ANA | Field-only amplifier/protector auxiliary rails |
+| 5V_RS485_ISO / RS485_REF | Dedicated RS-485 bus-side supply and isolated return |
+| 5V_CAN_ISO / CAN_REF | Separate CAN bus-side supply and isolated return |
+| DI_COM | Shared digital-input field return, isolated from MAIN_GND |
+| DI1–DI4 | DC input terminals; decoded logic polarity set from final circuit |
+| AI_V1 / AI_V2 | Two single-ended 0–10 V terminals |
+| AI_I1 / AI_I2 | Two externally powered current-loop receiver terminals |
+| AI_RETURN / AO_RETURN | Analog return terminals in MAIN_GND domain |
+| AO1 | Protected analog output terminal |
+| AO_READBACK | Protected amplifier-side monitor, before commanded disconnect |
+| DO1–DO4 / LOAD_RETURN | High-side output terminals and main-domain load returns |
+| RELAY1_CMD / RELAY2_CMD | Gated coil commands |
+| COM1/NO1/NC1; COM2/NO2/NC2 | Separate dry-contact circuits |
+| FIELD_VALID / RESET_OK / WATCHDOG_OK / ARM | General hardware permission factors |
+| FIELD_ANALOG_VALID | Relevant external analog rails valid; additional AO qualification |
+| AO_ENABLE | Commanded disconnect control qualified by required permission conditions |
 
-| Ref | Positions | Labels (left → right) | Side | Notes |
-|---|---|---|---|---|
-| J201 | 2 | PWR IN A · B | field | 12–36 V DC either way (10 V guaranteed floor), or 24 VAC (18–28) |
-| J701 | 5 | IN1 · IN2 · IN3 · IN4 · COM | field | 12–30 V AC/DC signals to COM, either polarity; IEC 61131-2 Type 1 (OFF ≤ 5 V, ON ≥ 15 V; threshold ≈ 8 V); 36 V continuous max |
-| J801 | 3 | K1: NO · C · NC | field | ≤ 2 A, ≤ 30 V AC/DC, isolated |
-| J802 | 3 | K2: NO · C · NC | field | same |
-| J901 | 4 | VLOAD+ · GND · OUT1− · OUT2− | **logic** | not isolated; VLOAD = 5 V only with JP901 closed, else external 8–12 V returned to GND; **meter polarity first** |
-| J401 | — | USB-C | logic | bench programming only — **DISCONNECT FIELD POWER BEFORE USB** (silk) |
-| J601 | 6 | 3V3 · GND · IO14 · IO16 · IO17 · IO18 | logic | DNP |
+Hardware and firmware must distinguish VFIELD, 5V_FIELD and 5V_SYS; live USB logic does not imply live field electronics. Keep isolated references separately named. AI_RETURN and LOAD_RETURN share electrical ground but require physical paths that keep load current out of acquisition returns.
 
-## Test points
+## Test access to allocate
 
-TP1 VBUS_DC · TP2 5V_BUCK · TP3 5V_SYS · TP4 +3V3 · TP5 GND · TP6 GND (THT) · TP7 SW (small) · TP8 EN · TP9 IO0 · TP10 TXD0 (THT) · TP11 RXD0 (THT) · TP12 VLOAD · TP13 VIN_SENSE · TP14 PG.
+Provide labeled access for VIN_RAW, VFIELD, every rail, MAIN_GND, reset, watchdog, general/analog validity, ARM, AO disconnect state, raw DI logic, SPI, diagnostics, and amplifier-side readback. Give each isolated island its own reference/probe access. Expose converter switching nodes only where probing/layout justify it.
+
+Do not copy old test-point numbers or schematic designators. Assign them after capture and update bring-up/assembly documents together.
+
+## Pin-allocation release checklist
+
+- Export the final CubeMX resource assignment and clock tree.
+- Match MCU part/package, symbol pin numbers and footprint pad numbers to the manufacturer documentation.
+- Confirm all power/reference pins, boot options, reset/debug reservations and recovery interfaces.
+- Confirm timer count/capture, ADC channels, DMA mapping and memory placement.
+- Review every pull/default and alternate-function transition affecting an output.
+- Check powered-off interface isolation, monitor injection and FIELD_ANALOG_VALID behavior.
+- Record exact connector pin order, designators and test points from the captured design.
+- Replace this provisional sheet with an approved pin table and version it with the schematic.
+
+Until that checklist is complete, firmware should use development-board definitions or symbolic resource reservations. This document does not establish a verified pin map.

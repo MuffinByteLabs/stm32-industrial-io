@@ -1,0 +1,50 @@
+name: Problem report
+description: Report a reproducible document, tool, firmware, or hardware problem.
+title: '[Problem] '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Identify the exact revision and evidence. For a planned circuit, describe the conflicting
+        requirements or calculation rather than reporting an untested hardware failure as measured.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Documentation or references
+        - Repository tooling or CI
+        - Schematic or PCB
+        - Firmware or communication
+        - Assembled hardware or enclosure
+    validations:
+      required: true
+  - type: input
+    id: revision
+    attributes:
+      label: Revision and software versions
+      description: Include the commit, board revision, firmware version, and applicable KiCad or Python version.
+      placeholder: Commit SHA; planning or board revision; relevant software versions
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps and conditions
+      description: For bench observations, include supply voltage, wiring, load, temperature, and instrument setup.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior and source
+      description: State the applicable requirement or documented behavior and link its source.
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior and evidence
+      description: Attach logs, reports, measurements, photos, or a precise document location. Remove credentials and private customer data.
+    validations:
+      required: true
