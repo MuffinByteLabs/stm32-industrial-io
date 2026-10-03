@@ -22,7 +22,7 @@ jobs:
       SCH: hardware/STM32_Industrial_IO/STM32_Industrial_IO.kicad_sch
       PCB: hardware/STM32_Industrial_IO/STM32_Industrial_IO.kicad_pcb
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Detect fresh design and record validation availability
         id: files
@@ -126,7 +126,7 @@ jobs:
 
       - name: Upload available reports and release exports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: stm32-industrial-io-checks
           path: out/

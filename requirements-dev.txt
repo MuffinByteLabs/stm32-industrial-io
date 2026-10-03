@@ -1,2 +1,2 @@
-# PDF identity/hash audits are tested with this version.
-pypdf==6.10.0
+# PDF identity/hash audits, including AES-protected manufacturer PDFs.
+pypdf[crypto]==6.10.0
