@@ -7,14 +7,14 @@ Rf gain gainfb 30k
 Rg gainfb 0 10k
 Edriver driverraw 0 gain feedback 1e6
 Rdriverout driverraw driver 1
-Rswitch driver terminal 12
-Rsafety terminal ao 40
-Rfeedback ao feedback 3.9k
+Rswitch driver terminal 12.5
+Rsafety terminal ao 100
+Rfeedback ao feedback 8.6k
 Rload ao 0 10k
 Rpulldown ao 0 100k
 Rfeedbackleak feedback 0 1e12
 * Comparison: same switch/series resistance without terminal feedback.
-Runcomp gain uncomp 52
+Runcomp gain uncomp 112.5
 Ruload uncomp 0 10k
 Rupulldown uncomp 0 100k
 * Current input with the ADC's 2.5 V bias and minimum effective resistance.

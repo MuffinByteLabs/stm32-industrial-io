@@ -1,0 +1,127 @@
+{
+  "arithmetic": {
+    "scope": "Selection arithmetic; specified resistor tolerances are cornered without statistical averaging",
+    "shunt_ohm": 200.0,
+    "shunt_power_rating_w": 1.25,
+    "shunt_power_at_40ma_w": 0.32,
+    "one_shunt_resistor_power_at_40ma_w": 0.064,
+    "one_shunt_resistor_30v_55us_energy_j": 4.9500000000000004e-05,
+    "loop_max_20ma_burden_v": 4.25,
+    "voltage_adc_at_10v_nominal_850kohm_v": 9.99023361656795,
+    "current_adc_at_20ma_nominal_850kohm_v": 3.9978707326984475,
+    "ao_readback_v_per_terminal_v": 0.15031982942430702,
+    "cs_readback_v_per_raw_v": 0.32488479262672804,
+    "cs_effective_burden_ohm": 1198.306844501238,
+    "cs_adc_at_0p5a_nominal_ratio300_v": 0.6488527844649559,
+    "vfp11_nominal_v": 10.9756,
+    "vfp6_nominal_v": 5.98886,
+    "vfp11_corner_v": [
+      10.709600350499002,
+      11.243321393987976
+    ],
+    "vfp6_corner_v": [
+      5.846292513293414,
+      6.132271561442885
+    ],
+    "ao_gain_resistor_drift_25c_opposing_25ppm_v_at10v": 0.009375,
+    "adc_volt_filter_nominal_hz": 143.60276377505673,
+    "adc_loop_filter_nominal_hz": 131.71806926416895,
+    "ao_fault_peak_a_at45v_resistor_minus1percent": 0.45454545454545453,
+    "ao_series_resistor_45v_1p8us_screening_energy_j": 3.681818181818181e-05,
+    "ao_feedback_fault_a_at45v_min_switch_and_resistor": 0.00850565153290742,
+    "readback_off_s_max_at5p75v_v": 3.455517792882847,
+    "vfp_shutdown": {
+      "parent_disable_min_v": 12.72283,
+      "parent_bulk_min_f": 0.0005,
+      "parent_discharge_max_a": 0.025,
+      "child_disable_delay_max_s": 0.001,
+      "child_cap_max_f": 1.2776500000000002e-05,
+      "child_tau_max_s": 0.06016964910000001,
+      "parent_zero_time_s": 0.2544566,
+      "child_end_max_v": [
+        0.18972621378931862,
+        0.11402502649401176
+      ],
+      "scope": "Parent >=500uF effective over 0-50C; child disable <=1ms; ordinary rail removal, no internal hard short; convex exponential-minus-linear bound"
+    }
+  },
+  "vendor_ao": {
+    "scope": "TI OPAx197 typical macromodel; switches modeled as fixed resistors; excludes switch transitions, layout, tolerances, fault pulses, and hardware qualification",
+    "model_source": "https://www.ti.com/lit/zip/sboma34",
+    "model_sha256": "fc5b020e63346e511bd808bf41c856b0150b000bcf8a41fe00eeececb1f422a5",
+    "corners": [
+      {
+        "cable_capacitance_f": 1e-10,
+        "feedback_switch_ohm": 600,
+        "main_switch_ohm": 12.5,
+        "terminal_series_ohm": 100,
+        "external_feedback_series_ohm": 4700,
+        "compensation_f": 1e-09,
+        "final_terminal_v": 9.000092247194205,
+        "peak_terminal_v": 9.000092298334152,
+        "peak_overshoot_percent": 6.392493423490464e-07,
+        "residual_after_500us_v": 2.7983011463561525e-08
+      },
+      {
+        "cable_capacitance_f": 1e-10,
+        "feedback_switch_ohm": 3900,
+        "main_switch_ohm": 12.5,
+        "terminal_series_ohm": 100,
+        "external_feedback_series_ohm": 4700,
+        "compensation_f": 1e-09,
+        "final_terminal_v": 9.000101023573189,
+        "peak_terminal_v": 9.000101069566655,
+        "peak_overshoot_percent": 5.749183351611009e-07,
+        "residual_after_500us_v": 2.7825242554513352e-08
+      },
+      {
+        "cable_capacitance_f": 1e-09,
+        "feedback_switch_ohm": 600,
+        "main_switch_ohm": 12.5,
+        "terminal_series_ohm": 100,
+        "external_feedback_series_ohm": 4700,
+        "compensation_f": 1e-09,
+        "final_terminal_v": 9.000092247199012,
+        "peak_terminal_v": 9.007423685153107,
+        "peak_overshoot_percent": 0.09164297442618707,
+        "residual_after_500us_v": 2.7948621195150736e-08
+      },
+      {
+        "cable_capacitance_f": 1e-09,
+        "feedback_switch_ohm": 3900,
+        "main_switch_ohm": 12.5,
+        "terminal_series_ohm": 100,
+        "external_feedback_series_ohm": 4700,
+        "compensation_f": 1e-09,
+        "final_terminal_v": 9.000101023572132,
+        "peak_terminal_v": 9.009276962679609,
+        "peak_overshoot_percent": 0.11469923884346311,
+        "residual_after_500us_v": 2.7794909485123753e-08
+      },
+      {
+        "cable_capacitance_f": 1e-08,
+        "feedback_switch_ohm": 600,
+        "main_switch_ohm": 12.5,
+        "terminal_series_ohm": 100,
+        "external_feedback_series_ohm": 4700,
+        "compensation_f": 1e-09,
+        "final_terminal_v": 9.000092230373726,
+        "peak_terminal_v": 9.125357785190966,
+        "peak_overshoot_percent": 1.5658194352154986,
+        "residual_after_500us_v": 2.7848011896480784e-08
+      },
+      {
+        "cable_capacitance_f": 1e-08,
+        "feedback_switch_ohm": 3900,
+        "main_switch_ohm": 12.5,
+        "terminal_series_ohm": 100,
+        "external_feedback_series_ohm": 4700,
+        "compensation_f": 1e-09,
+        "final_terminal_v": 9.000101023715423,
+        "peak_terminal_v": 9.231153013900766,
+        "peak_overshoot_percent": 2.8881498773167813,
+        "residual_after_500us_v": 2.779900576399541e-08
+      }
+    ]
+  }
+}

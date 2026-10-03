@@ -10,8 +10,8 @@ def calculate(service_w: float, efficiency: float) -> dict:
     n, current, shunt = 4, 0.5, 200.0
     service_reservations = {
         "mcu_and_essential_logic_w": 0.75,
-        "external_adc_dac_and_field_logic_w": 0.20,
-        "analog_auxiliaries_w": 0.45,
+        "external_adc_dac_and_field_logic_w": 0.50,
+        "analog_auxiliaries_w": 0.65,
         "two_relay_coils_w": 1.10,
         "two_isolated_bus_supplies_w": 2.75,
     }
@@ -20,6 +20,7 @@ def calculate(service_w: float, efficiency: float) -> dict:
     relay_min_cold_ohm = 62.5 * 0.90 * (1 + 0.00393 * (0.0 - 23.0))
     adc_input_ohm, adc_bias_v, example_series_ohm = 1_000_000.0, 2.5, 1000.0
     limit_resistor_ohm = 5110.0
+    sense_burden_ohm = 1 / (1 / 1210.0 + 1 / 124000.0)
     return {
         "scope": "Design arithmetic; prototype measurements remain pending",
         "assumptions": {
@@ -67,16 +68,16 @@ def calculate(service_w: float, efficiency: float) -> dict:
         },
         "analog_auxiliary_budget": {
             "positive_rail_v": 15.0,
-            "positive_rail_design_current_a": 0.015,
-            "positive_output_power_w": 15.0 * 0.015,
+            "positive_rail_design_current_a": 0.025,
+            "positive_output_power_w": 15.0 * 0.025,
             "boost_efficiency_assumed": 0.60,
-            "boost_primary_power_estimate_w": 15.0 * 0.015 / 0.60,
+            "boost_primary_power_estimate_w": 15.0 * 0.025 / 0.60,
             "lm7705_5v_primary_current_reserved_a": 0.004,
             "lm7705_primary_power_reserved_w": 5.0 * 0.004,
             "adg5401f_normal_positive_supply_max_a": 0.000240,
             "adg5401f_positive_supply_reserved_a": 0.000300,
             "branch_reservation_w": service_reservations["analog_auxiliaries_w"],
-            "note": "15 mA covers the two TPS26611 supplies, two TMUX groups, dual OPA2197, ADG5401F and supported AO load with reserve. The 60% boost efficiency and LM7705 current reserve are engineering assumptions. ADG5401F uses +15 V/MAIN_GND single-supply operation; only the amplifiers use the negative bias. Boost disable does not isolate its passive output path.",
+            "note": "25 mA rail capacity covers the two TPS26611 supplies, two TMUX groups, VFP supplies/bleeders, dual OPA2197, ADG5401F and supported AO load with reserve. The 60% boost efficiency and LM7705 current reserve are engineering assumptions. ADG5401F uses +15 V/MAIN_GND single-supply operation; only the amplifiers use the negative bias. Boost disable does not isolate its passive output path.",
         },
         "input_current": [
             {"supply_v": v,
@@ -88,11 +89,11 @@ def calculate(service_w: float, efficiency: float) -> dict:
             "continuous_input_target_a": 3.0,
             "candidate": "TPS26632RGER",
             "initial_limit_resistor_ohm": limit_resistor_ohm,
-            "resistor_tolerance_fraction": 0.01,
+            "resistor_tolerance_fraction": 0.001,
             "nominal_limit_a": 18000.0 / limit_resistor_ohm,
             "illustrative_limit_tolerance_fraction": 0.07,
-            "illustrative_lower_limit_a": 18000.0 / (limit_resistor_ohm * 1.01) * 0.93,
-            "illustrative_upper_limit_a": 18000.0 / (limit_resistor_ohm * 0.99) * 1.07,
+            "illustrative_lower_limit_a": 18000.0 / (limit_resistor_ohm * 1.001) * 0.93,
+            "illustrative_upper_limit_a": 18000.0 / (limit_resistor_ohm * 0.999) * 1.07,
             "note": "The datasheet's 4.5 A endpoint is +/-7%; verify the applicable tolerance at this setpoint. This reference does not freeze a guaranteed assembled limit or a fuse rating.",
         },
         "input_voltage_coordination": {
@@ -172,9 +173,9 @@ def calculate(service_w: float, efficiency: float) -> dict:
             "reference_short_circuit_switch_w_at_24v_0_7a": 24.0 * 0.7,
             "initial_current_limit_resistor_ohm": 2870.0,
             "nominal_current_limit_a": 0.8 * 2500.0 / 2870.0,
-            "initial_sense_resistor_ohm": 1200.0,
+            "selected_sense_burden_ohm": sense_burden_ohm,
             "nominal_sense_ratio": 300.0,
-            "nominal_sense_v_at_0_5a": current / 300.0 * 1200.0,
+            "nominal_sense_v_at_0_5a": current / 300.0 * sense_burden_ohm,
             "sense_fault_voltage_v": [4.5, 6.5],
             "note": "The diode equation is the manufacturer's 125 C loss model, not a guaranteed maximum across production. Ron limits bound conduction only; operating current, diode leakage, fault energy, thermal coupling and layout remain. Sense/current-limit tolerance and an unpowered MCU require protection; thermal swing can precede latched thermal shutdown.",
         },
@@ -191,7 +192,7 @@ def calculate(service_w: float, efficiency: float) -> dict:
         "ao_loading": {
             "load_ohm": 10000.0,
             "at_10v_load_ma": 10.0 / 10000.0 * 1000,
-            "50ohm_series_drop_mv_at_1ma": 0.001 * 50.0 * 1000,
+            "100ohm_series_drop_mv_at_1ma": 0.001 * 100.0 * 1000,
             "note": "This is an uncompensated series-drop example. My selected unity driver uses protected terminal feedback to compensate DC path resistance; actual leakage, offset, endpoint headroom, cable stability and fault transitions still require circuit verification.",
         },
         "resistive_load_fixture": [

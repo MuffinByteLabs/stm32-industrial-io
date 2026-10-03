@@ -41,6 +41,14 @@ jobs:
           python docs/calcs/controller_budget.py > out/engineering-calculations.json
           cat out/engineering-calculations.json
 
+      - name: Check circuit selection coverage and support arithmetic
+        if: always() && steps.python.outcome == 'success'
+        run: |
+          mkdir -p out
+          python scripts/audit_component_selections.py > out/component-selections.json
+          python docs/calcs/support_checks.py > out/support-calculations.json
+          python docs/calcs/analog_checks.py > out/analog-calculations.json
+
       - name: Summarize check scope
         if: always() && steps.python.outcome == 'success'
         run: |

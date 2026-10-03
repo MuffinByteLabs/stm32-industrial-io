@@ -10,7 +10,7 @@ I’m developing a four-layer STM32 controller for industrial sensors and DC act
 
 I’m treating the interfaces as a complete system: power sequencing, field wiring, reset behavior, calibration, and fault recovery are part of the design alongside the signal paths.
 
-**Rev A is in development.** I have defined and reviewed the architecture, interface requirements, production component candidates, MCU resource allocation, and engineering calculations. Schematic capture, PCB layout, application firmware, and prototype measurements are still ahead; the specifications below are my design targets.
+**Rev A is in development.** I have defined and reviewed the architecture, interface requirements, exact circuit/support-component selections, MCU resource allocation, and engineering calculations. Schematic capture, PCB layout, application firmware, and prototype measurements are still ahead; the specifications below are my design targets.
 
 ## My design at a glance
 
@@ -53,7 +53,7 @@ I describe the power domains, component candidates, and isolation boundaries in 
 
 I’m designing for predictable behavior when a wire is disconnected, a rail disappears, or a command stream stops. My [design decisions](docs/Design_Decisions.md) explain the tradeoffs behind analog protection, output backfeed blocking, current diagnostics, and safe startup.
 
-My [pre-schematic engineering review](docs/Engineering_Review.md) records current component status, corrected current-loop protection, isolated-port power capacity, protected AO feedback, and the next design gates. My [capture checklist](docs/Schematic_Capture.md) records implementation details.
+My [pre-schematic engineering review](docs/Engineering_Review.md) records current component status, corrected current-loop protection, isolated-port power capacity, protected AO feedback, and the next design gates. My [capture package](docs/Schematic_Capture.md) links complete power, control, analog and field I/O circuits, with [component selections](docs/components/README.md) and exact support values.
 
 I keep the calculations reproducible. My [power and measurement analysis](docs/calcs/README.md) covers input-current headroom, loop burden, quantization, fault dissipation, and output losses. For example, a 200 Ω loop shunt dissipates 80 mW at 20 mA, but 4.5 W if directly exposed to 30 V; that difference drives my active fault-protection strategy.
 

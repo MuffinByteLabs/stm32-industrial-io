@@ -1,6 +1,6 @@
 # Interface contract
 
-I define the Rev A connections and operating targets here. Connector part numbers, physical pin order, reference designators, mating plugs, and assembly drawings are not frozen. Schematic implementation and measured ratings remain pending; this document is not an as-built wiring drawing.
+I define the Rev A connections and operating targets here. I have selected exact connector pairs and pin order in the [power](circuits/Power.md), [analog](circuits/Analog.md) and [field I/O](circuits/Field_IO.md) specifications. Reference designators and as-built assembly drawings follow capture. Schematic implementation and measured ratings remain pending; this document is not an as-built wiring drawing.
 
 My [architecture](Architecture.md) describes the circuit blocks, [design decisions](Design_Decisions.md) records the rationale, and [validation plan](Validation.md) defines the acceptance evidence.
 
@@ -34,7 +34,7 @@ Bonding a field reference to MAIN_GND intentionally removes its separation. USB 
 | CAN | CAN_H, CAN_L, CAN_REF | Classic CAN followed by CAN FD qualification |
 | Service | USB-C, keyed SWD | Service logic, programming, and debug |
 
-I will select terminal ratings, wire size, screw access, and pin order with the enclosure. All external circuits in this design are low-voltage DC; relay contact ratings do not make the board a mains interface.
+I use the selected terminal ratings/pin order from my circuit specifications and check screw access with the enclosure. All external circuits in this design are low-voltage DC; relay contact ratings do not make the board a mains interface.
 
 ## DC supply and USB service
 
@@ -98,12 +98,14 @@ My initial contact qualification target is 30 V DC, 1 A resistive with the speci
 
 ## Wired communication and command ownership
 
-RS-485 has its own isolated supply and RS485_REF. I will map D+/D− explicitly to transceiver pins because vendor A/B labels vary. The network uses end-only 120 Ω termination and reviewed bias at one designated location. The Modbus RTU target range is 9,600–115,200 bit/s.
+RS-485 has its own isolated supply and RS485_REF. I will map D+/D− explicitly to transceiver pins because vendor A/B labels vary. The network uses end-only 120 Ω termination and DNP external bias by default, with an optional network at one designated location. The Modbus RTU target range is 9,600–115,200 bit/s.
 
 CAN has another isolated supply and CAN_REF. I will qualify classic CAN at 500 kbit/s first, then FD at 500 kbit/s arbitration and 2 Mbit/s data on a documented short bus with an FD-capable peer. The installation requires two end terminations and a documented reference/shield arrangement.
 
 I keep RS485_REF and CAN_REF separate. Joining them removes port-to-port isolation. Protection returns stay in their respective domains; shield bonding is an installation decision.
 
-I start operation disarmed. Hardware permission requires FIELD_VALID AND RESET_OK AND WATCHDOG_OK AND ARM; AO also requires FIELD_ANALOG_VALID. Modbus, CAN, or the local demonstration is explicitly selected as command owner. Another interface must not silently take control.
+I start operation disarmed. All seven actuator gates require PERMISSION: ANALOG_VALID, RESET_OK, WATCHDOG_OK, DISARM_N and ARM_STATE. Required analog-health loss also disarms digital and relay outputs; [Control and service](circuits/Control_Service.md) defines the gate network. Modbus, CAN, or the local demonstration is explicitly selected as command owner. Another interface must not silently take control.
 
 The default owner timeout is 1 s. Owner changes, reset, watchdog failure, invalid power, update mode, or a global fault inhibit energy outputs and clear arming. Recovery requires fresh valid commands and explicit rearming.
+
+My initial RS-485 fixture is ≤5 m with reference conductors and −7..+7 V common mode; the chosen protection narrows the transceiver family's full common-mode window. My CAN FD fixture is ≤5 m at500kbit/s arbitration and2Mbit/s data. I specify DI1's ≤3 m cable, output coils ≤100 mH/0.5 A/12.5 mJ and first qualification loads in [Field I/O](circuits/Field_IO.md).

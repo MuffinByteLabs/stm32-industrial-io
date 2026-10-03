@@ -1,4 +1,4 @@
-"""Maintain the candidate-family PDFs listed in the project manifest.
+"""Maintain the selected-family PDFs listed in the project manifest.
 
 I use standard-library HTTPS to retrieve manufacturer reference documents.
 A valid PDF and first-page family match
@@ -55,7 +55,7 @@ def retrieve(item: tuple[str, dict], refresh: bool) -> tuple[str, dict]:
             bytes=target.stat().st_size,
             sha256=digest,
             checked_utc=datetime.now(timezone.utc).isoformat(timespec="seconds"),
-            verification_scope="PDF parses and family token appears in first three pages; electrical/pin extraction pending",
+            verification_scope="PDF parses and family token appears in first three pages; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending",
         )
         result.pop("error", None)
     except Exception as exc:

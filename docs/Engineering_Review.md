@@ -1,6 +1,6 @@
 # Pre-schematic engineering review
 
-I reviewed the Rev A architecture on October 3, 2026 against manufacturer product status, electrical tables, interface requirements, power arithmetic, and a provisional MCU resource allocation. My corrected architecture is ready for schematic capture. I have not yet approved a completed circuit, PCB, production BOM, or assembled-board rating.
+I reviewed the Rev A architecture on October 3, 2026 against manufacturer product status, electrical tables, interface requirements, power arithmetic, and a provisional MCU resource allocation. My corrected architecture is specified for capture; [preparation status](Schematic_Capture.md#preparation-status) identifies the capacitor-evidence and library gates still open before full freeze. I have not yet approved a completed circuit, PCB, production BOM, or assembled-board rating.
 
 I separate three kinds of evidence: manufacturer-specified device capabilities, my calculations and design assumptions, and measurements still to be collected. I cannot run ERC, DRC, extracted-layout analysis, or whole-board simulation before the native design exists. My [capture checklist](Schematic_Capture.md) and [qualification plan](Validation.md) define the next gates.
 
@@ -13,14 +13,14 @@ I checked the following manufacturer pages on October 3, 2026. The semiconductor
 | MCU | STM32G474VET6, LQFP100 | [ST: Active](https://www.st.com/en/microcontrollers-microprocessors/stm32g474ve.html) |
 | Main input eFuse | TPS26632RGER | [TI: Active](https://www.ti.com/product/TPS2663/part-details/TPS26632RGER) |
 | Field buck | LMR38020 | [TI: Active](https://www.ti.com/product/LMR38020) |
-| Logic buck / MCU analog LDO | TPS62160 / TPS7A20 | [TPS62160](https://www.ti.com/product/TPS62160), [TPS7A20](https://www.ti.com/product/TPS7A20) |
+| Logic buck / MCU analog LDO | TPS62160 / TPS709 | [TPS62160](https://www.ti.com/product/TPS62160), [TPS709](https://www.ti.com/product/TPS709) |
 | Field/USB power selection | TPS2121 | [TI: Active](https://www.ti.com/product/TPS2121) |
-| Analog auxiliary rails | TPS55340 / LM7705 | [TPS55340](https://www.ti.com/product/TPS55340), [LM7705](https://www.ti.com/product/LM7705) |
+| Analog auxiliary rails | TPS61040 / LM7705 | [TPS61040](https://www.ti.com/product/TPS61040), [LM7705](https://www.ti.com/product/LM7705) |
 | Group-isolated digital inputs | Two ISO1212 | [TI: Active](https://www.ti.com/product/ISO1212) |
 | Four-channel 16-bit acquisition | ADS8684A | [TI: Active](https://www.ti.com/product/ADS8684A) |
 | Analog sense protection | TMUX7462F | [TI: Active](https://www.ti.com/product/TMUX7462F) |
 | Current-loop series protection | Two TPS26611DDFR, 8-pin DDF | [TI: Active](https://www.ti.com/product/TPS2661/part-details/TPS26611DDFR) |
-| Zero-scale POR DAC | DAC80501ZDQFR | [TI: Active](https://www.ti.com/product/DAC80501/part-details/DAC80501ZDQFR) |
+| Zero-scale POR DAC | DAC80501ZDGSR | [TI: Active](https://www.ti.com/product/DAC80501/part-details/DAC80501ZDGSR) |
 | Gain and output driver | OPA2197IDR, dual SOIC-8 | [TI: Active](https://www.ti.com/product/OPA2197/part-details/OPA2197IDR) |
 | AO disconnect and protected feedback | ADG5401FBCPZ-RL7, 10-lead LFCSP | [ADI: Recommended for New Designs](https://www.analog.com/en/products/adg5401f.html) |
 | Four diagnosed high-side outputs | TPS4H160BQPWPRQ1 | [TI: Active](https://www.ti.com/product/TPS4H160-Q1/part-details/TPS4H160BQPWPRQ1) |
@@ -37,7 +37,7 @@ I checked the following manufacturer pages on October 3, 2026. The semiconductor
 
 I retain SMCJ33CA as a provisional input TVS. Littelfuse lists it in its [current SMCJ datasheet](https://www.littelfuse.com/assetdocs/littelfuse_tvs_diode_smcj_datasheet.pdf?assetguid=37388813-0d6d-4329-969b-1aa8b7614ac1); I did not obtain an explicit lifecycle badge for that exact diode. I do not equate a catalog listing with a complete surge-design approval. My support candidates include CSD19537Q3, BSS138P,215 and STPS2H100A; I will check their operating point, temperature, pulse energy, and package against the captured circuit.
 
-I retain proven production families where they meet the requirement. I replaced UCC12050 because its capacity did not close my bus-side load budget, rather than because that family is obsolete. Exact voltage/frequency suffixes, packages, connector codes, passives, crystals, and footprints still need selection during capture.
+I retain proven production families where they meet the requirement. I replaced UCC12050 because its capacity did not close my bus-side load budget, rather than because that family is obsolete. I have now selected voltage/frequency suffixes, packages, connector pairs, support passives and a CMOS clock in the detailed [capture package](Schematic_Capture.md). Missing local CAD assets and capacitor DC-bias confirmation remain preparation gates; captured connectivity and measured qualification follow implementation.
 
 ## Corrections I made before capture
 
@@ -69,7 +69,7 @@ I select TMUX1511PWR for receiving-domain analog isolation on terminal readback 
 
 ### MCU pins, clocks, and reset behavior
 
-I found a conflict-free provisional resource allocation in the G474 datasheet. I reserve PB8 for BOOT0, keep PG10 as NRST, use PD0/PD1 for FDCAN1, PD4–PD6 for USART2/RS-485, PC8/PC9 for I2C3, and PA5–PA7 for shared SPI1. USB, SWD, the external crystal, and DI1 timer acquisition have separate pins. I use an 8 MHz HSE planning point with a 144 MHz system clock and exact 48 MHz USB clock; maximum 170 MHz operation is optional and needs a different USB clock strategy. My [capture checklist](Schematic_Capture.md) records the full allocation and relevant errata.
+I found a conflict-free provisional resource allocation in the G474 datasheet. I reserve PB8 for BOOT0, keep PG10 as NRST, use PD0/PD1 for FDCAN1, PD4–PD6 for USART2/RS-485, PC8/PC9 for I2C3, and PA5–PA7 for shared SPI1. USB, SWD, the external CMOS clock, and DI1 timer acquisition have separate pins. I use an 8 MHz HSE bypass selection with a 144 MHz system clock and exact 48 MHz USB clock; maximum 170 MHz operation is optional and needs a different USB clock strategy. My [capture checklist](Schematic_Capture.md) records the full allocation and relevant errata.
 
 I add a hardware ARM latch with asynchronous clearing. Holding a GPIO high must not reenable outputs when field power returns. The reset supervisor's nominal threshold is 3.07 V for TPS3808G33; I do not substitute an assumed 2.93 V value. I select partial-power-down buffers at MCU/field crossings and monitor actual analog rail windows before declaring acquisition or AO valid.
 
@@ -90,3 +90,7 @@ My interface choices are established industrial conventions: positive DC inputs,
 Before layout, I will close every exact pin/package choice, regulator support network and compensation, tolerance/error budget, rail monitor, hardware inhibit truth table, transient-energy path, and ERC result. Before fabrication, I will close DRC, isolation geometry, thermal/current-carrying design, manufacturability, and source/export consistency. After assembly, I will collect calibrated analog results, real-load and cable behavior, startup/miswire/fault recovery, communication, and repeatability evidence.
 
 My architecture review establishes a feasible starting design with explicit margins and known remaining work. It does not establish automotive qualification, functional-safety certification, EMC compliance, or a guaranteed field rating. I keep the [validation matrix](Validation.md) tied to the actual revision I will build.
+
+## Detailed circuit completion
+
+I prepared a detailed capture reference set on October 3, 2026. I replaced the oversized TPS55340 boost with the internally controlled light-load TPS61040, defined all MCU service/control resources, set finite bus/load fixtures and recorded complete analog support networks. I use 5.75 W of named service reservations inside 6 W. I document actual OPAx197 typical-model results and threshold-supply shutdown constraints in [Analog](circuits/Analog.md), and separate them from whole-board qualification.

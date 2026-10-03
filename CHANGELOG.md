@@ -4,6 +4,11 @@
 
 ### October 3, 2026
 
+- I completed circuit capture specifications and exact component/support-value selections for power, control/service, analog and field I/O.
+- I matched the auxiliary boost to light-load operation, completed rail-health and domain-crossing details, and added bounded AO manufacturer-model checks.
+- I fixed connector pairs/pin orders, finite load/cable fixtures and the 5.75 W service allocation.
+- I added explicit pre-capture capacitor evidence and library gates, including a bank-by-bank report of unresolved capacitance minima.
+
 - I reviewed production component status and documented a conflict-free provisional MCU allocation.
 - I revised current-loop protection to preserve the permanent shunt load, added protected AO terminal feedback, and selected larger independent isolated bus supplies.
 - I updated the service-power budget, hardware arming/reset design, input-fault conditions, and schematic/qualification checks.

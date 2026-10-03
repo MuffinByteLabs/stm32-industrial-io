@@ -5,7 +5,7 @@ I document the controller from requirements through validation, with enough deta
 | Document | My focus |
 | --- | --- |
 | [Engineering review](Engineering_Review.md) | Current component status, compatibility, corrections, and review scope |
-| [Schematic capture](Schematic_Capture.md) | Pin/clock allocation, supervision, sequencing, and capture checks |
+| [Schematic capture](Schematic_Capture.md) | Complete circuit/support-component reference set, physical-pin allocation, sequencing and capture order |
 | [Architecture](Architecture.md) | Power, signal paths, component candidates, and isolation |
 | [Design decisions](Design_Decisions.md) | Protection, measurement, output behavior, and layout tradeoffs |
 | [Interfaces](Interfaces.md) | Electrical contracts, wiring, and communication behavior |
@@ -13,3 +13,5 @@ I document the controller from requirements through validation, with enough deta
 | [Calculations](calcs/README.md) | Reproducible power, measurement, and loading analysis |
 
 I have completed the architecture and requirements documentation. I’ll add schematic, PCB, firmware, and measured evidence as I implement Rev A. Until then, I treat the electrical specifications as design targets.
+
+I keep exact support values and ordering codes in my [component selection index](components/README.md), with detailed circuit instructions linked from the [capture package](Schematic_Capture.md).

@@ -63,9 +63,9 @@ def main() -> None:
 
     result = {
         "scope": "Ideal-amplifier DC topology check; no IC transient, stability, surge, or hardware validation",
-        "assumed_main_switch_ohm": 12,
-        "assumed_series_protection_ohm": 40,
-        "assumed_feedback_switch_ohm": 3900,
+        "assumed_main_switch_ohm": 12.5,
+        "assumed_series_protection_ohm": 100,
+        "assumed_feedback_path_total_ohm": 8600,
         "load_ohm": 10000,
         "terminal_pulldown_ohm": 100000,
         "gain_stage_v": value("gain"),
