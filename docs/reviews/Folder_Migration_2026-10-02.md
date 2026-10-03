@@ -30,7 +30,7 @@ Partial coverage is explicit: proportional solenoids, ten precision bidirectiona
 
 ## Checks and practical limits
 
-Repository checks cover local links and anchors, PDF identity/hashes, expected cleanup, and local library/model paths. Planning arithmetic covers selected budgets and load fixtures. CI shell syntax and four-layer release-gate behavior were checked; the complete GitHub Actions workflow has not run.
+Repository checks cover local links and anchors, PDF identity/hashes, expected cleanup, and local library/model paths. Planning arithmetic covers selected budgets and load fixtures. CI shell syntax and four-layer release-gate behavior were checked during migration. The workflows subsequently ran successfully during [GitHub setup](GitHub_Setup_2026-10-02.md); native hardware checks still remain unrun because the design files do not exist.
 
 The [saved repository audit](Project_Audit_2026-10-02.json) reports no failures. All 21 candidate PDFs passed identity/hash checks, and four project-relative library/model references resolved. Four additional retained PDF references parsed successfully. All three Python scripts compiled; default planning arithmetic ran; Git whitespace checks passed after text normalization. Independent reviews found the new documentation consistent with the canonical plan. A missing digital-input closure item was added during final review.
 

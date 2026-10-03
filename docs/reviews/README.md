@@ -7,6 +7,7 @@ The active project is the fresh STM32 Industrial I/O Controller Rev A. Earlier r
 - [Folder migration, October 2, 2026](Folder_Migration_2026-10-02.md): cleanup, preserved assets, recovery archive, verification scope, and pending physical engineering.
 - [Machine-readable migration manifest](migration_manifest.json): removed targets, renamed libraries, and archive identity.
 - [Repository audit result](Project_Audit_2026-10-02.json): checked links, PDF identities/hashes, cleanup, and local asset paths.
+- [GitHub setup verification](GitHub_Setup_2026-10-02.md): published configuration, hosted checks, and commit attribution.
 - [Upwork job-fit analysis](../Upwork_Job_Fit.md): source-grounded capability fit and required finished proof.
 
 ## Reviews to add as implementation progresses
