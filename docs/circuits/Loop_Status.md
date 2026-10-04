@@ -1,6 +1,6 @@
 # Current-loop status receivers
 
-I receive the two TPS26611 SGOOD signals with **two SN74AUP1T17DCKR** low-threshold Schmitt buffers and **one SN74LVC2G125DCUR** qualified output buffer. All three packages use service `3V3_DIG` and `MAIN_GND`. This network completes the status connections to PD8 and PD9 in [Control and service](Control_Service.md); the current protectors themselves are specified in [Analog](Analog.md). My [component groups](../components/control_service.json) are capture selections, not a released assembly BOM.
+I receive the two TPS26611 SGOOD signals with **two SN74AUP1T17DCKR** low-threshold Schmitt buffers and **one SN74LVC2G125DCUR** qualified output buffer. All three packages use controller `3V3_DIG` and `MAIN_GND`. This network completes the status connections to PD8 and PD9 in [Control and service](Control_Service.md); the current protectors themselves are specified in [Analog](Analog.md). My [component groups](../components/control_service.json) are capture selections, not a released assembly BOM.
 
 ## Input level, load and wiring
 
@@ -22,7 +22,7 @@ The typical 6.3 kΩ low-state model produces only about 3.2 mV from 0.5 µA of u
 
 ## Qualified output and fail defaults
 
-I use the control sheet's spare inverter unit to make `HEALTH_READY_N = NOT HEALTH_READY; LOOP_STATUS_OE_N = HEALTH_READY_N`. This is the second unit of the already selected SN74LVC2G04DCUR; it is not an additional package. HEALTH_READY is independent analog/field power health and reset qualification. Neither SGOOD signal participates in generating this enable, so this status circuit creates no startup cycle.
+I use one control-sheet inverter unit to make `HEALTH_READY_N = NOT HEALTH_READY; LOOP_STATUS_OE_N = HEALTH_READY_N`. This is one unit of the selected SN74LVC2G04DCUR; its other input is grounded and its unused output is no-connect. HEALTH_READY is independent analog/field power health and reset qualification. Neither SGOOD signal participates in generating this enable, so this status circuit creates no startup cycle.
 
 | SN74LVC2G125 DCU pin | Connection |
 | --- | --- |
@@ -32,7 +32,7 @@ I use the control sheet's spare inverter unit to make `HEALTH_READY_N = NOT HEAL
 | 6 2Y | Through 100 Ω to `LOOP2_BAD_MCU`, PD9/package pin 56 |
 | 4 GND; 8 VCC | MAIN_GND; 3V3_DIG with 100 nF local bypass |
 
-Each MCU-side status net has **100 kΩ, ERJ-3EKF1003V, to 3V3_DIG**. Disabled buffers therefore report **high/invalid**, including USB-only service, reset and lost analog health. The downstream buffer is powered from the same service supply as the MCU and has powered-off protection. SGOOD never connects directly to the MCU rail or GPIO. The first-stage Schmitt outputs carry only the next buffer's input load; the 100 kΩ pulls are downstream of the qualified outputs. [SN74LVC2G125 pin functions and Ioff](https://www.ti.com/lit/ds/symlink/sn74lvc2g125.pdf)
+Each MCU-side status net has **100 kΩ, ERJ-3EKF1003V, to 3V3_DIG**. Disabled buffers therefore report **high/invalid**, including reset and lost analog health. The downstream buffer is powered from the same digital supply as the MCU and has powered-off protection. SGOOD never connects directly to the MCU rail or GPIO. The first-stage Schmitt outputs carry only the next buffer's input load; the 100 kΩ pulls are downstream of the qualified outputs. [SN74LVC2G125 pin functions and Ioff](https://www.ti.com/lit/ds/symlink/sn74lvc2g125.pdf)
 
 | State | MCU status interpretation |
 | --- | --- |
@@ -45,6 +45,6 @@ I name these GPIO nets `LOOP1_BAD_MCU` and `LOOP2_BAD_MCU` to preserve the physi
 
 ## Capture and qualification
 
-I allocate three additional IC packages, three 100 nF capacitors, four 100 Ω resistors, two 1 MΩ pulldowns, two 100 kΩ pullups and one 10 kΩ OE pullup. The existing second inverter unit supplies the enable polarity. I keep both low-speed interstage traces short, and compare every physical pin with the datasheets and selected KiCad symbols before capture approval.
+I allocate three additional IC packages, three 100 nF capacitors, four 100 Ω resistors, two 1 MΩ pulldowns, two 100 kΩ pullups and one 10 kΩ OE pullup. One control-sheet inverter unit supplies the enable polarity; the other unit is grounded/no-connect. I keep both low-speed interstage traces short, and compare every physical pin with the datasheets and selected KiCad symbols before capture approval.
 
-I qualify normal, overload, negative fault, reset, disabled receiver, USB-only, and service-power removal states. I measure SGOOD low voltage, input loading, status transitions, qualified-output defaults and powered-off leakage. These are prototype checks; I have not yet measured this circuit. I reserve **0.50 mA from 3V3_DIG** for this receiver network in its stable state, including the two output pullups and the OE pullup's approximately 0.33 mA enabled-state current; brief switching and fault intervals remain in the measured service-current budget.
+I qualify normal, overload, negative fault, reset, disabled receiver and external-supply removal states. I measure SGOOD low voltage, input loading, status transitions, qualified-output defaults and powered-off leakage. These are prototype checks; I have not yet measured this circuit. I reserve **0.50 mA from 3V3_DIG** for this receiver network in its stable state, including the two output pullups and the OE pullup's approximately 0.33 mA enabled-state current; brief switching and fault intervals remain in the measured controller-current budget.

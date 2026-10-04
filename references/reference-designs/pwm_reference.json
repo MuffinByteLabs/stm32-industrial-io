@@ -1,0 +1,11 @@
+{
+  "document": "Driving PWM Loads with TI High-Side Switches",
+  "manufacturer": "Texas Instruments",
+  "file": "REF_TI_PWM_HighSide_SLVAF10.pdf",
+  "source_url": "https://www.ti.com/lit/pdf/slvaf10",
+  "document_id": "SLVAF10",
+  "checked_date": "2026-10-04",
+  "pages": 23,
+  "sha256": "1b00a4a236d4f5dcb5f9c52f8ed4692e1aedbf506c71a6d96f249f41bcc0c8e8",
+  "scope": "Manufacturer application guidance; device-specific timing comes from TPS4H160B datasheet and prototype qualification."
+}

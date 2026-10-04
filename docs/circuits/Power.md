@@ -13,15 +13,13 @@ I qualify the prototype with a 9–30 V DC bench source limited to at most 4 A. 
 | VIN_EFUSE | Blocking-FET drain; eFuse IN pins |
 | VFIELD | Controlled eFuse output; high-side outputs and main buck input |
 | 5V_FIELD | Field-only 5 V: relay coils, isolated converters, field logic and analog conversion |
-| USB5_LIMIT | Separate USB limiter output, defined in [Control and service](Control_Service.md) |
-| 5V_SYS | Mux output: essential service electronics |
 | 3V3_DIG | Service digital buck output |
 | 3V3_MCU_ANA | Service analog LDO output |
 | 3V3_FIELD_LOGIC | Field-only LDO output: DI receiver logic, bus-transceiver logic, external ADC digital supply and field buffers |
-| 15V_ANA / VNEG | Field-only analog headroom and negative bias |
+| 15V_ANA | Analog-input protection and fault-threshold regulator supply |
 | MAIN_GND | Common main supply, USB, analog and load return reference |
 
-I keep USB-only operation limited to service electronics. I count actual firmware consumption against 100 mA before USB enumeration and against the negotiated allowance afterward. In USB-only host suspend I stop the MCU, disable the watchdog and clear ARM; my whole-device suspend-current target is 2.5 mA. The upstream TPS2553 hardware limit remains below 500 mA and does not by itself enforce the pre-enumeration 100 mA policy. I use powered-off isolation at every service-to-field signal crossing.
+I derive MCU, field logic, analog protection and port power from the external supply. USB VBUS is sensed only by the data-interface sheet; no board regulator or load is powered from it. I keep receiving-powered buffers and explicit output defaults because derived rails can still start and collapse at different times.
 
 ## Input protection and controlled startup
 
@@ -48,7 +46,7 @@ I connect the **BSS138P,215** fast-discharge FET with gate pin 1 at BLOCK_FAST_G
 | 17, 18 OUT | VFIELD |
 | 19–24 NC | Explicit no-connect |
 
-I use 0.1%, 25 ppm/°C thin-film resistors for these networks. The UVLO divider gives an 8.448 V nominal rising threshold, below my separate field-valid qualification threshold. Using the 1.176–1.224 V reference limits, ±150 nA pin leakage and resistor tolerance gives an approximately 8.17–8.73 V rising interval before resistor temperature drift. This provides startup margin at a 9 V connector after fuse drop; UVLO is not the 9 V operating-validity decision.
+I use 0.1%, 25 ppm/°C thin-film resistors for these networks. The UVLO divider gives an 8.448 V nominal rising threshold for raw-input startup; FIELD_OK separately supervises the post-protection voltage under load. Using the 1.176–1.224 V reference limits, ±150 nA pin leakage and resistor tolerance gives an approximately 8.17–8.73 V rising interval before resistor temperature drift. This provides startup margin at a 9 V connector after fuse drop; UVLO is not the 9 V operating-validity decision.
 
 My 5.11 kΩ current-limit resistor gives approximately 3.52 A nominal. The datasheet specifies limit accuracy at selected test currents; I do not interpolate those points into a guaranteed 3.52 A tolerance. A ±10% IC spread with this 0.1% resistor would give approximately 3.17–3.88 A as an engineering screening envelope. I measure the assembled limit, including temperature, before assigning a rating.
 
@@ -76,56 +74,32 @@ I use **LMR38020FDDAR**, the forced-PWM version without spread spectrum or a sep
 
 I connect **XAL7050-153MEC**, 15 µH ±20%, between SW_FIELD and 5V_FIELD. I place **six 885382209002, 2.2 µF/100 V X7R**, plus 100 nF, at VIN-to-GND. My input-bank acceptance condition is at least 4.7 µF effective at 35 V, including initial tolerance, temperature, aging and DC bias. I place **four GRM32ER71E226KE15L, 22 µF/25 V X7R**, at the output; the output-bank acceptance condition is at least 40 µF effective at 5.1 V with ESR in the manufacturer's ceramic-capacitor application range. I have selected the parts and count but have not yet archived their DC-bias curves.
 
-The 99.6 kΩ total top resistance sets 5.000 V nominal. Reference and initial resistor limits give approximately 4.917–5.083 V before ripple, feedback leakage and resistor temperature drift. My normal operating-envelope target is 4.90–5.10 V; my transient acceptance condition remains within the external ADC limits and LM7705's 5.25 V operating maximum. I measure the complete 5 V envelope rather than equating the nominal setting with compliance.
+The 99.6 kΩ total top resistance sets 5.000 V nominal. Reference and initial resistor limits give approximately 4.917–5.083 V before ripple, feedback leakage and resistor temperature drift. My normal operating-envelope target is 4.90–5.10 V; my transient acceptance condition remains within the external ADC limits and the retained 5 V load operating limits. I measure the complete 5 V envelope rather than equating the nominal setting with compliance.
 
 At 35 V input, 5.1 V output, 12 µH and an assumed 320 kHz lower frequency, inductor ripple is approximately 1.135 A peak-to-peak. A 1.2 A service load then reaches about 1.77 A peak, below the buck's 2.6 A minimum high-side current-limit test point. My 320–500 kHz screening range is an engineering allowance, not a new manufacturer frequency guarantee at the selected RT. The [inductor](https://www.coilcraft.com/getmedia/13a991b3-4273-4be3-81ba-f3cf372b4691/xal7050.pdf) has 41 mΩ maximum room-temperature DCR and a 6.4 A typical 30%-drop saturation-current point; I retain its temperature and core-loss qualification.
 
-## Field/USB service mux
-
-I use **TPS2121RUXR** in VQFN-HR-12, 2 × 2.5 mm. I select the field rail through its VREF priority mode rather than a firmware-controlled source selector. This circuit is source selection; the separate USB circuit sets the USB input policy. I follow the [TPS2121 VREF-mode application](https://www.ti.com/lit/ds/symlink/tps2121.pdf).
-
-| Pin | Connection |
-| --- | --- |
-| 1, 8 OUT | 5V_SYS; four 22 µF/25 V output capacitors |
-| 2 IN2 | USB5_LIMIT; one 2.2 µF/50 V local capacitor |
-| 3 CP2 | MAIN_GND |
-| 4 OV2 | 44.2 kΩ from USB5_LIMIT, 10 kΩ to MAIN_GND |
-| 5 OV1 | 44.2 kΩ from 5V_FIELD, 10 kΩ to MAIN_GND |
-| 6 PR1 | 100 kΩ from 5V_FIELD, 30.1 kΩ to MAIN_GND |
-| 7 IN1 | 5V_FIELD; one 10 µF/25 V local capacitor |
-| 9 ST | POWER_SOURCE_STATUS; 19.6 kΩ to 3V3_DIG; MCU PD12 |
-| 10 ILIM | 80.6 kΩ to MAIN_GND |
-| 11 SS | 1 µF/50 V to MAIN_GND |
-| 12 GND | MAIN_GND; use the RUX manufacturer's actual ground/power-pad geometry |
-
-I use 0.1% divider resistors. PR1's nominal field-preference threshold is 4.582 V; reference/leakage/tolerance screening gives approximately 4.35–4.77 V. A valid normal field rail therefore takes preference even if USB is higher. OV1/OV2 trip nominally at 5.745 V, approximately 5.46–5.98 V with reference/leakage/tolerance. These are mux input supervisors; they do not replace the field rail's 5.25 V maximum operating-envelope check.
-
-The 80.6 kΩ limit resistor gives about 1.49 A nominal from the fitted datasheet equation. I do not apply the 80 kΩ test-point min/max to a different resistor as a precise guarantee; USB remains separately limited. I use the 1 µF SS capacitor for a slow startup; the 88 V/s example slew is typical only. The USB5_LIMIT local capacitor contributes 2.42 µF maximum initial capacitance to USB inrush accounting, before temperature drift. My 19.6 kΩ ST pullup is inside its 6–20 kΩ recommended range and draws about 168 µA when LOW; my 100 kΩ fault pullup draws about 33 µA when LOW. The test-only field PG pullups are field-powered and do not participate in regulator enables or rail-health decisions.
-
-I allow an MCU reset during source transfer. The CP2-ground mode uses the ordinary switchover timing, not the fastest external-reference mode; reverse-current detection has finite response and transfer can wait for a retained output to fall below the new source. A 100 µs interruption at 150 mA and 40 µF effective output capacitance alone gives 0.375 V droop, but this arithmetic does not prove every removal waveform. HIGH at ST can mean field selected or neither source valid; LOW means USB selected. I read this pin together with the independent rail-health state.
-
-## Service digital buck and two 3.3 V LDOs
+## Controller digital buck and two 3.3 V LDOs
 
 I use the [TPS62160DSGR](https://www.ti.com/lit/ds/symlink/tps62160.pdf) vendor-recommended 2.2 µH network. I select **XFL3012-222MEC**, a 10 µF/25 V input capacitor plus 100 nF, and one 22 µF/25 V output capacitor. I require at least 4.7 µF effective input capacitance and 10 µF effective output capacitance after capacitor derating.
 
 | TPS62160 pin | Connection |
 | --- | --- |
 | 1 PGND / 4 AGND / exposed pad 9 | MAIN_GND, joined locally |
-| 2 VIN / 3 EN | 5V_SYS |
+| 2 VIN / 3 EN | 5V_FIELD |
 | 5 FB | 30.9 kΩ +301 Ω in series from 3V3_DIG; 10 kΩ to MAIN_GND |
 | 6 VOS | Kelvin connection to 3V3_DIG at the output capacitor |
 | 7 SW | SW_DIG; 2.2 µH to 3V3_DIG |
 | 8 PG | DIGITAL_BUCK_PG test point; 100 kΩ to 3V3_DIG |
 
-My 0.1% divider gives 3.296 V nominal. I use two E96 top resistors and reduce the original 312 kΩ/100 kΩ impedance tenfold: the 400 nA maximum feedback-leakage test bound would add about 125 mV with the original divider, but only 12.5 mV here. The +4% light-load reference bound, initial resistor ratio and conservative leakage screening give approximately 3.446 V maximum before resistor drift, line/load regulation and ripple. The divider consumes approximately 80 µA at nominal output, which I include in the USB suspend budget. I keep supervision separate from converter PG. The IC's 1 A capacity does not authorize a 1 A USB load. I verify the selected [inductor's](https://www.coilcraft.com/getmedia/f76a3c9b-4fff-4397-8028-ef8e043eb200/xfl3012.pdf) current and loss against the actual service profile.
+My 0.1% divider gives 3.296 V nominal. I use two E96 top resistors and reduce the original 312 kΩ/100 kΩ impedance tenfold: the 400 nA maximum feedback-leakage test bound would add about 125 mV with the original divider, but only 12.5 mV here. The +4% light-load reference bound, initial resistor ratio and conservative leakage screening give approximately 3.446 V maximum before resistor drift, line/load regulation and ripple. The divider consumes approximately 80 µA at nominal output. I keep supervision separate from converter PG and retain the named current budget. I verify the selected [inductor's](https://www.coilcraft.com/getmedia/f76a3c9b-4fff-4397-8028-ef8e043eb200/xfl3012.pdf) current and loss against the actual service profile.
 
-I use **two TPS70933DBVR**, each with one 2.2 µF/50 V input capacitor and one 10 µF/25 V output capacitor. On each regulator, pin 1 IN joins its input supply, pin 2 GND joins MAIN_GND, pin 3 EN is left floating as the manufacturer recommends for always-enabled operation, pin 4 NC is explicitly unconnected, and pin 5 OUT is the named output. I do not tie EN to VIN. One input is 5V_SYS and its output is 3V3_MCU_ANA; the other input is 5V_FIELD and its output is 3V3_FIELD_LOGIC. My output-bank design requirement is at least 2.2 µF effective and no more than 47 µF total including receiving-IC bypasses, with ESR no more than 0.2 Ω. This exceeds the 1.5 µF effective minimum for a 3.3 V output in the [TPS709 stability specification](https://www.ti.com/lit/ds/symlink/tps709.pdf).
+I use **two TPS70933DBVR**, each with one 2.2 µF/50 V input capacitor and one 10 µF/25 V output capacitor. On each regulator, pin 1 IN joins its input supply, pin 2 GND joins MAIN_GND, pin 3 EN is left floating as the manufacturer recommends for always-enabled operation, pin 4 NC is explicitly unconnected, and pin 5 OUT is the named output. I do not tie EN to VIN. One input is 5V_FIELD and its output is 3V3_MCU_ANA; the other input is 5V_FIELD and its output is 3V3_FIELD_LOGIC. My output-bank design requirement is at least 2.2 µF effective and no more than 47 µF total including receiving-IC bypasses, with ESR no more than 0.2 Ω. This exceeds the 1.5 µF effective minimum for a 3.3 V output in the [TPS709 stability specification](https://www.ti.com/lit/ds/symlink/tps709.pdf).
 
 I select this regulator for ordinary input-collapse behavior: its reverse-current protection operates independently of EN while OUT is above 1.8 V, and its OUT absolute maximum is 7 V independently of IN. This avoids the retained-output differential restriction of the earlier LDO. Reverse current can still flow below 1.8 V; I do not claim zero backfeed at every residual voltage. Neither output has an external power source, and hardware rail qualification removes output permission before this residual-discharge region.
 
-I set a 100 mA field-logic capacity target and a 50 mA maximum for the MCU analog-supply branch. The IC is rated for 150 mA. Conservatively adding the ±1% DC accuracy, 10 mV maximum line regulation and 50 mV maximum load regulation gives a 3.207–3.393 V DC screening envelope under the datasheet test conditions; I still check ripple and actual loading. At 4.90 V field input, 1.507 V headroom remains above the 1.4 V maximum dropout specified at 150 mA. For the service analog branch, my 4.10 V minimum steady 5V_SYS acceptance condition leaves more than the 650 mV maximum dropout specified at 50 mA. A source-transfer dip may reset the MCU; it must not arm outputs.
+I set a 100 mA field-logic capacity target and a 50 mA maximum for the MCU analog-supply branch. The IC is rated for 150 mA. Conservatively adding the ±1% DC accuracy, 10 mV maximum line regulation and 50 mV maximum load regulation gives a 3.207–3.393 V DC screening envelope under the datasheet test conditions; I still check ripple and actual loading. At 4.90 V field input, 1.507 V headroom remains above the 1.4 V maximum dropout specified at 150 mA. The MCU analog branch uses the same 4.90 V minimum input and has additional margin over the 650 mV maximum dropout specified at 50 mA. External-supply brownout removes permission and requires fresh rearming after reset.
 
-At 5.10 V and 3.207 V output, 100 mA pass-device dissipation is approximately 189 mW. The 212.1 °C/W DBV thermal metric would imply a 40 °C rise on its test fixture; it does not replace a board thermal measurement. I accept the TPS709's higher noise for MCU diagnostic ADC measurements and check those measurements with switching rails active. My precision field conversions use the external ADC/DAC and their own references. I do not transfer a typical noise figure characterized at another output voltage into a guaranteed 3.3 V noise specification.
+At 5.10 V and 3.207 V output, 100 mA pass-device dissipation is approximately 189 mW. The 212.1 °C/W DBV thermal metric would imply a 40 °C rise on its test fixture; it does not replace a board thermal measurement. I accept the TPS709's higher noise for MCU diagnostic ADC measurements and check those measurements with switching rails active. My precision field conversions use the external ADC and its own reference. I do not transfer a typical noise figure characterized at another output voltage into a guaranteed 3.3 V noise specification.
 
 ## +15 V analog boost and fall sequencing
 
@@ -139,7 +113,7 @@ I use the active **TPS61040DBVR** SOT-23 boost for this low-current rail. Its di
 | 4 EN | FIELD5V_VALID, with 100 kΩ to MAIN_GND |
 | 5 VIN | 5V_FIELD; 10 µF/25 V plus 100 nF locally |
 
-I connect the rectifier cathode to 15V_ANA. I use **two 2.2 µF/50 V X7R** plus **EEUFR1E681, 680 µF/25 V ±20%**, at the output and a 100 kΩ bleeder. I reserve a 25 mA load-capacity target, including analog loads, divider/bleeder current and fault-status current. The electrolytic is deliberate hold-up for the two child fault-threshold LDOs described in [Analog circuits](Analog.md). I wait for positive and negative rail qualification and analog settling before permitting outputs or acquisition.
+I connect the rectifier cathode to 15V_ANA. I use **two 2.2 µF/50 V X7R** plus **EEUFR1E681, 680 µF/25 V ±20%**, at the output and a 100 kΩ bleeder. I reserve a 25 mA load-capacity target, including analog loads, divider/bleeder current and fault-status current. The electrolytic is deliberate hold-up for the two child fault-threshold LDOs described in [Analog circuits](Analog.md). I wait for positive-rail qualification and analog settling before permitting outputs or acquisition.
 
 The divider gives 15.043 V nominal. Reference, resistor and ±1 µA feedback-current screening gives approximately 14.60–15.50 V before ripple and resistor temperature drift. At 4.9 V input, 15.5 V output, a 350 mA minimum peak-current limit and 12 µH minimum inductance, the ideal switching-boundary frequency is approximately 798 kHz, below the 1 MHz guidance. Maximum current-ramp on-time is about 1.83 µs using 18 µH, 450 mA and a conservative 0.45 V switch drop, below the 4 µs minimum maximum-on-time setting. Assuming 60% conversion efficiency, the simple peak-current capacity estimate is 33.2 mA, leaving margin above the 25 mA target; efficiency is an assumption requiring a prototype measurement. My 680 pF feedforward choice follows the datasheet formula near a 5 mA light-load operating point, not a loop-model measurement.
 
@@ -149,23 +123,17 @@ I enable the two child VFP regulators from ANALOG_VALID and pull their enables d
 
 I require the selected 680 µF parent bulk to retain **at least 500 µF throughout 0–50 °C**, not merely its 544 µF room-temperature tolerance minimum. Under this bound, the parent takes at least 254.457 ms to fall from the minimum UV decision to zero at 25 mA. Allowing 1 ms disable delay, 11.2433 V maximum initial VFP11 and 6.13227 V maximum initial VFP6, their retained voltages at parent zero are approximately 0.190 V and 0.114 V respectively, below the 0.3 V absolute-maximum differential. The exponentially falling child minus the linearly falling parent is convex, so the initial and final endpoint bounds cover the interval. I do not assume free child discharge while a child remains enabled and regulating. The bulk-capacitance and disable-delay requirements still need manufacturer temperature evidence and physical qualification; an internal hard short on 15V_ANA requires separate protection and is outside my external-terminal fault qualification.
 
-## Negative-bias generator
-
-I use [LM7705MM/NOPB](https://www.ti.com/lit/ds/symlink/lm7705.pdf) from 5V_FIELD. I connect pins 2 and 5 VSS to MAIN_GND, pin 3 SD directly to MAIN_GND, and pin 4 VDD to 5V_FIELD with 10 µF and 100 nF locally. I connect a **10 µF/25 V X7R** flying capacitor between pin 1 CF+ and pin 8 CF−, **22 µF/25 V** from pin 7 CRES to MAIN_GND, and **22 µF/25 V plus 100 nF** from pin 6 VOUT to MAIN_GND. Pin 6 defines VNEG. These are unpolarized ceramic pump capacitors; I do not put a positive electrolytic terminal on the negative rail.
-
-I select the larger flying capacitor to reduce the equivalent switched-capacitor resistance; the [LM7705 evaluation board](https://www.ti.com/lit/ug/snva359b/snva359b.pdf) uses 6.8 µF rather than the 5 µF electrical-characterization fixture. I do not claim the tabulated ripple/output bounds are guaranteed with every changed capacitor corner. The intended load is about 3 mA from the dual amplifier, and I allocate 4 mA from the 5 V source including conversion and quiescent current. SD remains grounded because a 3.3 V MCU output does not automatically meet the 3.25 V worst-case shutdown-high threshold. I qualify VNEG independently before AO is enabled. The 100 kΩ VNEG discharge resistor belongs to the analog sheet.
-
 ## Budget, capture checks and qualification gates
 
-I reserve 0.75 W for MCU/service logic, 0.50 W for field logic/ADC/DAC, 0.65 W for auxiliary conversion, 1.10 W for both relay coils and 2.75 W for both isolated converters. The sum is 5.75 W against a 6 W delivered 5V_FIELD ceiling, leaving 0.25 W. The auxiliary reservation covers 25 mA ×15 V /60% plus 4 mA ×5 V =645 mW. These are engineering allocations, not a complete guaranteed maximum-power specification. At 8.76 V after input protection and an assumed 80% main-buck efficiency, 2 A load current plus 6 W service demand gives about 2.86 A before small VFIELD overhead.
+I reserve 0.75 W for MCU/service logic, 0.50 W for field logic/ADC, 0.65 W for auxiliary conversion, 1.10 W for both relay coils and 2.75 W for both isolated converters. The sum is 5.75 W against a 6 W delivered 5V_FIELD ceiling, leaving 0.25 W. The auxiliary reservation covers 25 mA ×15 V /60% =625 mW, with 25 mW additional reserve. I retain the positive-rail capacity and 25 mA discharge ceiling despite the lower input-only analog load. These are engineering allocations, not a complete guaranteed maximum-power specification. I require VFIELD ≥8.4 V at a measured 9 V connector input under full load across 0–50 °C, bounding total hot input-path drop to 0.6 V. At 8.4 V and 80% assumed buck efficiency, 2 A switched loads plus 6 W electronics draw approximately 2.893 A before the four pre-diode bleeders and high-side operating-current reserve defined in the system budget. I start unloaded and measure the eFuse UVLO/startup path and hot loaded voltage drop before claiming the 9 V full-load envelope.
 
-I retain the isolated-converter networks on the field-I/O sheet and USB limiter/CC/supervisor/watchdog networks on the control sheet; I do not duplicate them here. FIELD5V_VALID is generated from service-powered monitors and does not depend on the boost or child VFP rails. ANALOG_VALID uses the +15 V/VNEG monitor chain and must not depend on the VFP outputs it enables.
+I retain the isolated-converter networks on the field-I/O sheet and USB data/CC/supervisor/watchdog networks on the control sheet. FIELD5V_VALID is generated from controller-powered monitors and does not depend on the boost or child VFP rails. ANALOG_VALID adds +15 V and field-logic qualification and must not depend on the VFP outputs it enables.
 
 I still need the following evidence before releasing a layout or assigning measured ratings:
 
 - I must archive selected-capacitor bias/temperature/aging curves and demonstrate the effective-capacitance minima listed above. Murata's production listings establish candidate lifecycle, not a bias-retention guarantee. This is a specific pre-layout component check that remains open.
-- I must create the three missing local IC symbols (LMR38020 DDA, TPS2121 RUX and TPS709 DBV) and the XFL3012 footprint, then verify every pin/pad and exposed-pad connection against the current drawings. Existing KiCad 10 candidate footprints are identified in the component list; library existence alone is not an assembly review.
+- I must create the two missing local IC symbols (LMR38020 DDA and TPS709 DBV) and the XFL3012 footprint, then verify every pin/pad and exposed-pad connection against the current drawings. Existing KiCad 10 candidate footprints are identified in the component list; library existence alone is not an assembly review.
 - I must review eFuse startup dissipation with the assembled capacitance and converter sequencing, and the blocking FET's temperature/SOA against source-removal and reversal waveforms. CSD19537Q3 has a 16.6 mΩ room-temperature bound at 6 V gate drive, below the driver's 8.3 V minimum gate boost; I still need its hot-board losses. TPS2663's 53 mΩ maximum internal resistance gives 477 mW at 3 A.
-- I must measure buck/boost ripple and load steps, source-transfer/reset behavior, USB attach/suspend current, child-rail discharge timing, and all disarmed fault tests using the finished schematic/layout. I have performed datasheet arithmetic and topology review here; I have not passed these physical tests.
+- I must measure buck/boost ripple and load steps, brownout/reset behavior, USB attach/power-off data leakage, child-rail discharge timing, and all disarmed fault tests using the finished schematic/layout. I have performed datasheet arithmetic and topology review here; I have not passed these physical tests.
 
 I keep switch loops short, route feedback away from SW nodes, provide thermal copper and vias for the eFuse/buck, and preserve a continuous MAIN_GND return below the control circuits. I route the TVS return directly to the supply connector and keep its pulse current out of ADC-reference paths.

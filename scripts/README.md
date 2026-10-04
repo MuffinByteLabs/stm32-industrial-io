@@ -24,4 +24,6 @@ An unavailable reference is reported as a warning when its manifest status says 
 
 I keep selected numerical assumptions in my [engineering calculations](../docs/calcs/README.md). The [KiCad workflow](../.github/workflows/kicad-ci.yml) runs native-design checks once implementation files exist.
 
+I use [audit_component_selections.py](audit_component_selections.py) to check required selection fields, duplicate IDs, retained interface quantities and absence of retired Rev A parts. My documentation workflow also runs the power, rail-support, analog and PWM calculations. These scope checks do not certify electrical connectivity or a released BOM.
+
 My scripts use the repository's pinned dependency rather than a machine-specific runtime path.

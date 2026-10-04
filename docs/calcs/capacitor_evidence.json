@@ -88,22 +88,6 @@
       "closure": "Archive exact public manufacturer bias/temperature/aging data or obtain an exact signed approval specification. Calculate minimum with stated measurement frequency, AC amplitude, DC bias, time since de-aging and0-50C conditions. If only typical curves exist, retain explicit engineering margin and require incoming/prototype biased capacitance measurements before layout approval; do not label a typical curve a guaranteed bound."
     },
     {
-      "bank_id": "service_mux_output",
-      "sheet": "Power",
-      "mpn": "GRM32ER71E226KE15L",
-      "qty": 4,
-      "nominal_each_uf": 22,
-      "bias_v": 5.1,
-      "required_bank_uf": 40,
-      "status": "open_effective_capacitance",
-      "initial_tolerance_min_factor": 0.9,
-      "x7r_temperature_screen_factor": 0.85,
-      "optional_engineering_aging_screen_factor": 0.95,
-      "bank_uf_before_bias_with_screen_allowance": 63.954,
-      "required_bias_retention_with_screen_allowance": 0.6254495418582106,
-      "closure": "Archive exact public manufacturer bias/temperature/aging data or obtain an exact signed approval specification. Calculate minimum with stated measurement frequency, AC amplitude, DC bias, time since de-aging and0-50C conditions. If only typical curves exist, retain explicit engineering margin and require incoming/prototype biased capacitance measurements before layout approval; do not label a typical curve a guaranteed bound."
-    },
-    {
       "bank_id": "digital_buck_input",
       "sheet": "Power",
       "mpn": "GRM31CR71E106KA12L",
@@ -167,23 +151,6 @@
       "optional_engineering_aging_screen_factor": 0.95,
       "bank_uf_before_bias_with_screen_allowance": 7.267499999999999,
       "required_bias_retention_with_screen_allowance": 0.302717578259374,
-      "closure": "Archive exact public manufacturer bias/temperature/aging data or obtain an exact signed approval specification. Calculate minimum with stated measurement frequency, AC amplitude, DC bias, time since de-aging and0-50C conditions. If only typical curves exist, retain explicit engineering margin and require incoming/prototype biased capacitance measurements before layout approval; do not label a typical curve a guaranteed bound."
-    },
-    {
-      "bank_id": "negative_pump_flying",
-      "sheet": "Power",
-      "mpn": "GRM31CR71E106KA12L",
-      "qty": 1,
-      "nominal_each_uf": 10,
-      "bias_v": 5.25,
-      "required_bank_uf": 5,
-      "extra_requirement": "Check actual differential CF+toCF- waveform and capacitor AC/ripple conditions; static bias screening alone cannot qualify pump performance.",
-      "status": "open_effective_capacitance",
-      "initial_tolerance_min_factor": 0.9,
-      "x7r_temperature_screen_factor": 0.85,
-      "optional_engineering_aging_screen_factor": 0.95,
-      "bank_uf_before_bias_with_screen_allowance": 7.267499999999999,
-      "required_bias_retention_with_screen_allowance": 0.6879944960440317,
       "closure": "Archive exact public manufacturer bias/temperature/aging data or obtain an exact signed approval specification. Calculate minimum with stated measurement frequency, AC amplitude, DC bias, time since de-aging and0-50C conditions. If only typical curves exist, retain explicit engineering margin and require incoming/prototype biased capacitance measurements before layout approval; do not label a typical curve a guaranteed bound."
     },
     {
@@ -268,22 +235,6 @@
       "bank_uf_before_bias_with_screen_allowance": 7.267499999999999,
       "required_bias_retention_with_screen_allowance": 0.302717578259374,
       "closure": "Archive exact public manufacturer bias/temperature/aging data or obtain an exact signed approval specification. Calculate minimum with stated measurement frequency, AC amplitude, DC bias, time since de-aging and0-50C conditions. If only typical curves exist, retain explicit engineering margin and require incoming/prototype biased capacitance measurements before layout approval; do not label a typical curve a guaranteed bound."
-    },
-    {
-      "bank_id": "dac_internal_reference",
-      "sheet": "Analog",
-      "mpn": "GRM21BR71H105KA12L",
-      "qty": 1,
-      "nominal_each_uf": 1,
-      "bias_v": 2.5,
-      "required_bank_uf": 0.15,
-      "status": "open_effective_capacitance",
-      "initial_tolerance_min_factor": 0.9,
-      "x7r_temperature_screen_factor": 0.85,
-      "optional_engineering_aging_screen_factor": 0.95,
-      "bank_uf_before_bias_with_screen_allowance": 0.72675,
-      "required_bias_retention_with_screen_allowance": 0.20639834881320948,
-      "closure": "Archive exact public manufacturer bias/temperature/aging data or obtain an exact signed approval specification. Calculate minimum with stated measurement frequency, AC amplitude, DC bias, time since de-aging and0-50C conditions. If only typical curves exist, retain explicit engineering margin and require incoming/prototype biased capacitance measurements before layout approval; do not label a typical curve a guaranteed bound."
     }
   ],
   "parent_hold_up": {
@@ -300,7 +251,7 @@
     "status": "open_temperature_and_time_retention",
     "endurance_screen_at20c_uf": 408,
     "basis": "FR-A permits25% change from initial after endurance; a680uF initial-low unit could be408uF at20C after that test. Therefore500uF is not guaranteed throughout the advertised endurance solely by the family table.",
-    "closure": "Before capture approval, decide whether the500uF criterion is initial-prototype only or a defined service-life requirement. Obtain exact Panasonic capacitance-temperature/time evidence or qualify measured500uF minimum with the intended replacement interval. If that cannot be met, root must revise the hold-up part/count or bleeder/disable contract and rerun the calculation; this report makes no independent substitution."
+    "closure": "Before capture approval, decide whether the500uF criterion is initial-prototype only or a defined service-life requirement. Obtain exact Panasonic capacitance-temperature/time evidence or qualify measured500uF minimum with the intended replacement interval. If that cannot be met, I revise the hold-up part/count or bleeder/disable contract and rerun the calculation; this report makes no independent substitution."
   },
   "other_selected_capacitors": [
     {
@@ -314,26 +265,20 @@
       "sheet": "Power",
       "scope": "100nF input/BOOT/dVdT/IMON bypass and timing",
       "status": "family_nominal_verified_timing_bias_aging_open",
-      "closure": "For dVdT/SS timing specifically, derive the waveform from exact low-bias capacitance and time/temperature bounds; bypass nominal alone does not close startup timing."
-    },
-    {
-      "mpn": "885382208005",
-      "sheet": "Power",
-      "scope": "1uF muxSS",
-      "status": "catalogue_nominal_verified_bias_aging_timing_open"
+      "closure": "For dVdT timing, derive the waveform from exact low-bias capacitance and time/temperature bounds; nominal bypass capacitance alone does not close startup timing."
     },
     {
       "mpn": "GRM188R71C104KA01D",
       "sheet": "Control_Service",
-      "scope": "100nF logic/reset/USB bypass",
+      "scope": "100nF MCU/logic/reset and USB VBUS-sense bypass",
       "status": "exact_suffix_and_bias_data_not_acquired"
     },
     {
       "mpn": "GRM188R71C105KA12D",
       "sheet": "Control_Service",
-      "scope": "1uF VDDA/VREF, REF3325 input/output and USB limiter",
+      "scope": "1uF VDDA and VREF+ local bypass",
       "status": "exact_suffix_and_bias_data_not_acquired",
-      "closure": "Confirm exact active ordering suffix and supplier-approved datasheet. Check effective1uF stability/decoupling requirements againstREF3325 andSTM32 hardware guide at3.4V, and USB inrush upper capacitance at5.25V; no curve-based guarantee is claimed."
+      "closure": "Confirm exact active ordering suffix and approved manufacturer data. Check effective local capacitance at3.4V against the STM32 hardware guide; no curve-based guarantee is claimed."
     },
     {
       "mpn": "GRM31CR71C106KAC7L",
@@ -344,7 +289,7 @@
     {
       "mpn": "GRM1885C1H102JA01D",
       "sheet": "Analog_and_Control_Service",
-      "scope": "1nF C0G compensation/filter",
+      "scope": "1nF C0G monitor/diagnostic filters",
       "status": "family_nominal_selected",
       "closure": "Exact approval sheet can close value/tolerance andC0Gtemperature/aging without X7R-like bias derating; these are not regulatorminimum-capacitance banks."
     },
@@ -357,10 +302,11 @@
     }
   ],
   "finite_completion_steps": [
-    "Freeze the effective-minimum, maximum, ESR and measurement-condition requirements listed per bank.",
-    "Obtain exact manufacturer performance/approval data through a public PDF or human-authorized download; no SimSurfing agreement was accepted here.",
-    "Evaluate the exact curves at each listed operating bias and0-50C with initial tolerance and an explicit time/aging contract. Save raw curve data/source revision and the calculation.",
-    "Where curves are typical, distinguish engineering-screen pass from production guarantee and measure representative ordered capacitors at actual bias and temperature before approving layout.",
-    "If a bank fails, root revises that bank's concrete part/count within regulator maximum-capacitance/ESR limits and repeats startup/hold-up calculations."
-  ]
+    "I freeze the effective minimum, maximum, ESR and measurement conditions listed per bank.",
+    "I obtain exact manufacturer performance/approval data, retaining its source and revision.",
+    "I evaluate the exact curves at the operating bias and 0\u201350 C with initial tolerance and an explicit time/aging contract, saving the raw evidence and calculation.",
+    "I distinguish typical-curve screening from production guarantees and measure representative ordered capacitors at actual bias and temperature before approving layout.",
+    "If a bank fails, I revise its selected part/count within regulator capacitance/ESR limits and repeat startup/hold-up calculations."
+  ],
+  "scope_revised_date": "2026-10-04"
 }

@@ -1,4 +1,4 @@
-"""I reproduce limited static frontend checks with the ngspice shared library."""
+"""I reproduce active-input DC and passive-pole checks with ngspice."""
 
 from __future__ import annotations
 
@@ -9,10 +9,16 @@ import math
 import os
 from pathlib import Path
 
+from analog_checks import arithmetic
+
+
+class Complex(c.Structure):
+    _fields_ = [("real", c.c_double), ("imag", c.c_double)]
+
 
 class Vector(c.Structure):
     _fields_ = [("name", c.c_char_p), ("type", c.c_int), ("flags", c.c_short),
-                ("real", c.POINTER(c.c_double)), ("complex", c.c_void_p),
+                ("real", c.POINTER(c.c_double)), ("complex", c.POINTER(Complex)),
                 ("length", c.c_int)]
 
 
@@ -50,7 +56,11 @@ def main() -> None:
     circuit = (c.c_char_p * (len(lines) + 1))(*lines, None)
     if ng.ngSpice_Circ(circuit) != 0:
         raise RuntimeError("ngspice rejected circuit: " + "\n".join(messages))
-    ng.ngSpice_Command(b"op")
+    def command(text):
+        if ng.ngSpice_Command(text.encode("ascii")) != 0:
+            raise RuntimeError("ngspice command failed: " + text + "\n" + "\n".join(messages))
+
+    command("op")
 
     def value(name):
         info = ng.ngGet_Vec_Info(name.encode("ascii"))
@@ -61,29 +71,64 @@ def main() -> None:
             raise RuntimeError(f"Nonfinite result: {name}")
         return result
 
-    result = {
-        "scope": "Ideal-amplifier DC topology check; no IC transient, stability, surge, or hardware validation",
-        "assumed_main_switch_ohm": 12.5,
-        "assumed_series_protection_ohm": 100,
-        "assumed_feedback_path_total_ohm": 8600,
-        "load_ohm": 10000,
-        "terminal_pulldown_ohm": 100000,
-        "gain_stage_v": value("gain"),
-        "terminal_feedback_v": value("ao"),
-        "without_terminal_feedback_v": value("uncomp"),
+    dc = {
+        "voltage_adc_v_at_10v": value("vadc"),
         "current_shunt_v_at_20ma": value("shunt"),
-        "adc_sense_v_at_20ma": value("sense"),
+        "current_adc_v_at_20ma": value("iadc"),
+        "current_diagnostic_raw_v_at0p5a_ratio300": value("csraw"),
+        "current_diagnostic_adc_v_at0p5a_ratio300": value("csadc"),
     }
-    # Independent equations check model connectivity and solver output.
-    expected_shunt = (200 * .020 + 200 * 2.5 / (850000 + 8.3)) / (1 + 200 / (850000 + 8.3))
-    if abs(result["current_shunt_v_at_20ma"] - expected_shunt) > 1e-8:
-        raise RuntimeError("Shunt model disagrees with independent loading equation")
-    if abs(result["terminal_feedback_v"] - 10) > .001:
-        raise RuntimeError("Ideal DC terminal-feedback topology failed")
-    if not result["without_terminal_feedback_v"] < 9.95:
-        raise RuntimeError("Expected resistive load drop is absent")
-    print(json.dumps(result, indent=2))
-    ng.ngSpice_Command(b"destroy all")
+    equations = arithmetic()
+    expected_shunt = (200 * .020 + 200 * 2.5 / (850000 + 1008.3)) / (1 + 200 / (850000 + 1008.3))
+    expectations = {
+        "voltage_adc_v_at_10v": equations["voltage_adc_at_10v_nominal_850kohm_v"],
+        "current_shunt_v_at_20ma": expected_shunt,
+        "current_adc_v_at_20ma": equations["current_adc_at_20ma_nominal_850kohm_v"],
+        "current_diagnostic_raw_v_at0p5a_ratio300": .5 / 300 * equations["cs_effective_burden_ohm"],
+        "current_diagnostic_adc_v_at0p5a_ratio300": equations["cs_adc_at_0p5a_nominal_ratio300_v"],
+    }
+    for name, expected in expectations.items():
+        if abs(dc[name] - expected) > 2e-6:
+            raise RuntimeError(f"DC model disagrees with equation for {name}: {dc[name]} versus {expected}")
+
+    command("ac dec 120 1 100000")
+
+    def info(name):
+        vector = ng.ngGet_Vec_Info(name.encode("ascii"))
+        if not vector or vector.contents.length < 1:
+            raise RuntimeError(f"Missing vector {name}")
+        return vector.contents
+
+    frequency = info("frequency")
+    frequencies = [frequency.real[i] if frequency.real else frequency.complex[i].real
+                   for i in range(frequency.length)]
+
+    def pole(name):
+        vector = info(name)
+        if not vector.complex or vector.length != len(frequencies):
+            raise RuntimeError(f"Missing complex AC vector {name}")
+        magnitudes = [math.hypot(vector.complex[i].real, vector.complex[i].imag)
+                      for i in range(vector.length)]
+        target = magnitudes[0] / math.sqrt(2)
+        for i in range(1, len(magnitudes)):
+            if magnitudes[i] <= target < magnitudes[i - 1]:
+                fraction = math.log(target / magnitudes[i - 1]) / math.log(magnitudes[i] / magnitudes[i - 1])
+                return frequencies[i - 1] * (frequencies[i] / frequencies[i - 1]) ** fraction
+        raise RuntimeError(f"No -3 dB crossing found for {name}")
+
+    poles = {"voltage_input_hz": pole("vadc"), "current_input_hz": pole("iadc")}
+    for name, key in [("voltage_input_hz", "adc_voltage_filter_loaded_nominal_hz"),
+                      ("current_input_hz", "adc_current_filter_loaded_nominal_hz")]:
+        if abs(poles[name] / equations[key] - 1) > .002:
+            raise RuntimeError(f"Passive pole disagrees with equation for {name}")
+    print(json.dumps({
+        "scope": "Active-input DC and passive-pole connectivity checks; ideal finite-gain diagnostic amplifier, fixed ADC resistance/on-resistances; no IC fault, stability, surge or hardware validation",
+        "assumptions": {"adc_biased_input_ohm": 850000, "adc_bias_v": 2.5,
+                        "input_protector_on_ohm": 8.3, "diagnostic_switch_on_ohm": 2,
+                        "diagnostic_amplifier_open_loop_gain": 1e6},
+        "dc": dc, "passive_poles": poles,
+    }, indent=2))
+    command("destroy all")
     if dll_directory:
         dll_directory.close()
 

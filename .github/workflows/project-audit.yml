@@ -48,6 +48,7 @@ jobs:
           python scripts/audit_component_selections.py > out/component-selections.json
           python docs/calcs/support_checks.py > out/support-calculations.json
           python docs/calcs/analog_checks.py > out/analog-calculations.json
+          python docs/calcs/pwm_checks.py > out/pwm-calculations.json
 
       - name: Summarize check scope
         if: always() && steps.python.outcome == 'success'

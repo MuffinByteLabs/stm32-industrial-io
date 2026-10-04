@@ -6,6 +6,9 @@ I use manufacturer reference designs to study implementation details, then verif
 
 I retained the [TI LMR38020 evaluation-module guide](REF_TI_LMR38020QEVM_UserGuide_SNVU817.pdf) for my buck-family study. Its values and layout are examples; I will recalculate and review the implementation for this board. Primary source: [TI SNVU817](https://www.ti.com/lit/ug/snvu817/snvu817.pdf).
 
+
+I retained [TI SLVAF10: Driving PWM Loads with TI High-Side Switches](REF_TI_PWM_HighSide_SLVAF10.pdf) for DO3 timing, load and thermal review. I keep its [source/hash record](pwm_reference.json) alongside the PDF. Primary source: [TI SLVAF10](https://www.ti.com/lit/pdf/slvaf10). Its example-device values do not replace TPS4H160B timing or measured qualification of my selected load.
+
 ## Guidance to consult during capture
 
 - [STM32G474VE product documentation](https://www.st.com/en/microcontrollers-microprocessors/stm32g474ve.html): exact package datasheet, reference manual, errata, and hardware-development guidance.

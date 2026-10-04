@@ -9,14 +9,14 @@ The [architecture](../docs/Architecture.md) describes the system, and [design de
 | Block | Design scope |
 | --- | --- |
 | Field power | Protected 9–30 V input, eFuse, reverse-current blocking, surge suppression, 5 V conversion, and supply monitoring |
-| Service and auxiliary power | Field/USB logic supply selection, MCU rails, field analog rails, and independent isolated bus supplies |
+| Service and auxiliary power | Externally supplied MCU/field analog rails and independent isolated bus supplies |
 | Controller | STM32G474VET6, clock, reset, boot configuration, USB, SWD, watchdog, and configuration storage |
 | Measurement | Four group-isolated digital inputs; two 0–10 V inputs and two 4–20 mA receivers through an external ADC |
-| Actuation | Four current-diagnosed high-side channels, two SPDT relays, and a protected 0–10 V output with a hardware disconnect |
+| Actuation | Four current-diagnosed high-side channels, DO3 timer PWM and two SPDT relays, all hardware permission-gated |
 | Communications | Separately isolated RS-485 and CAN, selectable termination, connector protection, and bus references |
 | Output permission | Hardware gating derived from field-power validity, reset state, watchdog health, and explicit arming |
 
-I’m separating USB-powered service from field power. My architecture allows USB to power the controller, while the external ADC/DAC, field outputs, relay coils, and isolated bus-side circuits require the field supply. I’m including electrical protection between these domains to prevent back-powering.
+I power the entire board from the protected external DC supply. USB provides self-powered data service with VBUS detection. I retain qualified signal crossings between independently derived rails and verify sequencing/injection during brownout.
 
 I use [KiCad project-local libraries](libs/README.md) to keep assets portable. Each selected component will have an exact ordering code, package-verified symbol and footprint, and sourcing information in its schematic properties. The schematic will own the released BOM.
 

@@ -9,11 +9,8 @@ I maintain manufacturer documents for my [circuit specifications](../../docs/Sch
 | TPS26632 | [TPS2663.pdf](TPS2663.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/tps2663.pdf); capture implementation review pending |
 | LMR38020 | [LMR38020.pdf](LMR38020.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/lmr38020.pdf); capture implementation review pending |
 | TPS62160 | [TPS62160.pdf](TPS62160.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/tps62160.pdf); capture implementation review pending |
-| TPS2121 | [TPS2121.pdf](TPS2121.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/tps2121.pdf); capture implementation review pending |
-| LM7705 | [LM7705.pdf](LM7705.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/lm7705.pdf); capture implementation review pending |
 | ISO1212 | [ISO1212.pdf](ISO1212.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/iso1212.pdf); capture implementation review pending |
 | TMUX7462F | [TMUX7462F.pdf](TMUX7462F.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/tmux7462f.pdf); capture implementation review pending |
-| DAC80501Z | [DAC80501.pdf](DAC80501.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/dac80501.pdf); capture implementation review pending |
 | TPS4H160B-Q1 | [TPS4H160-Q1.pdf](TPS4H160-Q1.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/tps4h160-q1.pdf); capture implementation review pending |
 | ISO1410 | [ISO1410.pdf](ISO1410.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/iso1410.pdf); capture implementation review pending |
 | ISO1042 | [ISO1042.pdf](ISO1042.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/iso1042.pdf); capture implementation review pending |
@@ -29,15 +26,11 @@ I maintain manufacturer documents for my [circuit specifications](../../docs/Sch
 | TPS3702 | [TPS3702.pdf](TPS3702.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/tps3702.pdf); capture implementation review pending |
 | TPS3700 | [TPS3700.pdf](TPS3700.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/tps3700.pdf); capture implementation review pending |
 | CSD19537Q3 | [CSD19537Q3.pdf](CSD19537Q3.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/csd19537q3.pdf); capture implementation review pending |
-| ADG5401F | Local cache unavailable; [manufacturer](https://www.analog.com/media/en/technical-documentation/data-sheets/adg5401f.pdf); capture implementation review pending |
 | TPS26611DDFR | [TPS2661.pdf](TPS2661.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/tps2661.pdf); capture implementation review pending |
 | UCC33421QDHARQ1 | [UCC33421-Q1.pdf](UCC33421-Q1.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/ucc33421-q1.pdf); capture implementation review pending |
-| OPA2197IDR | [OPA197.pdf](OPA197.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/opa197.pdf); capture implementation review pending |
-| REF3325AIDBZR | [REF33.pdf](REF33.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/ref33.pdf); capture implementation review pending |
 | SN74LVC2G17DBVR | [SN74LVC2G17.pdf](SN74LVC2G17.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/sn74lvc2g17.pdf); capture implementation review pending |
 | BSS138P,215 | [BSS138P.pdf](BSS138P.pdf); [manufacturer](https://assets.nexperia.com/documents/data-sheet/BSS138P.pdf); capture implementation review pending |
 | TPS61040DBVR | [TPS61040.pdf](TPS61040.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/tps61040.pdf); capture implementation review pending |
-| TPS2553DBVR | [TPS2553.pdf](TPS2553.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/tps2553.pdf); capture implementation review pending |
 | SN74LVC2G04DCUR | [SN74LVC2G04.pdf](SN74LVC2G04.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/sn74lvc2g04.pdf); capture implementation review pending |
 | TPD2E2U06DBZR | [TPD2E2U06.pdf](TPD2E2U06.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/tpd2e2u06.pdf); capture implementation review pending |
 | SiT8008BI-22-33S-8.000000E | [SiT8008.pdf](SiT8008.pdf); [manufacturer](https://www.sitime.com/datasheet/SiT8008); capture implementation review pending |
@@ -51,7 +44,6 @@ I maintain manufacturer documents for my [circuit specifications](../../docs/Sch
 | SN74AUP1T17DCKR | [SN74AUP1T17.pdf](SN74AUP1T17.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/sn74aup1t17.pdf); capture implementation review pending |
 | LM4040AIM3-2.5/NOPB | [LM4040-N.pdf](LM4040-N.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/lm4040-n.pdf); capture implementation review pending |
 | BAS70-04,215 | [BAS70-04.pdf](BAS70-04.pdf); [manufacturer](https://assets.nexperia.com/documents/data-sheet/BAS70-04.pdf); capture implementation review pending |
-| PMEG3010CEH,115 | [PMEG3010CEH.pdf](PMEG3010CEH.pdf); [manufacturer](https://assets.nexperia.com/documents/data-sheet/PMEG3010CEH.pdf); capture implementation review pending |
 | PMEG4010CEJ,115 | [PMEG4010CEJ.pdf](PMEG4010CEJ.pdf); [manufacturer](https://assets.nexperia.com/documents/data-sheet/PMEG4010CEJ.pdf); capture implementation review pending |
 
-I use the linked manufacturer ADG5401F datasheet when its PDF cache download is unavailable. My manifest labels download failures; I do not treat a missing cache as electrical verification.
+I retain references for the active circuit selections. PDF identity and revision provenance remain separate from exact-package and circuit approval.

@@ -19,29 +19,27 @@ I’m treating the interfaces as a complete system: power sequencing, field wiri
 | Controller | STM32G474VET6, integrated directly on the PCB |
 | Field power | Nominal 12/24 V DC; 9–30 V continuous operation; reverse-polarity, surge, and current protection |
 | Sensor inputs | Four group-isolated digital inputs, one with pulse counting; two 0–10 V inputs; two externally powered 4–20 mA loop receivers |
-| Load control | Four diagnosed high-side outputs at 0.5 A each simultaneously; two low-voltage SPDT dry-contact relays |
-| Analog control | One default-off, fault-protected 0–10 V voltage-source output with terminal feedback; external loads at least 10 kΩ |
-| Communication | Separately isolated RS-485/Modbus and CAN; USB service and SWD |
+| Load control | Four diagnosed high-side outputs at 0.5 A each simultaneously; DO3 adds 100 Hz PWM; two low-voltage SPDT dry-contact relays |
+| Communication | Independently isolated RS-485/Modbus and CAN/CAN FD; self-powered USB data service and SWD/SWO |
 | Fault response | Hardware output permission, external watchdog, command timeout, and explicit rearming |
 | PCB | Four layers, with dedicated return paths and separate isolation domains |
 
 ## System architecture
 
-I organized the design around a protected field supply and a serviceable logic domain. USB supports configuration and debugging without powering field loads.
+I power the complete board from its protected external DC input. USB provides configuration, diagnostics and logging while external power is present. DO3 adds adjustable load control for an initial resistive or compatible LED fixture up to 0.5 A, at 100 Hz and 10–90% commanded duty plus static off/on endpoints.
 
 ```mermaid
 flowchart LR
     FIELD["12/24 V DC"] --> PROTECT["Input protection"]
     PROTECT --> POWER["Field power rails"]
-    USB["USB service power"] --> LOGIC["Logic supply selection"]
-    POWER --> LOGIC
-    LOGIC --> MCU["STM32G474"]
+    POWER --> MCU["STM32G474"]
+    USB["USB data service"] <--> MCU
     SENSORS["0–10 V / 4–20 mA"] --> ANALOG["Fault protection + external ADC"]
     ANALOG --> MCU
     DI["4 digital inputs"] --> DIN["Group isolation"]
     DIN --> MCU
     MCU --> GATE["Hardware output permission"]
-    GATE --> OUTPUTS["High-side outputs / relays / 0–10 V"]
+    GATE --> OUTPUTS["High-side outputs / DO3 PWM / relays"]
     POWER --> OUTPUTS
     MCU <--> RS["Isolated RS-485 / Modbus"]
     MCU <--> CAN["Separately isolated CAN"]
@@ -53,9 +51,9 @@ I describe the power domains, component candidates, and isolation boundaries in 
 
 I’m designing for predictable behavior when a wire is disconnected, a rail disappears, or a command stream stops. My [design decisions](docs/Design_Decisions.md) explain the tradeoffs behind analog protection, output backfeed blocking, current diagnostics, and safe startup.
 
-My [pre-schematic engineering review](docs/Engineering_Review.md) records current component status, corrected current-loop protection, isolated-port power capacity, protected AO feedback, and the next design gates. My [capture package](docs/Schematic_Capture.md) links complete power, control, analog and field I/O circuits, with [component selections](docs/components/README.md) and exact support values.
+My [pre-schematic engineering review](docs/Engineering_Review.md) records current component status, corrected current-loop protection, isolated-port power capacity, PWM timing/current diagnostics, and the next design gates. My [capture package](docs/Schematic_Capture.md) links complete power, control, analog and field I/O circuits, with [component selections](docs/components/README.md) and exact support values.
 
-I keep the calculations reproducible. My [power and measurement analysis](docs/calcs/README.md) covers input-current headroom, loop burden, quantization, fault dissipation, and output losses. For example, a 200 Ω loop shunt dissipates 80 mW at 20 mA, but 4.5 W if directly exposed to 30 V; that difference drives my active fault-protection strategy.
+I keep the calculations reproducible. My [power and measurement analysis](docs/calcs/README.md) covers input-current headroom, loop burden, quantization, fault dissipation, output losses, and bounded PWM timing. For example, a 200 Ω loop shunt dissipates 80 mW at 20 mA, but 4.5 W if directly exposed to 30 V; that difference drives my active fault-protection strategy.
 
 I defined a [validation matrix](docs/Validation.md) for calibration, miswiring, short circuits, communication, thermal behavior, and repeatability across three units. I’ll publish measured results with the hardware and firmware revisions that produced them.
 

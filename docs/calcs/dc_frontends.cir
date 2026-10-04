@@ -1,29 +1,31 @@
-* I check static circuit principles using ideal amplifiers and resistive models.
-* These are not vendor IC macro-models, fault models, or a stability assessment.
-Vdac dac 0 DC 2.5
-Egain gainraw 0 dac gainfb 1e6
-Rgainout gainraw gain 1
-Rf gain gainfb 30k
-Rg gainfb 0 10k
-Edriver driverraw 0 gain feedback 1e6
-Rdriverout driverraw driver 1
-Rswitch driver terminal 12.5
-Rsafety terminal ao 100
-Rfeedback ao feedback 8.6k
-Rload ao 0 10k
-Rpulldown ao 0 100k
-Rfeedbackleak feedback 0 1e12
-* Comparison: same switch/series resistance without terminal feedback.
-Runcomp gain uncomp 112.5
-Ruload uncomp 0 10k
-Rupulldown uncomp 0 100k
-* Current input with the ADC's 2.5 V bias and minimum effective resistance.
-Iloop 0 shunt DC 20m
-Rshunt shunt 0 200
-Rsense shunt sense 8.3
-Rin sense bias 850k
+* I check active analog-input and load-current-diagnostic static networks.
+* Fixed resistors and an ideal finite-gain follower are not IC fault models.
 Vbias bias 0 DC 2.5
-.control
-op
-.endc
+* Voltage input: terminal resistor, TMUX resistance, filter and biased ADC input.
+Vvoltage vterminal 0 DC 10 AC 1
+Rvoltage_terminal vterminal vclamp 1k
+Rvoltage_switch vclamp vprotected 8.3
+Rvoltage_filter vprotected vadc 100
+Cvoltage vadc 0 1u
+Rvoltage_adc vadc bias 850k
+* Current input: permanent shunt and independent protected sense branch.
+Iloop 0 shunt DC 20m AC 1
+Rshunt shunt 0 200
+Rloop_switch shunt iprotected 8.3
+Rloop_filter iprotected iadc 1k
+Cloop iadc 0 1u
+Rloop_adc iadc bias 850k
+* Diagnostics: illustrative 0.5 A load and 300:1 current-sense ratio.
+Ics 0 csraw DC 1.666666666666667m AC 1
+Rcsburden csraw 0 1210
+Rcs_top csraw csinput 56k
+Rcs_bottom csinput 0 68k
+Ecsbuffer csbufferraw 0 csinput csbuffer 1e6
+Rcsbuffer_output csbufferraw csbuffer 1
+Rcsbuffer_bleed csbuffer 0 100k
+Rcs_post_top csbuffer csswitch 1k
+Rcs_post_bottom csswitch 0 1.5k
+Rcs_switch csswitch csadc 2
+Rcs_adc_pull csadc 0 47k
+Ccs_adc csadc 0 1n
 .end

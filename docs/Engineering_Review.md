@@ -1,6 +1,6 @@
 # Pre-schematic engineering review
 
-I reviewed the Rev A architecture on October 3, 2026 against manufacturer product status, electrical tables, interface requirements, power arithmetic, and a provisional MCU resource allocation. My corrected architecture is specified for capture; [preparation status](Schematic_Capture.md#preparation-status) identifies the capacitor-evidence and library gates still open before full freeze. I have not yet approved a completed circuit, PCB, production BOM, or assembled-board rating.
+I reviewed component lifecycle and core electrical selections on October 3, 2026 and revised the scope/PWM checks on October 4, 2026 against manufacturer product status, electrical tables, interface requirements, power arithmetic, and a provisional MCU resource allocation. My corrected architecture is specified for capture; [preparation status](Schematic_Capture.md#preparation-status) identifies the capacitor-evidence and library gates still open before full freeze. I have not yet approved a completed circuit, PCB, production BOM, or assembled-board rating.
 
 I separate three kinds of evidence: manufacturer-specified device capabilities, my calculations and design assumptions, and measurements still to be collected. I cannot run ERC, DRC, extracted-layout analysis, or whole-board simulation before the native design exists. My [capture checklist](Schematic_Capture.md) and [qualification plan](Validation.md) define the next gates.
 
@@ -14,15 +14,11 @@ I checked the following manufacturer pages on October 3, 2026. The semiconductor
 | Main input eFuse | TPS26632RGER | [TI: Active](https://www.ti.com/product/TPS2663/part-details/TPS26632RGER) |
 | Field buck | LMR38020 | [TI: Active](https://www.ti.com/product/LMR38020) |
 | Logic buck / MCU analog LDO | TPS62160 / TPS709 | [TPS62160](https://www.ti.com/product/TPS62160), [TPS709](https://www.ti.com/product/TPS709) |
-| Field/USB power selection | TPS2121 | [TI: Active](https://www.ti.com/product/TPS2121) |
-| Analog auxiliary rails | TPS61040 / LM7705 | [TPS61040](https://www.ti.com/product/TPS61040), [LM7705](https://www.ti.com/product/LM7705) |
+| Positive analog auxiliary | TPS61040 / TPS7A16 | [TPS61040](https://www.ti.com/product/TPS61040), [TPS7A16](https://www.ti.com/product/TPS7A16) |
 | Group-isolated digital inputs | Two ISO1212 | [TI: Active](https://www.ti.com/product/ISO1212) |
 | Four-channel 16-bit acquisition | ADS8684A | [TI: Active](https://www.ti.com/product/ADS8684A) |
 | Analog sense protection | TMUX7462F | [TI: Active](https://www.ti.com/product/TMUX7462F) |
 | Current-loop series protection | Two TPS26611DDFR, 8-pin DDF | [TI: Active](https://www.ti.com/product/TPS2661/part-details/TPS26611DDFR) |
-| Zero-scale POR DAC | DAC80501ZDGSR | [TI: Active](https://www.ti.com/product/DAC80501/part-details/DAC80501ZDGSR) |
-| Gain and output driver | OPA2197IDR, dual SOIC-8 | [TI: Active](https://www.ti.com/product/OPA2197/part-details/OPA2197IDR) |
-| AO disconnect and protected feedback | ADG5401FBCPZ-RL7, 10-lead LFCSP | [ADI: Recommended for New Designs](https://www.analog.com/en/products/adg5401f.html) |
 | Four diagnosed high-side outputs | TPS4H160BQPWPRQ1 | [TI: Active](https://www.ti.com/product/TPS4H160-Q1/part-details/TPS4H160BQPWPRQ1) |
 | Isolated bus transceivers | ISO1410 / ISO1042 | [ISO1410](https://www.ti.com/product/ISO1410), [ISO1042](https://www.ti.com/product/ISO1042) |
 | Independent isolated port power | Two UCC33421QDHARQ1 | [TI: Active, production](https://www.ti.com/product/UCC33421-Q1/part-details/UCC33421QDHARQ1) |
@@ -31,7 +27,7 @@ I checked the following manufacturer pages on October 3, 2026. The semiconductor
 | Permission gates / powered-off buffers | SN74LVC2G08DCUR / SN74LVC2G125DCUR | [SN74LVC2G08](https://www.ti.com/product/SN74LVC2G08/part-details/SN74LVC2G08DCUR), [SN74LVC2G125](https://www.ti.com/product/SN74LVC2G125/part-details/SN74LVC2G125DCUR) |
 | MCU diagnostic analog isolation | TMUX1511PWR, 14-pin TSSOP | [TI: Active](https://www.ti.com/product/TMUX1511/part-details/TMUX1511PWR) |
 | Rail windows / ADC rail window | TPS3700DDCR / TPS3702CX50DDCR | [TPS3700](https://www.ti.com/product/TPS3700/part-details/TPS3700DDCR), [TPS3702](https://www.ti.com/product/TPS3702/part-details/TPS3702CX50DDCR) |
-| Negative-bias monitor reference / health conditioning | REF3325AIDBZR / SN74LVC2G17DBVR | [REF3325](https://www.ti.com/product/REF3325/part-details/REF3325AIDBZR), [SN74LVC2G17](https://www.ti.com/product/SN74LVC2G17/part-details/SN74LVC2G17DBVR) |
+| Health conditioning | SN74LVC2G17DBVR | [SN74LVC2G17](https://www.ti.com/product/SN74LVC2G17/part-details/SN74LVC2G17DBVR) |
 | Calibration/configuration storage | 24LC64 | [Microchip: In Production](https://www.microchip.com/en-us/product/24lc64) |
 | SPDT relay | G5Q-1 DC5 | [Aratas: In Production](https://www.aratas.com/us-en/products/relays/G5Q) |
 
@@ -49,7 +45,7 @@ My revised current path is **terminal → TPS26611 → permanent 200 Ω Kelvin s
 
 The TPS26611 limit is 25–40 mA, 32 mA typical. At its 40 mA upper bound, the shunt dissipates 0.32 W. I specify a precision shunt rated at least 1 W, then separately review fast-trip pulse energy and enclosure derating. At 20 mA, a 12.5 Ω maximum protector resistance adds 0.25 V to the shunt's 4 V burden. I therefore use **4.25 V plus wiring** in the loop-compliance budget. I qualify a 24 mA overrange target; the ADC's arithmetic 25.6 mA endpoint is not a guaranteed receiver operating limit. [TPS2661 datasheet](../references/datasheets/TPS2661.pdf)
 
-The ADC input is biased toward 2.5 V through its effective input resistance; I include that loading in calibration. At the 1 MΩ typical value, the 200 Ω receiver reads approximately +1.7 µA at 4 mA and −1.5 µA at 20 mA before calibration. A voltage source with 1 kΩ total series impedance can lose about 8.8 mV at 10 V using the ADC's 0.85 MΩ minimum input resistance. I will define permitted source impedance and include protection resistance in the ±20 mV budget. [ADS8684A datasheet](../references/datasheets/ADS8684A.pdf)
+The ADC input is biased toward 2.5 V through its effective input resistance; I include that loading in calibration. At an illustrative 1 MΩ ADC resistance, the selected 200 Ω shunt plus 1008.3 Ω sense path gives about +10.258 µA at 4 mA and −9.051 µA at 20 mA before calibration. These are loading examples, not guaranteed converter errors. The selected voltage path has 1108.3 Ω illustrative total resistance; at 10 V and the ADC's 0.85 MΩ minimum equivalent resistance it gives about −9.766 mV of loading error. I will define permitted source impedance and include protection resistance in the ±20 mV budget. [ADS8684A datasheet](../references/datasheets/ADS8684A.pdf)
 
 ### Port power and service budget
 
@@ -57,21 +53,23 @@ The ISO1410 bus side can require 160 mA at 5 V under the specified 54 Ω, 500 kb
 
 I increased the service-electronics allocation to **6 W delivered from the field buck**, while retaining four 0.5 A load outputs and a 3 A continuous input target. My [calculation](calcs/controller_budget.py) keeps named branch reservations and labels efficiency as an assumption. At 9 V and 85% field-buck efficiency, the estimate is 2.784 A before protection losses and small additional input currents. This is a useful margin for capture, not a demonstrated thermal or inrush pass.
 
-### Precision AO with a controlled disconnected state
+### Low-line power and rail-health margin
 
-I selected **OPA2197IDR** for two stages: a local gain-four amplifier followed by a unity-gain output driver. **ADG5401F** switches both the output path and a protected Kelvin feedback path from the terminal. Its internal local-feedback path keeps the unity driver closed-loop when the powered switch is disabled or faulted. I hold IN low unless hardware AO permission is valid; both external source pins face the field wiring.
+FIELD_OK measures VFIELD after input protection. I use 180 kΩ+10 kΩ over 10 kΩ for its UV network: nominal 8.0 V release, with calculated release corners 7.89084–8.10975 V and falling corners 7.71140–8.02950 V. I require VFIELD ≥8.4 V at the 9 V connector/combined-load fixture, leaving at least 0.290 V release and 0.370 V falling margin. At assumed 80% main-buck efficiency, the full load/service budget plus nominal bleeders and 20 mA operating reserve is approximately 2.916 A before remaining effects. Hot/tolerance input-path drop and real consumption remain explicit qualification gates.
 
-I place the gain-setting divider wholly around the first amplifier. The switch's secondary feedback resistance must not become part of that divider: a typical 600 Ω added to a 30 kΩ/10 kΩ gain network would change a 10 V command to 10.15 V. The second stage instead senses the terminal at a high-impedance amplifier input, compensating the main switch and reviewed series-impedance drop. This is my application of ADI's protected-feedback arrangement, not an already validated OPA2197 reference circuit. [ADG5401F datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/adg5401f.pdf), [ADI application discussion](https://www.analog.com/en/resources/design-notes/precision-solutions-with-protection-and-robustness.html)
+### PWM timing and diagnostics
 
-I power the switch from +15 V/GND and the amplifiers from +15 V/LM7705 negative bias. The 0–10 V signal fits the switch's VDD−2 V headroom. I use POC grounded for its weak powered-but-disabled pulldown, plus a reviewed external terminal pulldown; IN also has an external pulldown. I still need to validate capacitive-load compensation, endpoint headroom over temperature, fault transitions, and independently protected terminal readback. DAC zero-scale POR does not eliminate its possible startup glitch, so AO remains disconnected through initialization and settling.
+I add DO3 PWM through TPS4H160B using PE9 / TIM1_CH1 / AF2, verified against STM32G474 DS12288 Rev6. TPS4H160B's switching/current-sense tables and TI's [PWM application guidance](../references/reference-designs/README.md) support evaluating this mode. I use 100 Hz and 10–90% commanded duty plus static endpoints as an initial qualification target for resistive or compatible LED loads up to 0.5 A.
 
-I select TMUX1511PWR for receiving-domain analog isolation on terminal readback and shared high-side current telemetry. Its powered-off signal range is limited to 0–3.6 V; I must attenuate and independently clamp field faults before it. A pre-isolator clamp into MCU 3.3 V would create the backpower path I am preventing. SEL is qualified by receiving-domain reset/rail validity so brownout also opens the path. Divider loading from the ADC pulldown and effective current-sense burden belong in the captured-circuit calculation. [TMUX1511 datasheet](https://www.ti.com/lit/ds/symlink/tmux1511.pdf)
+I calculate finite edge/settling windows and switching heat in [pwm_checks.py](calcs/pwm_checks.py). Published timing is measured under manufacturer-specific conditions; the selected 9–30 V supply, 3.3 V command and approximately 0.7 A current limit require prototype verification. I make no precise duty-to-power, motor or proportional-solenoid claim.
+
+I retain the protected OPA2320/TMUX1511 receiving path for multiplexed current diagnostics. I sample PWM during a settled on-window and mark unavailable windows invalid. On-state current and duty are separate observations. Current limiting and hardware permission remain independent of sampling success.
 
 ### MCU pins, clocks, and reset behavior
 
 I found a conflict-free provisional resource allocation in the G474 datasheet. I reserve PB8 for BOOT0, keep PG10 as NRST, use PD0/PD1 for FDCAN1, PD4–PD6 for USART2/RS-485, PC8/PC9 for I2C3, and PA5–PA7 for shared SPI1. USB, SWD, the external CMOS clock, and DI1 timer acquisition have separate pins. I use an 8 MHz HSE bypass selection with a 144 MHz system clock and exact 48 MHz USB clock; maximum 170 MHz operation is optional and needs a different USB clock strategy. My [capture checklist](Schematic_Capture.md) records the full allocation and relevant errata.
 
-I add a hardware ARM latch with asynchronous clearing. Holding a GPIO high must not reenable outputs when field power returns. The reset supervisor's nominal threshold is 3.07 V for TPS3808G33; I do not substitute an assumed 2.93 V value. I select partial-power-down buffers at MCU/field crossings and monitor actual analog rail windows before declaring acquisition or AO valid.
+I add a hardware ARM latch with asynchronous clearing. Holding a GPIO high must not reenable outputs when field power returns. The reset supervisor's nominal threshold is 3.07 V for TPS3808G33; I do not substitute an assumed 2.93 V value. I select partial-power-down buffers at MCU/field crossings and monitor actual analog rail windows before declaring acquisition and current diagnostics valid.
 
 ### Input-fault claims and surge coordination
 
@@ -79,18 +77,14 @@ I removed the unqualified +40 V main-input test. SMCJ33CA has a 36.7–40.6 V br
 
 I also review the eFuse's negative differential stress with output capacitance still charged. A −53.3 V catalog TVS clamp combined with +30 V retained output is already 83.3 V across the relevant path, close to the stated −85 V/10 ms condition; a +35 V retained output would exceed it. Component voltage labels alone do not establish bipolar surge survival. [TPS2663 datasheet](../references/datasheets/TPS2663.pdf)
 
-## Industry practice and the next design gates
+## Revised scope and remaining gates
 
-I checked accuracy feasibility separately from ADC/DAC resolution. ADS8684A's maximum ±2 LSB INL corresponds to ±0.3125 mV on the voltage range and ±0.78125 µA through the current shunt. DAC80501's ±1 LSB maximum INL corresponds to ±0.153 mV at a 10 V terminal span. These terms fit comfortably inside my calibrated targets, but do not include the complete protection, resistor, reference, drift, noise, and calibration budgets. I avoid counting total unadjusted error twice with its constituent errors. [ADS8684A](../references/datasheets/ADS8684A.pdf), [DAC80501](../references/datasheets/DAC80501.pdf)
+I power every board rail from the protected external supply and retain USB as a self-powered data interface. I removed the analog voltage-command circuit, its negative bias/reference monitoring and USB power-transfer circuitry from the active component selections, calculations and references. The +15 V and threshold supplies remain essential to input protection. Both isolated buses, power supervision, calibration, relays and load diagnostics remain in Rev A.
 
-I also distinguish credible zero-output headroom from a guaranteed temperature proof. LM7705 supplies at least the specified −209 mV negative bias at 5 V over its temperature table. OPA2197's quoted 125 mV maximum output headroom at a 10 kΩ load is a 25 °C row, and its guaranteed open-loop-gain test region does not reach my exact zero endpoint. I will verify zero, load, temperature, and startup on the assembled circuit; a unipolar DAC's positive zero-code offset cannot always be digitally nulled. [LM7705](../references/datasheets/LM7705.pdf), [OPAx197](../references/datasheets/OPA197.pdf)
+I check accuracy separately from ADC resolution. ADS8684A's maximum ±2 LSB INL corresponds to ±0.3125 mV on the voltage range and ±0.78125 µA through the 200 Ω shunt. Protection/loading, reference, drift, noise and calibration uncertainty still need a complete error budget. My [analog calculations](calcs/analog_checks.py) and ideal DC simulation cover only their stated assumptions.
 
-My interface choices are established industrial conventions: positive DC inputs, 0–10 V, externally powered 4–20 mA, RS-485/Modbus RTU, CAN/CAN FD, dry contacts, and protected load switching. I use the Modbus Organization's current application V1.1b3 and serial implementation V1.02 guidance. I updated my land-pattern reference to IPC-7352; IPC lists IPC-7351 as no longer maintained. These references guide implementation and do not certify my board. [Modbus specifications](https://www.modbus.org/modbus-specifications), [IPC revision table](https://www.ipc.org/ipc-document-revision-table)
+I use positive DC inputs, voltage/current sensor interfaces, Modbus RTU, CAN/CAN FD, dry contacts and protected load switching. My [standards references](../references/standards/README.md) guide implementation; they do not certify the board.
 
-Before layout, I will close every exact pin/package choice, regulator support network and compensation, tolerance/error budget, rail monitor, hardware inhibit truth table, transient-energy path, and ERC result. Before fabrication, I will close DRC, isolation geometry, thermal/current-carrying design, manufacturability, and source/export consistency. After assembly, I will collect calibrated analog results, real-load and cable behavior, startup/miswire/fault recovery, communication, and repeatability evidence.
+I can begin schematic hierarchy and package preparation from the revised [capture package](Schematic_Capture.md). Effective capacitor evidence and missing local CAD assets remain preparation gates. Before layout I close captured pins/networks, rail sequencing, permission/default truth tables, transient paths and ERC. Before fabrication I close DRC, isolation geometry, thermal/current-carrying design and manufacturing exports. Measurements then establish accuracy, PWM behavior, real-load/fault response, communication and repeatability.
 
-My architecture review establishes a feasible starting design with explicit margins and known remaining work. It does not establish automotive qualification, functional-safety certification, EMC compliance, or a guaranteed field rating. I keep the [validation matrix](Validation.md) tied to the actual revision I will build.
-
-## Detailed circuit completion
-
-I prepared a detailed capture reference set on October 3, 2026. I replaced the oversized TPS55340 boost with the internally controlled light-load TPS61040, defined all MCU service/control resources, set finite bus/load fixtures and recorded complete analog support networks. I use 5.75 W of named service reservations inside 6 W. I document actual OPAx197 typical-model results and threshold-supply shutdown constraints in [Analog](circuits/Analog.md), and separate them from whole-board qualification.
+I have no native schematic or PCB to review yet. My document, part-index, arithmetic and bounded simulation checks are not a whole-board verification. I tie every release claim to [recorded qualification](Validation.md) on the actual revision.

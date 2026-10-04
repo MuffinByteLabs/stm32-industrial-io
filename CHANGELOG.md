@@ -2,6 +2,15 @@
 
 ## Rev A — In development
 
+### October 4, 2026
+
+- I revised Rev A around external board power and self-powered USB data service.
+- I removed the analog voltage-command stage, its dedicated bias/reference circuits and USB source-transfer circuitry from the active design.
+- I retained precision inputs, both isolated buses, power supervision, relays and current diagnostics.
+- I added DO3 timer PWM with a bounded 100 Hz load/timing target, phase-aware current sensing and explicit shutdown/rearming behavior.
+- I separated receiving-domain buffer enables, added global driver-fault ARM clearing and coordinated low-line rail monitoring with the post-protection power margin.
+- I updated circuit specifications, component selections, references, calculations and qualification requirements together. Native schematic/PCB implementation and measured ratings remain pending.
+
 ### October 3, 2026
 
 - I completed circuit capture specifications and exact component/support-value selections for power, control/service, analog and field I/O.

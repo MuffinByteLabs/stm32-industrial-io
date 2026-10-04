@@ -9,6 +9,8 @@ I record the selected parts and support values before drawing the schematic. The
 | [Analog](analog.json) | [Analog](../circuits/Analog.md) |
 | [Field I/O](field_io.json) | [Field I/O](../circuits/Field_IO.md) |
 
+My October 4 scope uses external board power, self-powered USB data service and DO3 timer PWM. The active selections retain all four analog inputs, independently isolated RS-485/CAN, relays, current diagnostics and rail supervision.
+
 I allocate quantities within each block and identify off-board mating plugs and optional/DNP parts separately. Repeated MPNs represent separate placements. Control pull/bypass counts include a small placement allocation; actual reference designators replace them after capture. I do not use pre-capture counts as ordering quantities.
 
 I distinguish existing library candidates from project-specific assets to create/check. These identifiers do not certify footprints or assert missing symbols already exist. I verify physical pins during placement, then approve land patterns before layout.

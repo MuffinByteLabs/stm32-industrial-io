@@ -1,6 +1,6 @@
 {
   "project": "STM32 Industrial I/O Controller",
-  "selection_status": "Detailed pre-capture circuit selections; native implementation, library comparison and measured qualification pending",
+  "selection_status": "External-power Rev A with four analog inputs and DO3 PWM; pre-capture selections, native implementation and measured qualification pending",
   "checked_date": "2026-10-03",
   "parts": {
     "STM32G474VET6": {
@@ -73,30 +73,6 @@
       "checked_utc": "2026-10-03T15:47:02+00:00",
       "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending"
     },
-    "TPS2121": {
-      "manufacturer": "Texas Instruments",
-      "file": "TPS2121.pdf",
-      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tps2121.pdf",
-      "title_token": "TPS2121",
-      "status": "downloaded_identity_checked",
-      "pages": 45,
-      "bytes": 3341505,
-      "sha256": "b2f5950f596dc2c4ca33e4ebac27fd35e4dcc68ea63e173466123e1118e91a06",
-      "checked_utc": "2026-10-03T15:47:02+00:00",
-      "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending"
-    },
-    "LM7705": {
-      "manufacturer": "Texas Instruments",
-      "file": "LM7705.pdf",
-      "datasheet_url": "https://www.ti.com/lit/ds/symlink/lm7705.pdf",
-      "title_token": "LM7705",
-      "status": "downloaded_identity_checked",
-      "pages": 28,
-      "bytes": 1159152,
-      "sha256": "90c1104b9b42bc575fdc05425e77af07049ba802f6cb02d598be835bc19a3050",
-      "checked_utc": "2026-10-03T15:47:02+00:00",
-      "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending"
-    },
     "ISO1212": {
       "manufacturer": "Texas Instruments",
       "file": "ISO1212.pdf",
@@ -118,18 +94,6 @@
       "pages": 43,
       "bytes": 1854336,
       "sha256": "62c57abf3394c86e6e6ff8fb25760ae9a7f65709c9bb485d521edcf9186d7f5d",
-      "checked_utc": "2026-10-03T15:47:03+00:00",
-      "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending"
-    },
-    "DAC80501Z": {
-      "manufacturer": "Texas Instruments",
-      "file": "DAC80501.pdf",
-      "datasheet_url": "https://www.ti.com/lit/ds/symlink/dac80501.pdf",
-      "title_token": "DAC80501",
-      "status": "downloaded_identity_checked",
-      "pages": 52,
-      "bytes": 3518337,
-      "sha256": "51dcb60423765d2521c62af621e2d6c7f4d38c9aa48deec4b4044d49decbbc20",
       "checked_utc": "2026-10-03T15:47:03+00:00",
       "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending"
     },
@@ -345,17 +309,6 @@
       "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending",
       "source_kind": "manufacturer"
     },
-    "ADG5401F": {
-      "manufacturer": "Analog Devices",
-      "file": "ADG5401F.pdf",
-      "datasheet_url": "https://www.analog.com/media/en/technical-documentation/data-sheets/adg5401f.pdf",
-      "title_token": "ADG5401F",
-      "status": "download_failed",
-      "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending",
-      "download_note": "RemoteDisconnected: Remote end closed connection without response",
-      "checked_utc": "2026-10-03T11:59:06.108730+00:00",
-      "error": "RemoteDisconnected: Remote end closed connection without response"
-    },
     "TPS26611DDFR": {
       "manufacturer": "Texas Instruments",
       "file": "TPS2661.pdf",
@@ -378,32 +331,6 @@
       "pages": 34,
       "bytes": 1892583,
       "sha256": "27107e766c5ecf018e17ad01b177fd3df7ecf20269298c0cec94de94a902d8a8",
-      "checked_utc": "2026-10-03T15:47:04+00:00",
-      "source_kind": "manufacturer",
-      "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending"
-    },
-    "OPA2197IDR": {
-      "manufacturer": "Texas Instruments",
-      "file": "OPA197.pdf",
-      "datasheet_url": "https://www.ti.com/lit/ds/symlink/opa197.pdf",
-      "title_token": "OPA2197",
-      "status": "downloaded_identity_checked",
-      "pages": 56,
-      "bytes": 2174683,
-      "sha256": "27653a7d5e965cbb2d23f7998919ebd774efd5cd3e126b8f0881469ae91166fd",
-      "checked_utc": "2026-10-03T15:47:04+00:00",
-      "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending",
-      "family_scope_note": "OPAx197 family PDF covers dual OPA2197; selected SOIC-8 IDR still requires pin/footprint cross-check."
-    },
-    "REF3325AIDBZR": {
-      "manufacturer": "Texas Instruments",
-      "file": "REF33.pdf",
-      "datasheet_url": "https://www.ti.com/lit/ds/symlink/ref33.pdf",
-      "title_token": "REF33",
-      "status": "downloaded_identity_checked",
-      "pages": 36,
-      "bytes": 1512901,
-      "sha256": "39839abc9bf09417d0a4b446c6e922679f6dc63b19072e284169dd23007e65fe",
       "checked_utc": "2026-10-03T15:47:04+00:00",
       "source_kind": "manufacturer",
       "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending"
@@ -446,20 +373,6 @@
       "pages": 39,
       "bytes": 2280389,
       "sha256": "6cdca27bfce2aa901281361729cfebaac6b4ecf85f5fc1fac41b81bb7e673d18",
-      "checked_utc": "2026-10-03T15:47:05+00:00"
-    },
-    "TPS2553DBVR": {
-      "manufacturer": "Texas Instruments",
-      "file": "TPS2553.pdf",
-      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tps2553.pdf",
-      "manufacturer_datasheet_url": "https://www.ti.com/lit/ds/symlink/tps2553.pdf",
-      "title_token": "TPS2553",
-      "status": "downloaded_identity_checked",
-      "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending",
-      "source_kind": "manufacturer_primary",
-      "pages": 44,
-      "bytes": 2091666,
-      "sha256": "88e453700cea2b263cdb5b44fce1e883e0f6d3b975457f879ac1423eeea42071",
       "checked_utc": "2026-10-03T15:47:05+00:00"
     },
     "SN74LVC2G04DCUR": {
@@ -644,20 +557,6 @@
       "checked_utc": "2026-10-03T16:24:46+00:00",
       "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending"
     },
-    "PMEG3010CEH,115": {
-      "manufacturer": "Nexperia",
-      "file": "PMEG3010CEH.pdf",
-      "datasheet_url": "https://assets.nexperia.com/documents/data-sheet/PMEG3010CEH.pdf",
-      "manufacturer_datasheet_url": "https://assets.nexperia.com/documents/data-sheet/PMEG3010CEH.pdf",
-      "title_token": "PMEG3010CEH",
-      "source_kind": "manufacturer_primary",
-      "status": "downloaded_identity_checked",
-      "pages": 8,
-      "bytes": 612378,
-      "sha256": "29f6cd12b13e5544b38fb21ec78637dd0eb841f104d88a723f1371d1aa7c389c",
-      "checked_utc": "2026-10-03T16:24:46+00:00",
-      "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending"
-    },
     "PMEG4010CEJ,115": {
       "manufacturer": "Nexperia",
       "file": "PMEG4010CEJ.pdf",
@@ -672,5 +571,6 @@
       "checked_utc": "2026-10-03T16:24:46+00:00",
       "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending"
     }
-  }
+  },
+  "scope_revised_date": "2026-10-04"
 }

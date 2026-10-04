@@ -2,13 +2,13 @@
 
 I use this document to explain the architecture choices that affect circuit behavior, fault handling, and the eventual measurements. I have selected an approach and candidate families; exact circuitry, schematic capture, layout, and prototype results are still pending. I distinguish a component capability from an assembled-board rating.
 
-## Keep service power separate from field energy
+## Power the complete board externally
 
-I want USB access for configuration and diagnosis with the main supply disconnected. I therefore put only essential logic behind a field/USB service-power mux. I keep external ADC/DAC, analog auxiliary rails, relay coils, and isolated bus supplies on field power.
+I use the protected external DC supply for every board rail. USB is a self-powered data interface with VBUS detection, ESD protection and CC resistors. This keeps service access useful without a second board-power source or a transfer/suspend power state.
 
-I selected TPS2121 as the source-selection candidate because reverse-current control matters when both supplies are connected. I also treat SPI, command signals, monitors, and readback as possible power paths. I will select buffers with verified powered-off behavior and check every signal crossing during source removal. A firmware flag can mark unavailable data, but it cannot stop current through an input protection diode. I require field/analog rail validity before accepting measurements or enabling AO.
+Separate regulators can still ramp or collapse at different rates. I retain qualified buffers and receiving-domain analog isolation, check VBUS-connected/unpowered states, and require valid rails before accepting measurements. Firmware validity flags do not prevent electrical injection.
 
-I address external output backfeed separately. Each high-side channel gets a series diode so a positive source at DOx cannot ordinarily return energy through the switch body diode into VFIELD. I still need to qualify negative-terminal faults and all applicable diode stress. [TPS2121](../references/datasheets/TPS2121.pdf), [TPS4H160-Q1](../references/datasheets/TPS4H160-Q1.pdf)
+I treat output backfeed separately. Each high-side channel has a series blocking diode and a reviewed freewheel path. I qualify actual stress, losses and load-energy behavior on the finished circuit. [TPS4H160-Q1](../references/datasheets/TPS4H160-Q1.pdf)
 
 ## Separate operating voltage from fault survival
 
@@ -20,7 +20,7 @@ I use SMCJ33CA as a provisional TVS and limit the initial positive DC fault to 3
 
 ## Use a shared analog reference deliberately
 
-I keep analog inputs/output, MCU, USB, and main DC return in one ground domain. This simplifies the single-ended ADC path and calibration, while making sensor-ground compatibility a stated interface requirement. I provide separate isolation for the digital-input group and each communication bus.
+I keep analog inputs, MCU, USB, and main DC return in one ground domain. This simplifies the single-ended ADC path and calibration, while making sensor-ground compatibility a stated interface requirement. I provide separate isolation for the digital-input group and each communication bus.
 
 I do not treat the ADS8684A input-ground pins as floating negative inputs. I will use an external isolated transmitter where the sensor return potential is incompatible with MAIN_GND. I keep LOAD_RETURN and AI_RETURN physically arranged so actuator current does not flow through the local ADC reference connection. Separate terminal names describe current routing, not galvanic separation. [ADS8684A](../references/datasheets/ADS8684A.pdf)
 
@@ -32,19 +32,17 @@ The TPS26611 limit is 25–40 mA, not a guaranteed 30 mA. I rate the precision s
 
 I select high-impedance drain response on the TMUX sense branches. Its DR pin selects fault response, not channel enable. I keep separate voltage and current threshold groups, and include the ADC's 2.5 V-biased effective input loading in calibration. ADC_AVDD has a permanent starting 10 kΩ bleeder to meet its powered-off low-impedance supply condition; I still check complete sequencing and transient stress. [TMUX7462F](../references/datasheets/TMUX7462F.pdf), [ADS8684A](../references/datasheets/ADS8684A.pdf)
 
-## Control and sense the actual voltage-command terminal
+## Add bounded PWM to one load output
 
-I selected a sourced 0–10 V output for compatible high-impedance actuator inputs. I verify the receiving device's electrical requirements; current-sinking lighting controls and current transmitters require different interfaces.
+I use DO3 with PE9 / TIM1_CH1 / AF2 to control a compatible load through the existing high-side switch. My first target is 100 Hz, 10–90% commanded duty plus static off/on, with instantaneous load current ≤0.5 A. I start with a resistor fixture and then qualify a specific LED assembly.
 
-I use DAC80501Z followed by OPA2197IDR: one local gain-four stage and one unity driver. ADG5401F switches the output and a separate protected terminal-feedback path. Its powered disabled/fault state opens both field paths and reconnects local driver feedback. I hold enable low through initialization and use qualified analog power plus hardware output permission to enable it.
+Finite switch delays and slew rates distort short pulses and increase switching heat. I calculate the available plateau and sense window before claiming an operating envelope, then measure it across supply, temperature and load conditions. PWM provides adjustable full-supply pulses; I do not describe it as a precision analog command or assume compatibility with motor/proportional-solenoid loads.
 
-I keep the switch's secondary feedback resistance out of the gain-setting divider. At 10 V into 10 kΩ, uncompensated 50 Ω series resistance loses the entire 50 mV allowance. The unity driver's terminal feedback instead compensates the main-switch and reviewed series-impedance drop; the remaining error budget includes DAC/reference error, gain ratio, amplifier offsets, drift, and feedback leakage. I use +15 V/GND for the switch and +15 V/LM7705 bias for both amplifiers. My ideal DC model demonstrates the feedback principle, while actual amplifier compensation and cable capacitance remain to be validated.
-
-I ground POC for the switch's weak powered disabled pulldown and add a permanent 100 kΩ terminal pulldown. Independently protected terminal readback has its own attenuation and unpowered-MCU isolation. The switch's internal feedback node cannot prove the terminal value when disabled or faulted. [DAC80501](../references/datasheets/DAC80501.pdf), [OPAx197](../references/datasheets/OPA197.pdf), [ADG5401F](https://www.analog.com/media/en/technical-documentation/data-sheets/adg5401f.pdf), [Engineering review](Engineering_Review.md)
+I sample settled on-state current in a phase-aware schedule and report duty and diagnostic validity separately. The hardware permission gate overrides the timer, and a stalled program cannot keep the watchdog healthy through autonomous PWM. [PWM calculations](calcs/pwm_checks.py), [TI PWM guidance](../references/reference-designs/README.md)
 
 ## Accept diode losses and qualify diagnostics
 
-I chose series blocking and freewheel diodes for the initial on/off load stage. I selected STPS2H100A as the starting diode. Its manufacturer 125 °C conduction-loss model gives about 0.291 W/channel at 0.5 A; this is a model, not a guaranteed maximum over production and temperature. I still close the complete loss and leakage budget. The freewheel path gives slow inductive decay, so I will characterize release time for the selected load. Faster release or proportional PWM would require a revised energy/clamp design.
+I chose series blocking and freewheel diodes for the load stage with three on/off channels and one bounded PWM channel. I selected STPS2H100A as the starting diode. Its manufacturer 125 °C conduction-loss model gives about 0.291 W/channel at 0.5 A; this is a model, not a guaranteed maximum over production and temperature. I still close the complete loss and leakage budget. The freewheel path gives slow inductive decay, so I will characterize release time for the selected load. Faster release or proportional-solenoid PWM requires a separately reviewed energy/clamp design; my initial PWM fixture is resistive or a specifically qualified LED assembly.
 
 I expect the series diode to alter off-state/open-load diagnostics. I will use on-state current and the actual load to establish useful detection thresholds rather than assume the IC's unmodified diagnostic behavior survives the added diode. I also protect the MCU sense input from fault-level voltage and unpowered states.
 
@@ -52,7 +50,7 @@ I accept one multiplexed current-sense output for four channels. Firmware must s
 
 ## Remove output permission independently of application software
 
-I combine field validity, reset status, external watchdog status, and an asynchronously cleared ARM latch in hardware. A stale GPIO cannot restore permission when field power returns; a fresh valid arm transition is required. I gate the high-side command inputs, relay drivers, and AO disconnect; diagnostic enable is not an output-power inhibit. I require analog rail validity for AO as well.
+I combine field validity, reset status, external watchdog status, and an asynchronously cleared ARM latch in hardware. A stale GPIO cannot restore permission when field power returns; a fresh valid arm transition is required. I gate all four high-side command inputs, including PWM, and both relay drivers; diagnostic enable is not an output-power inhibit. Required analog-health validity protects the input and diagnostic paths and remains part of the permission contract.
 
 I service the watchdog only after application health checks, so a stalled program cannot remain healthy through a free-running timer output. I clear arming on owner changes and global faults and require fresh commands after recovery. I define the relay's deenergized state electrically: COM–NO opens and COM–NC closes. Coil-command telemetry alone does not prove contact position. [TPS3431](../references/datasheets/TPS3431.pdf), [G5Q reference status](../references/datasheets/README.md)
 

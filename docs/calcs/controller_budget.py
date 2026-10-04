@@ -10,7 +10,7 @@ def calculate(service_w: float, efficiency: float) -> dict:
     n, current, shunt = 4, 0.5, 200.0
     service_reservations = {
         "mcu_and_essential_logic_w": 0.75,
-        "external_adc_dac_and_field_logic_w": 0.50,
+        "external_adc_and_field_logic_w": 0.50,
         "analog_auxiliaries_w": 0.65,
         "two_relay_coils_w": 1.10,
         "two_isolated_bus_supplies_w": 2.75,
@@ -29,7 +29,7 @@ def calculate(service_w: float, efficiency: float) -> dict:
             "output_channels": n,
             "current_per_output_a": current,
             "input_continuous_budget_a": 3.0,
-            "excluded": "Extra input-protection losses, VFIELD overhead, inrush, limit tolerances, transient peaks",
+            "excluded": "Extra input-protection losses, high-side operating current/VFIELD overhead, inrush, limit tolerances, transient peaks",
             "note": "Service power is referred to the delivered 5V_FIELD rail and includes downstream conversion losses. Efficiency is an assumption, not a guaranteed datasheet minimum.",
         },
         "service_reservations": {
@@ -72,19 +72,32 @@ def calculate(service_w: float, efficiency: float) -> dict:
             "positive_output_power_w": 15.0 * 0.025,
             "boost_efficiency_assumed": 0.60,
             "boost_primary_power_estimate_w": 15.0 * 0.025 / 0.60,
-            "lm7705_5v_primary_current_reserved_a": 0.004,
-            "lm7705_primary_power_reserved_w": 5.0 * 0.004,
-            "adg5401f_normal_positive_supply_max_a": 0.000240,
-            "adg5401f_positive_supply_reserved_a": 0.000300,
             "branch_reservation_w": service_reservations["analog_auxiliaries_w"],
-            "note": "25 mA rail capacity covers the two TPS26611 supplies, two TMUX groups, VFP supplies/bleeders, dual OPA2197, ADG5401F and supported AO load with reserve. The 60% boost efficiency and LM7705 current reserve are engineering assumptions. ADG5401F uses +15 V/MAIN_GND single-supply operation; only the amplifiers use the negative bias. Boost disable does not isolate its passive output path.",
+            "note": "25 mA positive-rail capacity conservatively covers two TPS26611 supplies, two TMUX groups, VFP supplies/bleeders and reserve. The 60% boost efficiency is an engineering assumption; 0.625 W estimated conversion fits the retained 0.65 W reservation. Boost disable does not isolate its passive output path.",
         },
         "input_current": [
             {"supply_v": v,
              "total_before_extra_losses_a": n * current + service_w / (v * efficiency),
-             "remaining_3a_budget_a": 3.0 - n * current - service_w / (v * efficiency)}
+             "output_bleeders_nominal_a": n * v / 10000,
+             "high_side_operating_current_engineering_reserve_a": 0.020,
+             "total_with_bleeders_and_operating_reserve_a": n * current + service_w / (v * efficiency) + n * v / 10000 + 0.020,
+             "remaining_3a_after_bleeders_and_operating_reserve_a": 3.0 - n * current - service_w / (v * efficiency) - n * v / 10000 - 0.020}
             for v in (9.0, 12.0, 24.0, 30.0)
         ],
+        "vfield_overhead": {
+            "pre_diode_bleeders": "Four 10 kohm / 0.25 W resistors; nominal 12 mA and 0.36 W total at 30 V",
+            "high_side_operating_current_reserve_a": 0.020,
+            "note": "20 mA is an engineering allocation, not a guaranteed TPS4H160 maximum. Bleeder tolerance, measured chip consumption and input-protection losses require margin closure at actual post-protection voltage.",
+        },
+        "post_protection_low_line_contract": {
+            "connector_minimum_v": 9.0,
+            "vfield_minimum_target_v": 8.4,
+            "maximum_protection_path_drop_target_v": 0.6,
+            "main_buck_efficiency_assumed": 0.80,
+            "total_with_nominal_bleeders_and_operating_reserve_a": n * current + service_w / (8.4 * 0.80) + n * 8.4 / 10000 + 0.020,
+            "margin_to_3a_before_remaining_effects_a": 3.0 - n * current - service_w / (8.4 * 0.80) - n * 8.4 / 10000 - 0.020,
+            "note": "Captured hot/tolerance fuse, FET, eFuse, terminals and traces must prove VFIELD >=8.4 V at 9 V connector with combined load. The 20 mA allocation and 80% efficiency are assumptions, not guaranteed maxima/minima. If this contract fails, revise power path or operating target before release.",
+        },
         "efuse_current_limit_reference": {
             "continuous_input_target_a": 3.0,
             "candidate": "TPS26632RGER",
@@ -157,7 +170,6 @@ def calculate(service_w: float, efficiency: float) -> dict:
             "current_room_temperature_ua": (20.0 - 4.0) * 0.002 * 1000,
             "voltage_temperature_goal_mv": 10.0 * 0.005 * 1000,
             "current_temperature_goal_ua": (20.0 - 4.0) * 0.005 * 1000,
-            "ao_mv": 10.0 * 0.005 * 1000,
             "voltage_lsb_uv_on_10_24v_range": 10.24 / 2**16 * 1e6,
             "note": "Quantization is only one error term; calibration and component/temperature errors remain.",
         },
@@ -170,6 +182,7 @@ def calculate(service_w: float, efficiency: float) -> dict:
             "four_blocking_diodes_loss_model_125c_w": n * (0.56 * current + 0.045 * current**2),
             "hs_switch_four_channel_conduction_w_with_25c_max_ron": n * current**2 * 0.165,
             "hs_switch_four_channel_conduction_w_with_150c_max_ron": n * current**2 * 0.280,
+            "hs_switch_four_channel_conduction_w_at30v_with_nominal_bleeders": n * (current + 30 / 10000)**2 * 0.280,
             "reference_short_circuit_switch_w_at_24v_0_7a": 24.0 * 0.7,
             "initial_current_limit_resistor_ohm": 2870.0,
             "nominal_current_limit_a": 0.8 * 2500.0 / 2870.0,
@@ -189,11 +202,14 @@ def calculate(service_w: float, efficiency: float) -> dict:
             "efuse_gate_drive_min_typ_max_v": [8.3, 10.23, 14.0],
             "note": "The 10 V Rds maximum does not establish a maximum loss at the eFuse's 8.3 V minimum gate drive. Verify lower-drive/hot resistance and transient SOA. A 100 V FET alone does not resolve the IC's -85 V input/output pulse limit.",
         },
-        "ao_loading": {
-            "load_ohm": 10000.0,
-            "at_10v_load_ma": 10.0 / 10000.0 * 1000,
-            "100ohm_series_drop_mv_at_1ma": 0.001 * 100.0 * 1000,
-            "note": "This is an uncompensated series-drop example. My selected unity driver uses protected terminal feedback to compensate DC path resistance; actual leakage, offset, endpoint headroom, cable stability and fault transitions still require circuit verification.",
+        "pwm_budget_policy": {
+            "channel": "DO3 / PE9 / TIM1_CH1 / AF2",
+            "initial_frequency_hz": 100.0,
+            "commanded_duty_percent": [10.0, 90.0],
+            "static_endpoints_percent": [0.0, 100.0],
+            "instantaneous_load_ceiling_a": current,
+            "continuous_full_on_channels_budgeted": n,
+            "note": "No input-current credit for reduced duty. PWM overlap redistributes delivered power into switch heat and is screened separately in pwm_checks.py; do not add it twice to the fixed-current supply model. High-side operating current, parasitics, conversion/protection losses and measured margins remain to be closed.",
         },
         "resistive_load_fixture": [
             {"supply_v": v,
