@@ -41,6 +41,13 @@ jobs:
           python docs/calcs/controller_budget.py > out/engineering-calculations.json
           cat out/engineering-calculations.json
 
+      - name: Report selected CAD asset availability
+        if: always() && steps.python.outcome == 'success'
+        run: |
+          mkdir -p out
+          python scripts/audit_capture_readiness.py > out/capture-readiness.json
+          cat out/capture-readiness.json
+
       - name: Check circuit selection coverage and support arithmetic
         if: always() && steps.python.outcome == 'success'
         run: |
@@ -63,22 +70,37 @@ jobs:
               '',
               'I use these checks to verify documentation links, saved reference identity, library paths, and engineering arithmetic.',
               'I verify electrical performance separately through schematic review and prototype measurements.',
+              'Host diagnostic tests use simulated protocol fixtures; they do not qualify the physical controller.',
               '',
           ]
           report = Path('out/project-audit.json')
           if report.exists() and report.stat().st_size:
               result = json.loads(report.read_text())
-              for key in ('markdown_files', 'local_links_checked', 'candidate_pdfs_identity_hash_checked', 'native_design_files'):
+              for key in ('markdown_files', 'local_links_checked', 'candidate_pdfs_identity_hash_checked', 'capacitor_csvs_identity_hash_samples_checked', 'native_design_files'):
                   lines.append(f'- {key}: {result[key]}')
               lines.append(f'- Audit failures: {len(result["failures"])}')
               lines.append(f'- Audit warnings: {len(result["warnings"])}')
           else:
               lines.append('My document audit did not produce a report; details are recorded in the job log.')
+          capture = Path('out/capture-readiness.json')
+          if capture.exists() and capture.stat().st_size:
+              assets = json.loads(capture.read_text())
+              lines.append(f'- Capture asset gate: {assets["capture_asset_gate"]}')
+              lines.append(f'- Selected groups with missing assets: {assets["groups_with_missing_assets"]}')
+              lines.append(f'- Selected groups with unchecked stock availability: {assets["groups_with_unchecked_stock_assets"]}')
+              lines.append('- Asset existence does not establish package approval; open gates remain open when structural checks pass.')
           lines.append('')
           lines.append('I retain the available audit and calculation reports as artifacts of this run.')
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
               summary.write('\n'.join(lines) + '\n')
           PY
+
+      - name: Check host diagnostics and protocol fixtures
+        if: always() && steps.python.outcome == 'success'
+        run: |
+          python -m unittest discover -s tools/diagnostics/tests -v
+          python tools/diagnostics/fieldio_cli.py --simulate identity
+          python tools/diagnostics/fieldio_cli.py --simulate snapshot
 
       - name: Save check reports
         if: always()

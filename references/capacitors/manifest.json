@@ -1,0 +1,198 @@
+{
+  "scope": "read-only manufacturer evidence retrieval; formal capacitor gates unchanged",
+  "files": [
+    {
+      "file": "GRM31CR71E106KA12_bias_0C_0p01Vrms.csv",
+      "sha256": "48d76654ceae69b323d8e87cbf156e0bff8be9a418bd75664518a1a2a0cbcfeb",
+      "bytes": 6003,
+      "manufacturer": "Murata",
+      "requested_part": "GRM31CR71E106KA12L",
+      "exported_base_model": "GRM31CR71E106KA12",
+      "origin_url": "https://ds.murata.com/simsurfing/mlcc.html?oripartnumbers=%5B%22GRM31CR71E106KA12L%22%5D&partnumbers=%5B%22GRM31CR71E106KA12%22%5D&rgear=zzo&rgearinfo=com",
+      "retrieved_local_date": "2026-10-04",
+      "csv_headers": [
+        "#GRM31CR71E106KA12",
+        "#In Production",
+        "#2026/10/05",
+        "#c_dcbias_capacitance",
+        "#capacitance  0.0degC  AC0.01Vrms"
+      ],
+      "point_count": 201,
+      "evidence_class": "typical_characteristic_model_not_guaranteed_minimum",
+      "curve_kind": "absolute capacitance versus DC bias",
+      "conditions": {
+        "measurement_frequency_Hz": 1000,
+        "frequency_source": "visible viewer prescribed condition 1 kHz / 1 Vrms; low-excitation option at the prescribed frequency",
+        "ac_voltage_Vrms": 0.01,
+        "temperature_C": 0,
+        "dc_bias_sweep_V": [
+          0,
+          25
+        ]
+      }
+    },
+    {
+      "file": "GRM31CR71E106KA12_bias_25C_0p01Vrms.csv",
+      "sha256": "38059d7c9b956bcd38883e19dad33994610aefd5f10852f5c3c2d1fe9168f837",
+      "bytes": 5989,
+      "manufacturer": "Murata",
+      "requested_part": "GRM31CR71E106KA12L",
+      "exported_base_model": "GRM31CR71E106KA12",
+      "origin_url": "https://ds.murata.com/simsurfing/mlcc.html?oripartnumbers=%5B%22GRM31CR71E106KA12L%22%5D&partnumbers=%5B%22GRM31CR71E106KA12%22%5D&rgear=zzo&rgearinfo=com",
+      "retrieved_local_date": "2026-10-04",
+      "csv_headers": [
+        "#GRM31CR71E106KA12",
+        "#In Production",
+        "#2026/10/05",
+        "#c_dcbias_capacitance",
+        "#capacitance  25.0degC  AC0.01Vrms"
+      ],
+      "point_count": 201,
+      "evidence_class": "typical_characteristic_model_not_guaranteed_minimum",
+      "curve_kind": "absolute capacitance versus DC bias",
+      "conditions": {
+        "measurement_frequency_Hz": 1000,
+        "frequency_source": "visible viewer prescribed condition 1 kHz / 1 Vrms; low-excitation option at the prescribed frequency",
+        "ac_voltage_Vrms": 0.01,
+        "temperature_C": 25,
+        "dc_bias_sweep_V": [
+          0,
+          25
+        ]
+      }
+    },
+    {
+      "file": "GRM31CR71E106KA12_bias_25C_1Vrms.csv",
+      "sha256": "dc96a6a5eeab58e61606698e07ae526b2ccd5524c8f14d1df746aa76dc7829ff",
+      "bytes": 5522,
+      "manufacturer": "Murata",
+      "requested_part": "GRM31CR71E106KA12L",
+      "exported_base_model": "GRM31CR71E106KA12",
+      "origin_url": "https://ds.murata.com/simsurfing/mlcc.html?oripartnumbers=%5B%22GRM31CR71E106KA12L%22%5D&partnumbers=%5B%22GRM31CR71E106KA12%22%5D&rgear=zzo&rgearinfo=com",
+      "retrieved_local_date": "2026-10-04",
+      "csv_headers": [
+        "#GRM31CR71E106KA12",
+        "#2026/10/05",
+        "#c_dcbias_capchange",
+        "#capchange  25.0degC  AC1.0Vrms"
+      ],
+      "point_count": 201,
+      "evidence_class": "typical_characteristic_model_not_guaranteed_minimum",
+      "curve_kind": "relative capacitance change versus DC bias",
+      "conditions": {
+        "measurement_frequency_Hz": 1000,
+        "frequency_source": "visible viewer prescribed condition 1 kHz / 1 Vrms; low-excitation option at the prescribed frequency",
+        "ac_voltage_Vrms": 1.0,
+        "temperature_C": 25,
+        "dc_bias_sweep_V": [
+          0,
+          25
+        ]
+      }
+    },
+    {
+      "file": "GRM31CR71E106KA12_bias_50C_0p01Vrms.csv",
+      "sha256": "4f696e4cf9622daac2f3a243705f08beb059de06c66cb0270fd614ce98c3848e",
+      "bytes": 6010,
+      "manufacturer": "Murata",
+      "requested_part": "GRM31CR71E106KA12L",
+      "exported_base_model": "GRM31CR71E106KA12",
+      "origin_url": "https://ds.murata.com/simsurfing/mlcc.html?oripartnumbers=%5B%22GRM31CR71E106KA12L%22%5D&partnumbers=%5B%22GRM31CR71E106KA12%22%5D&rgear=zzo&rgearinfo=com",
+      "retrieved_local_date": "2026-10-04",
+      "csv_headers": [
+        "#GRM31CR71E106KA12",
+        "#In Production",
+        "#2026/10/05",
+        "#c_dcbias_capacitance",
+        "#capacitance  50.0degC  AC0.01Vrms"
+      ],
+      "point_count": 201,
+      "evidence_class": "typical_characteristic_model_not_guaranteed_minimum",
+      "curve_kind": "absolute capacitance versus DC bias",
+      "conditions": {
+        "measurement_frequency_Hz": 1000,
+        "frequency_source": "visible viewer prescribed condition 1 kHz / 1 Vrms; low-excitation option at the prescribed frequency",
+        "ac_voltage_Vrms": 0.01,
+        "temperature_C": 50,
+        "dc_bias_sweep_V": [
+          0,
+          25
+        ]
+      }
+    },
+    {
+      "file": "GRM31CR71E106KA12_temp_3p4V_0p01Vrms.csv",
+      "sha256": "52e72321e9ce8e350c95090117e71a0553e33202d5a8d889dcd55600cd93ce29",
+      "bytes": 10358,
+      "manufacturer": "Murata",
+      "requested_part": "GRM31CR71E106KA12L",
+      "exported_base_model": "GRM31CR71E106KA12",
+      "origin_url": "https://ds.murata.com/simsurfing/mlcc.html?oripartnumbers=%5B%22GRM31CR71E106KA12L%22%5D&partnumbers=%5B%22GRM31CR71E106KA12%22%5D&rgear=zzo&rgearinfo=com",
+      "retrieved_local_date": "2026-10-04",
+      "csv_headers": [
+        "#GRM31CR71E106KA12",
+        "#In Production",
+        "#2026/10/05",
+        "#c_temp_capacitance",
+        "#capacitance  DC3.4V  AC0.01Vrms"
+      ],
+      "point_count": 361,
+      "evidence_class": "typical_characteristic_model_not_guaranteed_minimum",
+      "sampled_0_50C": {
+        "count": 101,
+        "min_temp_C": 0.0,
+        "min_capacitance_F": 6.168479735819904e-06,
+        "max_capacitance_F": 7.552852405380563e-06,
+        "step_C": 0.5
+      },
+      "curve_kind": "absolute capacitance versus temperature",
+      "conditions": {
+        "measurement_frequency_Hz": 1000,
+        "frequency_source": "visible viewer prescribed condition 1 kHz / 1 Vrms; low-excitation option at the prescribed frequency",
+        "ac_voltage_Vrms": 0.01,
+        "dc_bias_V": 3.4,
+        "temperature_sweep_C": [
+          -55,
+          125
+        ]
+      }
+    },
+    {
+      "file": "GRM31CR71E106KA12_temp_5p25V_0p01Vrms.csv",
+      "sha256": "7bd3d2639767b05a41502fcd77375de72c7e83ecb9330717a29aa1a778eda359",
+      "bytes": 10405,
+      "manufacturer": "Murata",
+      "requested_part": "GRM31CR71E106KA12L",
+      "exported_base_model": "GRM31CR71E106KA12",
+      "origin_url": "https://ds.murata.com/simsurfing/mlcc.html?oripartnumbers=%5B%22GRM31CR71E106KA12L%22%5D&partnumbers=%5B%22GRM31CR71E106KA12%22%5D&rgear=zzo&rgearinfo=com",
+      "retrieved_local_date": "2026-10-04",
+      "csv_headers": [
+        "#GRM31CR71E106KA12",
+        "#In Production",
+        "#2026/10/05",
+        "#c_temp_capacitance",
+        "#capacitance  DC5.25V  AC0.01Vrms"
+      ],
+      "point_count": 361,
+      "evidence_class": "typical_characteristic_model_not_guaranteed_minimum",
+      "sampled_0_50C": {
+        "count": 101,
+        "min_temp_C": 0.0,
+        "min_capacitance_F": 5.682853749850013e-06,
+        "max_capacitance_F": 6.660150072139644e-06,
+        "step_C": 0.5
+      },
+      "curve_kind": "absolute capacitance versus temperature",
+      "conditions": {
+        "measurement_frequency_Hz": 1000,
+        "frequency_source": "visible viewer prescribed condition 1 kHz / 1 Vrms; low-excitation option at the prescribed frequency",
+        "ac_voltage_Vrms": 0.01,
+        "dc_bias_V": 5.25,
+        "temperature_sweep_C": [
+          -55,
+          125
+        ]
+      }
+    }
+  ]
+}

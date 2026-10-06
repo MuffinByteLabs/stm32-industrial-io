@@ -1,0 +1,2 @@
+# Optional: install only to use a physical serial port.
+pyserial==3.5

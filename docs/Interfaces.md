@@ -4,6 +4,8 @@ I define the Rev A connections and operating targets here. I have selected exact
 
 My [architecture](Architecture.md) describes the circuit blocks, [design decisions](Design_Decisions.md) records the rationale, and [validation plan](Validation.md) defines the acceptance evidence.
 
+The [scope and milestones](Scope.md#implementation-and-qualification-order) retain the electrical targets below while staging implementation. M1 uses static outputs and Modbus at nominal 12/24 V and room temperature; classic CAN, bounded PWM and wider qualification follow separately. The [protocol contract](../firmware/Protocol.md) defines exact data/command encoding. A supported interface is separate from a physically qualified mode.
+
 ## References and isolation
 
 | Domain | Connections and intended separation |
@@ -39,9 +41,13 @@ I use the selected terminal ratings/pin order from my circuit specifications and
 
 VIN+ accepts positive and VIN− negative. Fuse, TVS, blocking FET/eFuse and controlled capacitance precede VFIELD. Reverse polarity is a fault-survival test, not an operating connection.
 
+The power header is Phoenix 1759017 with 1757019 mating plug: planned physical pin 1 VIN+ and pin 2 VIN−. I must confirm that assignment against the exact connector view before approving the release drawing. Repeated field and analog connectors require the verified coding and cross-mating checks in the [mechanical plan](../mechanical/README.md).
+
 The external supply powers every board rail, including MCU, ADC, auxiliary conversion, relay coils and both isolated port supplies. USB-C carries data, VBUS detection and ground; its VBUS does not power board regulators. I require external board power and detected VBUS before the self-powered USB device attaches.
 
 I qualify external-power startup/removal with USB absent and connected, USB attach/detach while externally powered, and USB-connected/unpowered behavior. No regulator, MCU or field rail may be energized unintentionally through USB or a signal. USB ground connects the host to MAIN_GND.
+
+Full USB electrical operation is qualified at3V3_DIG=3.0–3.6 V. The lower G30 reset threshold does not extend that USB range; brownout is a service-disconnect/recovery condition. I measure independent digital-rail collapse and require fresh stable rails/clocks/VBUS before reattachment, without committing incomplete USB calibration/settings transactions.
 
 ## Digital inputs
 
@@ -91,6 +97,8 @@ Current telemetry is multiplexed, so channel readings are sequential. I will qua
 
 Each relay provides COM, NO, and NC. A deenergized coil leaves COM–NO open and COM–NC closed. I will use COM–NO where the demonstration requires deenergizing to open the load circuit. The contacts are dry and require an external load supply.
 
+The selected G5Q power contacts are not yet qualified for tiny dry-circuit loads. The manufacturer's 10 mA/5 V P-level reference is not a guaranteed universal minimum; a 2–3 mA logic-sensing application requires a suitable signal relay or its own measured contact-reliability contract. [Relay details](circuits/Field_IO.md#two-spdt-dry-contact-relays).
+
 My initial contact qualification target is 30 V DC, 1 A resistive with the specified terminals. Inductive contact loads require suppression and separate qualification. A coil-command state is not measured contact feedback.
 
 ## Wired communication and command ownership
@@ -101,8 +109,8 @@ CAN has another isolated supply and CAN_REF. I will qualify classic CAN at 500 k
 
 I keep RS485_REF and CAN_REF separate. Joining them removes port-to-port isolation. Protection returns stay in their respective domains; shield bonding is an installation decision.
 
-I start operation disarmed. All six actuator gates require PERMISSION: ANALOG_VALID, RESET_OK, WATCHDOG_OK, DO_FAULT_OK, DISARM_N and ARM_STATE. Required analog-health loss also disarms digital and relay outputs; [Control and service](circuits/Control_Service.md) defines the gate network. Modbus, CAN, or the local demonstration is explicitly selected as command owner. Another interface must not silently take control.
+I start operation disarmed. All six actuator gates require PERMISSION: ANALOG_VALID, RESET_OK, WATCHDOG_OK, DO_FAULT_OK, DISARM_N and ARM_STATE. Required analog-health loss also disarms digital and relay outputs; [Control and service](circuits/Control_Service.md) defines the gate network. Modbus, CAN, or the local demonstration is explicitly selected as command owner only when that command transport is implemented and qualified. M1/M2 retain Modbus ownership; initial classic CAN provides telemetry only. Another interface must not silently take control.
 
-The default owner timeout is 1 s. Owner changes, reset, watchdog failure, invalid power, update mode, or a global fault inhibit energy outputs and clear arming. Recovery requires fresh valid commands and explicit rearming.
+The default owner timeout is 1 s. Owner changes, reset, watchdog failure, invalid power, update mode, or a global fault inhibit energy outputs and clear arming. Bus-off while CAN mode is enabled is a latched global fault; inactive CAN does not create that fault. After removing the cause, explicit DISARM acknowledges recoverable latches and the self-check must return READY. The host reads fresh boot/epoch/sequence values, sends ARM with all commands zero, confirms ARMED, then sends a fresh SET. Reading telemetry or recovering a bus never restores output permission.
 
 My initial RS-485 fixture is ≤5 m with reference conductors and −7..+7 V common mode; the chosen protection narrows the transceiver family's full common-mode window. My CAN FD fixture is ≤5 m at500kbit/s arbitration and2Mbit/s data. I specify DI1's ≤3 m cable, output coils ≤100 mH/0.5 A/12.5 mJ and first qualification loads in [Field I/O](circuits/Field_IO.md).

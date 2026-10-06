@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 from collections import Counter
+import csv
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
@@ -14,7 +16,7 @@ from pypdf import PdfReader
 
 ROOT = Path(__file__).resolve().parents[1]
 IGNORED = {".git", ".agents", ".codex", ".aws", "__pycache__", ".venv", "out",
-           "tmp_build", "Claude outputs"}
+           "output", "tmp_build"}
 PROJECT_VARIABLE = "$" + "{KIPRJMOD}"
 
 
@@ -87,6 +89,39 @@ def main() -> int:
             failures.append(f"{mpn}: PDF identity/page count differs from manifest")
         checked_pdfs += 1
 
+    capacitor_root = ROOT / "references/capacitors"
+    capacitor_manifest = json.loads((capacitor_root / "manifest.json").read_text(encoding="utf-8-sig"))
+    checked_capacitor_csvs = 0
+    for record in capacitor_manifest["files"]:
+        path = capacitor_root / record["file"]
+        if not path.is_file():
+            failures.append(f"{record['file']}: capacitor manifest claims an absent CSV")
+            continue
+        payload = path.read_bytes()
+        if hashlib.sha256(payload).hexdigest() != record["sha256"] or len(payload) != record["bytes"]:
+            failures.append(f"{record['file']}: CSV hash/length differs from manifest")
+        rows = list(csv.reader(io.StringIO(payload.decode("utf-8-sig"))))
+        headers = [row[0] for row in rows if row and row[0].startswith("#")]
+        if headers != record["csv_headers"] or f"#{record['exported_base_model']}" not in headers:
+            failures.append(f"{record['file']}: manufacturer CSV identity/headers differ from manifest")
+        points = []
+        for row in rows:
+            try:
+                points.append((float(row[0]), float(row[1])))
+            except (ValueError, IndexError):
+                continue
+        if len(points) != record["point_count"]:
+            failures.append(f"{record['file']}: CSV point count differs from manifest")
+        sample = record.get("sampled_0_50C")
+        if sample:
+            subset = [(temperature, capacitance) for temperature, capacitance in points if 0 <= temperature <= 50]
+            minimum = min(subset, key=lambda point: point[1]) if subset else None
+            if (len(subset) != sample["count"] or minimum != (sample["min_temp_C"], sample["min_capacitance_F"])
+                    or max((point[1] for point in subset), default=None) != sample["max_capacitance_F"]
+                    or any(right[0] - left[0] != sample["step_C"] for left, right in zip(subset, subset[1:]))):
+                failures.append(f"{record['file']}: sampled typical temperature summary differs from CSV")
+        checked_capacitor_csvs += 1
+
     pwm_record = ROOT / 'references/reference-designs/pwm_reference.json'
     pwm = json.loads(pwm_record.read_text(encoding='utf-8'))
     pwm_path = pwm_record.parent / pwm['file']
@@ -106,7 +141,8 @@ def main() -> int:
         if path.parent != project:
             failures.append(f"Unexpected native project path: {path.relative_to(ROOT)}")
     asset_paths = 0
-    for path in [project / "fp-lib-table", *(ROOT / "hardware/libs").rglob("*.kicad_mod")]:
+    for path in [project / "sym-lib-table", project / "fp-lib-table",
+                 *(ROOT / "hardware/libs").rglob("*.kicad_mod")]:
         for value in re.findall(r'"(\$[{]KIPRJMOD[}][^"]+)"', path.read_text(encoding="utf-8-sig")):
             if not Path(value.replace(PROJECT_VARIABLE, str(project))).resolve().exists():
                 failures.append(f"{path.relative_to(ROOT)}: missing local asset {value}")
@@ -117,6 +153,7 @@ def main() -> int:
         "markdown_files": len(markdown),
         "local_links_checked": local_links,
         "candidate_pdfs_identity_hash_checked": checked_pdfs,
+        "capacitor_csvs_identity_hash_samples_checked": checked_capacitor_csvs,
         "pwm_guidance_pdf_present": pwm_path.is_file(),
         "project_relative_assets_checked": asset_paths,
         "native_design_files": len(native),

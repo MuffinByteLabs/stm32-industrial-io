@@ -375,35 +375,7 @@
       "sha256": "6cdca27bfce2aa901281361729cfebaac6b4ecf85f5fc1fac41b81bb7e673d18",
       "checked_utc": "2026-10-03T15:47:05+00:00"
     },
-    "SN74LVC2G04DCUR": {
-      "manufacturer": "Texas Instruments",
-      "file": "SN74LVC2G04.pdf",
-      "datasheet_url": "https://www.ti.com/lit/ds/symlink/sn74lvc2g04.pdf",
-      "manufacturer_datasheet_url": "https://www.ti.com/lit/ds/symlink/sn74lvc2g04.pdf",
-      "title_token": "SN74LVC2G04",
-      "status": "downloaded_identity_checked",
-      "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending",
-      "source_kind": "manufacturer_primary",
-      "pages": 31,
-      "bytes": 1025016,
-      "sha256": "a70afa4e4d049ffaa382fe75d22c438fe2350de13923c54cdebe7e2b08df1b6e",
-      "checked_utc": "2026-10-03T15:47:05+00:00"
-    },
-    "TPD2E2U06DBZR": {
-      "manufacturer": "Texas Instruments",
-      "file": "TPD2E2U06.pdf",
-      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tpd2e2u06.pdf",
-      "manufacturer_datasheet_url": "https://www.ti.com/lit/ds/symlink/tpd2e2u06.pdf",
-      "title_token": "TPD2E2U06",
-      "status": "downloaded_identity_checked",
-      "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending",
-      "source_kind": "manufacturer_primary",
-      "pages": 23,
-      "bytes": 785929,
-      "sha256": "a133b86ea3d3c3d34667339b92d3b5e98d541d10e9775d63e7cdfa153794f4ed",
-      "checked_utc": "2026-10-03T15:47:05+00:00"
-    },
-    "SiT8008BI-22-33S-8.000000E": {
+    "SiT8008BI-22-XXS-8.000000E": {
       "manufacturer": "SiTime",
       "file": "SiT8008.pdf",
       "datasheet_url": "https://www.sitime.com/datasheet/SiT8008",
@@ -415,7 +387,9 @@
       "pages": 18,
       "bytes": 1472165,
       "sha256": "fcdbddbb6ff5c9c44edcd70ca2d8271387afa87538ba97f6e42122180c7a8bab",
-      "checked_utc": "2026-10-03T15:47:07+00:00"
+      "checked_utc": "2026-10-03T15:47:07+00:00",
+      "selection_review_date": "2026-10-06",
+      "selection_review_note": "Existing generic SiT8008B Rev1.08 PDF retained unchanged; Table1 specifies XX supply2.25–3.63V. Exact programmed8MHz standby packing/procurement and package approval remain pending."
     },
     "TPS7A1601DGNR": {
       "manufacturer": "Texas Instruments",
@@ -570,7 +544,39 @@
       "sha256": "378861b96f1aa490dca0818999999db0b460da2441fb7170b3c75699c156524f",
       "checked_utc": "2026-10-03T16:24:46+00:00",
       "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending"
+    },
+    "SN74LVC2G04DBVR": {
+      "manufacturer": "Texas Instruments",
+      "file": "SN74LVC2G04.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/sn74lvc2g04.pdf",
+      "manufacturer_datasheet_url": "https://www.ti.com/lit/ds/symlink/sn74lvc2g04.pdf",
+      "title_token": "SN74LVC2G04",
+      "status": "downloaded_identity_checked",
+      "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending",
+      "source_kind": "manufacturer_primary",
+      "pages": 31,
+      "bytes": 1025016,
+      "sha256": "a70afa4e4d049ffaa382fe75d22c438fe2350de13923c54cdebe7e2b08df1b6e",
+      "checked_utc": "2026-10-03T15:47:05+00:00",
+      "selection_review_date": "2026-10-06",
+      "selection_review_note": "Removed stale ordering-code label; existing generic manufacturer PDF remains unchanged. Current exact code/package is specified in control_service selections and corrected circuit instructions."
+    },
+    "TPD2E2U06DCKR": {
+      "manufacturer": "Texas Instruments",
+      "file": "TPD2E2U06.pdf",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tpd2e2u06.pdf",
+      "manufacturer_datasheet_url": "https://www.ti.com/lit/ds/symlink/tpd2e2u06.pdf",
+      "title_token": "TPD2E2U06",
+      "status": "downloaded_identity_checked",
+      "verification_scope": "Local PDF identity where available; electrical selections in docs/circuits; native pin/net/footprint comparison and measurements pending",
+      "source_kind": "manufacturer_primary",
+      "pages": 23,
+      "bytes": 785929,
+      "sha256": "a133b86ea3d3c3d34667339b92d3b5e98d541d10e9775d63e7cdfa153794f4ed",
+      "checked_utc": "2026-10-03T15:47:05+00:00",
+      "selection_review_date": "2026-10-06",
+      "selection_review_note": "Removed stale ordering-code label; existing generic manufacturer PDF remains unchanged. Current exact code/package is specified in control_service selections and corrected circuit instructions."
     }
   },
-  "scope_revised_date": "2026-10-04"
+  "scope_revised_date": "2026-10-06"
 }

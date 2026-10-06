@@ -22,14 +22,14 @@ The typical 6.3 kΩ low-state model produces only about 3.2 mV from 0.5 µA of u
 
 ## Qualified output and fail defaults
 
-I use one control-sheet inverter unit to make `HEALTH_READY_N = NOT HEALTH_READY; LOOP_STATUS_OE_N = HEALTH_READY_N`. This is one unit of the selected SN74LVC2G04DCUR; its other input is grounded and its unused output is no-connect. HEALTH_READY is independent analog/field power health and reset qualification. Neither SGOOD signal participates in generating this enable, so this status circuit creates no startup cycle.
+I use one control-sheet inverter unit to make `HEALTH_READY_N = NOT HEALTH_READY; LOOP_STATUS_OE_N = HEALTH_READY_N`. This is one unit of the selected SN74LVC2G04DBVR in SOT-23-6; its other input is grounded and its unused output is no-connect. HEALTH_READY is independent analog/field power health and reset qualification. Neither SGOOD signal participates in generating this enable, so this status circuit creates no startup cycle.
 
 | SN74LVC2G125 DCU pin | Connection |
 | --- | --- |
 | 1 1OE; 7 2OE | LOOP_STATUS_OE_N; shared 10 kΩ pullup to 3V3_DIG |
 | 2 1A; 5 2A | LOOP1_BAD_CONDITIONED; LOOP2_BAD_CONDITIONED |
-| 3 1Y | Through 100 Ω to `LOOP1_BAD_MCU`, PD8/package pin 55 |
-| 6 2Y | Through 100 Ω to `LOOP2_BAD_MCU`, PD9/package pin 56 |
+| 6 1Y | Through 100 Ω to `LOOP1_BAD_MCU`, PD8/package pin 55 |
+| 3 2Y | Through 100 Ω to `LOOP2_BAD_MCU`, PD9/package pin 56 |
 | 4 GND; 8 VCC | MAIN_GND; 3V3_DIG with 100 nF local bypass |
 
 Each MCU-side status net has **100 kΩ, ERJ-3EKF1003V, to 3V3_DIG**. Disabled buffers therefore report **high/invalid**, including reset and lost analog health. The downstream buffer is powered from the same digital supply as the MCU and has powered-off protection. SGOOD never connects directly to the MCU rail or GPIO. The first-stage Schmitt outputs carry only the next buffer's input load; the 100 kΩ pulls are downstream of the qualified outputs. [SN74LVC2G125 pin functions and Ioff](https://www.ti.com/lit/ds/symlink/sn74lvc2g125.pdf)

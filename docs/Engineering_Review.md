@@ -4,6 +4,8 @@ I reviewed component lifecycle and core electrical selections on October 3, 2026
 
 I separate three kinds of evidence: manufacturer-specified device capabilities, my calculations and design assumptions, and measurements still to be collected. I cannot run ERC, DRC, extracted-layout analysis, or whole-board simulation before the native design exists. My [capture checklist](Schematic_Capture.md) and [qualification plan](Validation.md) define the next gates.
 
+My October 6 [external-review verification](External_Review_Verification.md) is the latest review. It corrects the buffer output map, fitted power connector, reset supervisor/oscillator and digital-regulator package, adopts conditional PGOOD sequencing and records current sourcing and rejected redesign assumptions. The October 4 [deep pre-schematic verification](Pre_Schematic_Review.md) records the earlier corrections and remaining capacitor/sequence/library gates. Historical codes below describe their dated baseline; current selections and the latest record govern capture.
+
 ## Component lifecycle and selection
 
 I checked the following manufacturer pages on October 3, 2026. The semiconductor families below are Active, In Production, or Recommended for New Designs. An older publication date alone does not make a supported component obsolete. Lifecycle status also does not guarantee distributor inventory or future availability; I will check exact ordering codes and stock when I freeze the assembly BOM.
@@ -23,7 +25,7 @@ I checked the following manufacturer pages on October 3, 2026. The semiconductor
 | Isolated bus transceivers | ISO1410 / ISO1042 | [ISO1410](https://www.ti.com/product/ISO1410), [ISO1042](https://www.ti.com/product/ISO1042) |
 | Independent isolated port power | Two UCC33421QDHARQ1 | [TI: Active, production](https://www.ti.com/product/UCC33421-Q1/part-details/UCC33421QDHARQ1) |
 | External watchdog | TPS3431 | [TI: Active](https://www.ti.com/product/TPS3431) |
-| MCU reset / hardware ARM memory | TPS3808G33DBVR / SN74LVC1G74DCUR | [TPS3808](https://www.ti.com/product/TPS3808/part-details/TPS3808G33DBVR), [SN74LVC1G74](https://www.ti.com/product/SN74LVC1G74/part-details/SN74LVC1G74DCUR) |
+| MCU reset / hardware ARM memory | TPS3808G30DBVR / SN74LVC1G74DCUR, reset selection corrected October 6 | [TPS3808](https://www.ti.com/product/TPS3808/part-details/TPS3808G30DBVR), [SN74LVC1G74](https://www.ti.com/product/SN74LVC1G74/part-details/SN74LVC1G74DCUR) |
 | Permission gates / powered-off buffers | SN74LVC2G08DCUR / SN74LVC2G125DCUR | [SN74LVC2G08](https://www.ti.com/product/SN74LVC2G08/part-details/SN74LVC2G08DCUR), [SN74LVC2G125](https://www.ti.com/product/SN74LVC2G125/part-details/SN74LVC2G125DCUR) |
 | MCU diagnostic analog isolation | TMUX1511PWR, 14-pin TSSOP | [TI: Active](https://www.ti.com/product/TMUX1511/part-details/TMUX1511PWR) |
 | Rail windows / ADC rail window | TPS3700DDCR / TPS3702CX50DDCR | [TPS3700](https://www.ti.com/product/TPS3700/part-details/TPS3700DDCR), [TPS3702](https://www.ti.com/product/TPS3702/part-details/TPS3702CX50DDCR) |
@@ -69,7 +71,7 @@ I retain the protected OPA2320/TMUX1511 receiving path for multiplexed current d
 
 I found a conflict-free provisional resource allocation in the G474 datasheet. I reserve PB8 for BOOT0, keep PG10 as NRST, use PD0/PD1 for FDCAN1, PD4–PD6 for USART2/RS-485, PC8/PC9 for I2C3, and PA5–PA7 for shared SPI1. USB, SWD, the external CMOS clock, and DI1 timer acquisition have separate pins. I use an 8 MHz HSE bypass selection with a 144 MHz system clock and exact 48 MHz USB clock; maximum 170 MHz operation is optional and needs a different USB clock strategy. My [capture checklist](Schematic_Capture.md) records the full allocation and relevant errata.
 
-I add a hardware ARM latch with asynchronous clearing. Holding a GPIO high must not reenable outputs when field power returns. The reset supervisor's nominal threshold is 3.07 V for TPS3808G33; I do not substitute an assumed 2.93 V value. I select partial-power-down buffers at MCU/field crossings and monitor actual analog rail windows before declaring acquisition and current diagnostics valid.
+I add a hardware ARM latch with asynchronous clearing. Holding a GPIO high must not reenable outputs when field power returns. The October 6 correction selects TPS3808G30 with a 2.79 V nominal falling threshold and a conservatively screened 2.903 V maximum release. The former G33 has a 3.07 V nominal falling threshold; it was not a 2.93 V device and its maximum release conflicted with the digital-rail lower bound. I select partial-power-down buffers at MCU/field crossings and monitor actual analog rail windows before declaring acquisition and current diagnostics valid.
 
 ### Input-fault claims and surge coordination
 
@@ -78,6 +80,8 @@ I removed the unqualified +40 V main-input test. SMCJ33CA has a 36.7–40.6 V br
 I also review the eFuse's negative differential stress with output capacitance still charged. A −53.3 V catalog TVS clamp combined with +30 V retained output is already 83.3 V across the relevant path, close to the stated −85 V/10 ms condition; a +35 V retained output would exceed it. Component voltage labels alone do not establish bipolar surge survival. [TPS2663 datasheet](../references/datasheets/TPS2663.pdf)
 
 ## Revised scope and remaining gates
+
+I froze major functions after the October 4 portfolio comparison and added the [scope baseline](Scope.md), [implementation milestones](Implementation_Plan.md) and [architecture review record](Architecture_Review.md). I subsequently chose to retain the entire current board and recorded that disposition. The current exact circuit/component selections remain the electrical baseline; their capacitor, package, sequence and physical-test requirements are still open. The nominal-supply Modbus milestone, classic CAN, bounded PWM and full qualification have separate completion evidence.
 
 I power every board rail from the protected external supply and retain USB as a self-powered data interface. I removed the analog voltage-command circuit, its negative bias/reference monitoring and USB power-transfer circuitry from the active component selections, calculations and references. The +15 V and threshold supplies remain essential to input protection. Both isolated buses, power supervision, calibration, relays and load diagnostics remain in Rev A.
 

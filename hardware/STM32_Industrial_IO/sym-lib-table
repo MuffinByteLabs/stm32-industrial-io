@@ -1,3 +1,4 @@
 (sym_lib_table
   (version 7)
+  (lib (name "IndustrialIO")(type "KiCad")(uri "${KIPRJMOD}/../libs/IndustrialIO.kicad_sym")(options "")(descr "Registered empty capture library; selected custom symbols remain to be created and verified"))
 )

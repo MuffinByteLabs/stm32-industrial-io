@@ -2,6 +2,14 @@
 
 I use this document to explain the architecture choices that affect circuit behavior, fault handling, and the eventual measurements. I have selected an approach and candidate families; exact circuitry, schematic capture, layout, and prototype results are still pending. I distinguish a component capability from an assembled-board rating.
 
+## Finish a coherent controller before adding functions
+
+I froze the [major hardware scope](Scope.md) around industrial sensing, bounded DC actuation, wired communication and service access. The supplied [market review](Market_Alignment.md) supports the underlying MCU, mixed-signal, power/protection, layout and handoff skills. My exact sensor formats, channel counts and isolation boundaries remain application choices.
+
+I prioritize a complete nominal 12/24 V Modbus demonstration, a diagnostic/calibration host workflow and physical evidence. Classic CAN, bounded PWM and full qualification follow through the [implementation milestones](Implementation_Plan.md). I retain both relay circuits and their power allocation; a partly populated first assembly is a recorded bring-up variant.
+
+I evaluate local rail/crossing complexity through a [recorded architecture review](Architecture_Review.md). The existing support circuits remain necessary to the current topology until a complete alternative resolves their obligations. I do not expand this revision into wireless, battery charging, analog commands, mains or motor-control circuitry just to increase its feature list.
+
 ## Power the complete board externally
 
 I use the protected external DC supply for every board rail. USB is a self-powered data interface with VBUS detection, ESD protection and CC resistors. This keeps service access useful without a second board-power source or a transfer/suspend power state.

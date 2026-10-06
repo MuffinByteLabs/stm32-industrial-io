@@ -1,0 +1,2017 @@
+{
+  "record_date_local": "2026-10-06",
+  "generated_at_utc": "2026-10-06T20:50:11.468376+00:00",
+  "scope": "Existing document, selection, arithmetic, asset-availability, host-fixture, ideal-model and whitespace checks. No native ERC/DRC, target firmware, layout EMC/thermal or physical qualification.",
+  "status": "passed_existing_checks_open_hardware_gates",
+  "source_sha256": {
+    "docs/calcs/support_checks.py": "6207551ff7a88d1b0f9940cf2b9f71c65a1289a95dc83a010c6820aa1d9badee",
+    "docs/calcs/dc_frontends.cir": "0af7f7199867581759e33db5f2c5fc4c2f0f2c8307d073e57a3b20c63029ea96",
+    "references/reviews/independent_verification_calcs_2026-10-06.py": "1205163cb787420fe236b22aed1639b132644115b45063a2dd0948d3f21c0683",
+    "docs/components/power.json": "673a15586bf971457623e51b9ff42e8fb5d9554649cc8ea25ef21aae3d10992b",
+    "docs/components/control_service.json": "ffa2189e1f77e80f68be577dbd5862527703b189cf2c2ff658c49ffa0830c89d",
+    "docs/components/analog.json": "0089113e908862446cfa2570b1533fa9f79d2287a03e6dd04b856d89c7a0969d",
+    "docs/components/field_io.json": "87f49f285856f62d971d7502a73bcf39b5ba4a5c7e5acd18efa6ac0b72a8d161",
+    "references/datasheets/manifest.json": "25d2a4a713a4c7a3942e00f2fcd9f23ff338d941679894428bdbee45c310f437",
+    "docs/External_Review_Verification.md": "692a427ced54c889c035389c25315baeb327edc1a6717c81c54f466d1a3259e1"
+  },
+  "results": [
+    {
+      "check": "project_audit",
+      "exit_code": 0,
+      "result": {
+        "scope": "Repository document, reference identity, and library checks",
+        "markdown_files": 43,
+        "local_links_checked": 438,
+        "candidate_pdfs_identity_hash_checked": 41,
+        "capacitor_csvs_identity_hash_samples_checked": 6,
+        "pwm_guidance_pdf_present": true,
+        "project_relative_assets_checked": 5,
+        "native_design_files": 0,
+        "warnings": [],
+        "failures": []
+      },
+      "original_generated_report_name": "project_audit.json",
+      "detail_location": "#/results/0/result"
+    },
+    {
+      "check": "selection_audit",
+      "exit_code": 0,
+      "result": {
+        "scope": "Selection-index structure and block coverage only; not a released BOM, inventory, library or electrical approval",
+        "groups_by_block": {
+          "power.json": 36,
+          "control_service.json": 46,
+          "analog.json": 36,
+          "field_io.json": 48
+        },
+        "component_groups": 166,
+        "unique_order_codes": 142,
+        "scope_checks": "Retired power/AO blocks absent; MCU, ADC, four-channel I/O, two relays, two isolated buses, EEPROM, watchdog, USB, reset supervisors and main power connector retained",
+        "failures": []
+      },
+      "original_generated_report_name": "selection_audit.json",
+      "detail_location": "#/results/1/result"
+    },
+    {
+      "check": "capture_asset_audit",
+      "exit_code": 0,
+      "result": {
+        "scope": "Selected positive-quantity board asset availability; existence is not pin/pad or electrical approval",
+        "stock_library_root": "C:\\Program Files\\KiCad\\10.0\\share\\kicad",
+        "groups_checked": 150,
+        "groups_with_missing_assets": 30,
+        "groups_with_unchecked_stock_assets": 0,
+        "native_files_present": {
+          "kicad_pro": false,
+          "kicad_sch": false,
+          "kicad_pcb": false
+        },
+        "capture_asset_gate": "open",
+        "missing_asset_groups": [
+          {
+            "selection": "power.json",
+            "component_id": "PWR_FIELD_BUCK",
+            "mpn": "LMR38020FDDAR",
+            "symbol": {
+              "identifier": "IndustrialIO:LMR38020F_DDA",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "Package_SO:TI_SO-PowerPAD-8_ThermalVias",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "power.json",
+            "component_id": "PWR_DIGITAL_INDUCTOR",
+            "mpn": "XFL3012-222MEC",
+            "symbol": {
+              "identifier": "Device:L",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "IndustrialIO:XFL3012_Coilcraft",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "power.json",
+            "component_id": "PWR_LDOS_3V3",
+            "mpn": "TPS70933DBVR",
+            "symbol": {
+              "identifier": "IndustrialIO:TPS70933_DBV",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "Package_TO_SOT_SMD:SOT-23-5",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "power.json",
+            "component_id": "PWR_INPUT_HEADER",
+            "mpn": "1759017",
+            "symbol": {
+              "identifier": "Connector_Generic:Conn_01x02",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "IndustrialIO:Phoenix_1759017",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "control_service.json",
+            "component_id": "CS_OSC",
+            "mpn": "SiT8008BI-22-XXS-8.000000E",
+            "symbol": {
+              "identifier": "Oscillator:ASE-xxxMHz",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "IndustrialIO:SiT8008_3225_ST",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "control_service.json",
+            "component_id": "CS_SUP",
+            "mpn": "TPS3808G30DBVR",
+            "symbol": {
+              "identifier": "IndustrialIO:TPS3808G30_DBV6",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "Package_TO_SOT_SMD:SOT-23-6",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "control_service.json",
+            "component_id": "CS_MON",
+            "mpn": "TPS3700DDCR",
+            "symbol": {
+              "identifier": "IndustrialIO:TPS3700_DDC6",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "Package_TO_SOT_SMD:SOT-23-6",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "control_service.json",
+            "component_id": "CS_ADC_MON",
+            "mpn": "TPS3702CX50DDCR",
+            "symbol": {
+              "identifier": "IndustrialIO:TPS3702CX50_DDC6",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "Package_TO_SOT_SMD:SOT-23-6",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "control_service.json",
+            "component_id": "CS_WD",
+            "mpn": "TPS3431SDRBR",
+            "symbol": {
+              "identifier": "IndustrialIO:TPS3431S_DRB8",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "IndustrialIO:TPS3431_DRB8",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "control_service.json",
+            "component_id": "CS_ARM",
+            "mpn": "SN74LVC1G74DCUR",
+            "symbol": {
+              "identifier": "IndustrialIO:SN74LVC1G74_DCU8",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "Package_SO:VSSOP-8_2.3x2mm_P0.5mm",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "control_service.json",
+            "component_id": "CS_CC_ESD",
+            "mpn": "TPD2E2U06DCKR",
+            "symbol": {
+              "identifier": "IndustrialIO:TPD2E2U06_DCK3",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "Package_TO_SOT_SMD:SOT-323_SC-70",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "control_service.json",
+            "component_id": "CS_USBC",
+            "mpn": "TYPE-C-31-M-12",
+            "symbol": {
+              "identifier": "IndustrialIO:TYPE_C_31_M_12",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "IndustrialIO:USB_C_Receptacle_HRO_TYPE-C-31-M-12",
+              "availability": "present",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "control_service.json",
+            "component_id": "CS_SWD",
+            "mpn": "FTSH-105-01-L-DV-K",
+            "symbol": {
+              "identifier": "Connector_Generic:Conn_02x05_Odd_Even",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "IndustrialIO:FTSH_105_01_L_DV_K",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "control_service.json",
+            "component_id": "LS_SCHMITT",
+            "mpn": "SN74AUP1T17DCKR",
+            "symbol": {
+              "identifier": "IndustrialIO:SN74AUP1T17_DCK5",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "Package_TO_SOT_SMD:SOT-353_SC-70-5",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "analog.json",
+            "component_id": "AN-U-ADC",
+            "mpn": "ADS8684AIDBTR",
+            "symbol": {
+              "identifier": "IndustrialIO:ADS8684AIDBT",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "Package_SO:TSSOP-38_4.4x9.7mm_P0.5mm",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "analog.json",
+            "component_id": "AN-U-LOOP",
+            "mpn": "TPS26611DDFR",
+            "symbol": {
+              "identifier": "IndustrialIO:TPS26611DDF",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "Package_TO_SOT_SMD:SOT-23-8",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "analog.json",
+            "component_id": "AN-U-PROTECT",
+            "mpn": "TMUX7462FPWR",
+            "symbol": {
+              "identifier": "IndustrialIO:TMUX7462FPW",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "Package_SO:TSSOP-16_4.4x5mm_P0.65mm",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "analog.json",
+            "component_id": "AN-U-VFP",
+            "mpn": "TPS7A1601DGNR",
+            "symbol": {
+              "identifier": "IndustrialIO:TPS7A1601_DGN",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "IndustrialIO:TPS7A16_DGN_8_1EP",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "analog.json",
+            "component_id": "AN-U-READAMP",
+            "mpn": "OPA2320AIDR",
+            "symbol": {
+              "identifier": "IndustrialIO:OPA2320_D",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "analog.json",
+            "component_id": "AN-U-CLAMPREF",
+            "mpn": "LM4040AIM3-2.5/NOPB",
+            "symbol": {
+              "identifier": "IndustrialIO:LM4040_AIM3_DBZ",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "Package_TO_SOT_SMD:SOT-23",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "analog.json",
+            "component_id": "AN-U-MCUISO",
+            "mpn": "TMUX1511PWR",
+            "symbol": {
+              "identifier": "IndustrialIO:TMUX1511PW",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "Package_SO:TSSOP-14_4.4x5mm_P0.65mm",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "analog.json",
+            "component_id": "AN-D-CLAMP",
+            "mpn": "BAS70-04,215",
+            "symbol": {
+              "identifier": "IndustrialIO:BAS70_04_SOT23",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "Package_TO_SOT_SMD:SOT-23",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "field_io.json",
+            "component_id": "FIO-DI-U01",
+            "mpn": "ISO1212DBQR",
+            "symbol": {
+              "identifier": "IndustrialIO:ISO1212DBQ",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "Package_SO:SSOP-16_3.9x4.9mm_P0.635mm",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "field_io.json",
+            "component_id": "FIO-DO-U01",
+            "mpn": "TPS4H160BQPWPRQ1",
+            "symbol": {
+              "identifier": "IndustrialIO:TPS4H160B_PWP",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "IndustrialIO:TPS4H160_PWP0028V",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "field_io.json",
+            "component_id": "FIO-RS-U01",
+            "mpn": "ISO1410DWR",
+            "symbol": {
+              "identifier": "IndustrialIO:ISO1410_DW16",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "Package_SO:SOIC-16W_7.5x10.3mm_P1.27mm",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "field_io.json",
+            "component_id": "FIO-CAN-U01",
+            "mpn": "ISO1042DWVR",
+            "symbol": {
+              "identifier": "IndustrialIO:ISO1042_DWV8",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "IndustrialIO:ISO1042_DWV8",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "field_io.json",
+            "component_id": "FIO-CAN-D01",
+            "mpn": "PESD2CANFD24V-T",
+            "symbol": {
+              "identifier": "IndustrialIO:PESD2CANFD24V_T",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "Package_TO_SOT_SMD:SOT-23",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "field_io.json",
+            "component_id": "FIO-ISO-U01",
+            "mpn": "UCC33421QDHARQ1",
+            "symbol": {
+              "identifier": "IndustrialIO:UCC33421_DHA16",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "IndustrialIO:UCC33421_DHA16",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "field_io.json",
+            "component_id": "FIO-J03",
+            "mpn": "1759033",
+            "symbol": {
+              "identifier": "Connector_Generic:Conn_01x04",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "IndustrialIO:Phoenix_1759033",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            }
+          },
+          {
+            "selection": "field_io.json",
+            "component_id": "FIO-J05",
+            "mpn": "1759020",
+            "symbol": {
+              "identifier": "Connector_Generic:Conn_01x03",
+              "availability": "present",
+              "source": "installed_stock",
+              "package_approval": "not_established_by_this_audit"
+            },
+            "footprint": {
+              "identifier": "IndustrialIO:Phoenix_1759020",
+              "availability": "missing",
+              "source": "project_local",
+              "package_approval": "not_established_by_this_audit"
+            }
+          }
+        ],
+        "unchecked_stock_groups": [],
+        "failures": []
+      },
+      "original_generated_report_name": "capture_asset_audit.json",
+      "detail_location": "#/results/2/result"
+    },
+    {
+      "check": "power_calculations",
+      "exit_code": 0,
+      "original_generated_report_name": "power_calculations.json",
+      "result": {
+        "scope": "Design arithmetic; prototype measurements remain pending",
+        "assumptions": {
+          "service_power_delivered_w": 6.0,
+          "main_buck_conversion_efficiency_assumed": 0.85,
+          "output_channels": 4,
+          "current_per_output_a": 0.5,
+          "input_continuous_budget_a": 3.0,
+          "excluded": "Extra input-protection losses, high-side operating current/VFIELD overhead, inrush, limit tolerances, transient peaks",
+          "note": "Service power is referred to the delivered 5V_FIELD rail and includes downstream conversion losses. Efficiency is an assumption, not a guaranteed datasheet minimum."
+        },
+        "service_reservations": {
+          "branches_w": {
+            "mcu_and_essential_logic_w": 0.75,
+            "external_adc_and_field_logic_w": 0.5,
+            "analog_auxiliaries_w": 0.65,
+            "two_relay_coils_w": 1.1,
+            "two_isolated_bus_supplies_w": 2.75
+          },
+          "total_reserved_w": 5.75,
+          "margin_to_selected_ceiling_w": 0.25,
+          "nominal_design_ceiling_w": 6.0,
+          "note": "Branch engineering allocations combine component limits and reserves; they are not a completed worst-case BOM maximum. Inrush and fault loading are separate."
+        },
+        "isolation_budget": {
+          "converter_candidate": "UCC33421QDHARQ1, two independent 5 V outputs",
+          "each_converter_output_class_w": 1.5,
+          "isolated_output_upper_v": 5.15,
+          "iso1410_bus_dynamic_max_a": 0.16,
+          "iso1042_bus_dc_dominant_max_a": 0.0734,
+          "can_switching_cable_reserve_a": 0.02,
+          "combined_bus_bias_local_reserve_a": 0.01,
+          "isolated_efficiency_assumed": 0.5,
+          "total_output_with_reserves_w": 1.35651,
+          "estimated_primary_with_reserves_w": 2.71302,
+          "primary_reservation_w": 2.75,
+          "note": "160 mA is specified at 500 kbps, 54 ohm/50 pF; 73.4 mA is DC dominant at 60 ohm, not a guaranteed dynamic FD maximum. Reserves and 50% efficiency require circuit and measured closure; the module's output class derates with temperature."
+        },
+        "relay_coils": {
+          "coil_candidate": "G5Q-1 DC5, SPDT",
+          "nominal_current_per_coil_a": 0.08,
+          "resistance_at_23c_nominal_ohm": 62.5,
+          "resistance_tolerance_fraction": 0.1,
+          "copper_temperature_coefficient_per_c_assumed": 0.00393,
+          "upper_rail_v": 5.25,
+          "minimum_resistance_at_0c_model_ohm": 51.1655625,
+          "cold_upper_rail_total_current_a": 0.20521615490888037,
+          "cold_upper_rail_total_power_w": 1.077384813271622,
+          "reservation_w": 1.1,
+          "note": "Copper-temperature modeling is an engineering assumption; 80 mA is nominal, not a worst-case supply bound. Qualify the actual coils and rail envelope."
+        },
+        "analog_auxiliary_budget": {
+          "positive_rail_v": 15.0,
+          "positive_rail_screening_upper_v": 15.5,
+          "positive_rail_design_current_a": 0.025,
+          "positive_output_power_w": 0.375,
+          "boost_efficiency_assumed": 0.6,
+          "boost_primary_power_estimate_w": 0.625,
+          "boost_primary_power_at_upper_rail_estimate_w": 0.6458333333333334,
+          "branch_reservation_w": 0.65,
+          "upper_rail_margin_to_reservation_w": 0.004166666666666652,
+          "note": "25 mA positive-rail capacity conservatively covers two TPS26611 supplies, two TMUX groups, VFP supplies/bleeders and reserve. The 60% boost efficiency is an engineering assumption. Nominal conversion is 0.625 W; the 15.5 V scenario is about 0.646 W, leaving only 0.0042 W in the retained 0.65 W allocation before unmodeled effects. Efficiency and the complete allocation remain to be closed; boost disable does not isolate its passive output path."
+        },
+        "input_current": [
+          {
+            "supply_v": 9.0,
+            "total_before_extra_losses_a": 2.784313725490196,
+            "output_bleeders_nominal_a": 0.0036,
+            "high_side_operating_current_engineering_reserve_a": 0.02,
+            "total_with_bleeders_and_operating_reserve_a": 2.807913725490196,
+            "remaining_3a_after_bleeders_and_operating_reserve_a": 0.19208627450980384
+          },
+          {
+            "supply_v": 12.0,
+            "total_before_extra_losses_a": 2.588235294117647,
+            "output_bleeders_nominal_a": 0.0048,
+            "high_side_operating_current_engineering_reserve_a": 0.02,
+            "total_with_bleeders_and_operating_reserve_a": 2.613035294117647,
+            "remaining_3a_after_bleeders_and_operating_reserve_a": 0.3869647058823529
+          },
+          {
+            "supply_v": 24.0,
+            "total_before_extra_losses_a": 2.2941176470588234,
+            "output_bleeders_nominal_a": 0.0096,
+            "high_side_operating_current_engineering_reserve_a": 0.02,
+            "total_with_bleeders_and_operating_reserve_a": 2.323717647058823,
+            "remaining_3a_after_bleeders_and_operating_reserve_a": 0.6762823529411763
+          },
+          {
+            "supply_v": 30.0,
+            "total_before_extra_losses_a": 2.235294117647059,
+            "output_bleeders_nominal_a": 0.012,
+            "high_side_operating_current_engineering_reserve_a": 0.02,
+            "total_with_bleeders_and_operating_reserve_a": 2.267294117647059,
+            "remaining_3a_after_bleeders_and_operating_reserve_a": 0.7327058823529411
+          }
+        ],
+        "vfield_overhead": {
+          "pre_diode_bleeders": "Four 10 kohm / 0.25 W resistors; nominal 12 mA and 0.36 W total at 30 V",
+          "high_side_operating_current_reserve_a": 0.02,
+          "note": "20 mA is an engineering allocation, not a guaranteed TPS4H160 maximum. Bleeder tolerance, measured chip consumption and input-protection losses require margin closure at actual post-protection voltage."
+        },
+        "post_protection_low_line_contract": {
+          "connector_minimum_v": 9.0,
+          "vfield_minimum_target_v": 8.4,
+          "maximum_protection_path_drop_target_v": 0.6,
+          "main_buck_efficiency_assumed": 0.8,
+          "total_with_nominal_bleeders_and_operating_reserve_a": 2.9162171428571426,
+          "margin_to_3a_before_remaining_effects_a": 0.0837828571428572,
+          "note": "Captured hot/tolerance fuse, FET, eFuse, terminals and traces must prove VFIELD >=8.4 V at 9 V connector with combined load. The 20 mA allocation and 80% efficiency are assumptions, not guaranteed maxima/minima. If this contract fails, revise the power path and recheck the retained operating envelope before release."
+        },
+        "efuse_current_limit_reference": {
+          "continuous_input_target_a": 3.0,
+          "candidate": "TPS26632RGER",
+          "initial_limit_resistor_ohm": 5110.0,
+          "resistor_tolerance_fraction": 0.001,
+          "nominal_limit_a": 3.522504892367906,
+          "illustrative_limit_tolerance_fraction": 0.1,
+          "illustrative_lower_limit_a": 3.1670873158153006,
+          "illustrative_upper_limit_a": 3.878634015620317,
+          "note": "The +/-10% IC spread is an engineering screening assumption, aligned with Power.md; specified endpoint tests do not guarantee that spread at the selected 3.52 A setpoint. This reference does not freeze a guaranteed assembled limit or a fuse rating."
+        },
+        "input_voltage_coordination": {
+          "continuous_window_v": [
+            9.0,
+            30.0
+          ],
+          "initial_positive_dc_fault_v": 36.0,
+          "initial_positive_dc_fault_temperature_c": 25.0,
+          "tvs_candidate": "SMCJ33CA",
+          "catalog_tvs_breakdown_min_at_25c_v": 36.7,
+          "catalog_tvs_clamp_at_28_2a_10_1000us_v": 53.3,
+          "efuse_input_output_negative_10ms_stress_limit_v": -85.0,
+          "negative_clamp_plus_retained_30v_differential_v": -83.3,
+          "negative_clamp_plus_retained_35v_differential_v": -88.3,
+          "note": "36 V requires a bounded source, tolerance, duration, and TVS temperature; it is not a cold-corner or sustained +40 V guarantee. Catalog clamping is waveform-specific. Negative pulse coordination including initial retained output, temperature, parasitics and overshoot remains pending."
+        },
+        "current_receiver": {
+          "shunt_ohm": 200.0,
+          "at_4ma_v": 0.8,
+          "at_20ma_v": 4.0,
+          "at_20ma_shunt_w": 0.08,
+          "supported_overrange_goal_ma": 24.0,
+          "at_24ma_v": 4.8,
+          "at_24ma_shunt_w": 0.1152,
+          "at_25_6ma_shunt_w": 0.131072,
+          "5_12v_range_overrange_ma": 25.6,
+          "current_lsb_ua": 0.390625,
+          "200ohm_direct_30v_fault_w_without_protection": 4.5,
+          "loop_protector_candidate": "TPS26611DDFR, supply 15 V and default-off enable",
+          "protector_maximum_ron_ohm": 12.5,
+          "20ma_shunt_plus_protector_burden_v": 4.25,
+          "24ma_shunt_plus_protector_burden_v": 5.1000000000000005,
+          "fault_current_limit_range_ma": [
+            25.0,
+            40.0
+          ],
+          "at_maximum_40ma_limit_shunt_v": 8.0,
+          "at_maximum_40ma_limit_shunt_w": 0.32,
+          "minimum_nominal_shunt_power_class_w": 1.0,
+          "note": "The ADC range alone gives 25.6 mA; the complete supported-overrange goal is 24 mA. 4.25 V burden at 20 mA includes only the shunt and maximum protector resistance, before terminals/wiring. Fault energy comes from the external loop, separate from service supply power. Verify resistor derating/pulse limits and protector tolerance; direct-fault power is not a permitted operating point."
+        },
+        "adc_loading_example": {
+          "adc_input_impedance_reference_ohm": 1000000.0,
+          "adc_input_impedance_min_max_ohm": [
+            850000.0,
+            1150000.0
+          ],
+          "adc_equivalent_bias_v": 2.5,
+          "illustrative_series_resistance_ohm": 1000.0,
+          "formula": "V_ADC = (V_source * R_ADC + V_bias * R_series) / (R_ADC + R_series)",
+          "points": [
+            {
+              "source_v": 0.0,
+              "adc_v": 0.0024975024975024975,
+              "loading_error_mv": 2.4975024975024973,
+              "loading_error_mv_with_minimum_850kohm": 2.937720329024677
+            },
+            {
+              "source_v": 2.5,
+              "adc_v": 2.5,
+              "loading_error_mv": 0.0,
+              "loading_error_mv_with_minimum_850kohm": 0.0
+            },
+            {
+              "source_v": 10.0,
+              "adc_v": 9.992507492507492,
+              "loading_error_mv": -7.492507492507493,
+              "loading_error_mv_with_minimum_850kohm": -8.813160987074031
+            }
+          ],
+          "current_shunt_model_formula": "V_shunt = (I_terminal + V_bias / R_ADC) / (1 / R_shunt + 1 / R_ADC)",
+          "current_shunt_points_without_additional_sense_series_r": [
+            {
+              "terminal_current_ma": 4.0,
+              "shunt_voltage_v": 0.8003399320135972,
+              "indicated_current_error_ua": 1.6996600679863514
+            },
+            {
+              "terminal_current_ma": 20.0,
+              "shunt_voltage_v": 3.999700059988002,
+              "indicated_current_error_ua": -1.4997000599911714
+            },
+            {
+              "terminal_current_ma": 24.0,
+              "shunt_voltage_v": 4.799540091981603,
+              "indicated_current_error_ua": -2.2995400919857687
+            }
+          ],
+          "note": "This nominal 1 Mohm/2.5 V equivalent model illustrates offset and loading, not a divider to ground. The 1 kohm example is not a frozen circuit value; verify impedance/bias tolerance, protector resistance, external source impedance, filtering and calibration."
+        },
+        "accuracy_targets": {
+          "voltage_room_temperature_mv": 20.0,
+          "current_room_temperature_ua": 32.0,
+          "voltage_temperature_goal_mv": 50.0,
+          "current_temperature_goal_ua": 80.0,
+          "voltage_lsb_uv_on_10_24v_range": 156.25,
+          "note": "Quantization is only one error term; calibration and component/temperature errors remain."
+        },
+        "output_path": {
+          "high_side_candidate": "TPS4H160BQPWPRQ1",
+          "blocking_and_freewheel_diode_candidate": "STPS2H100A",
+          "diode_reverse_voltage_class_v": 100.0,
+          "diode_current_class_a": 2.0,
+          "diode_loss_model_125c_w_per_channel": 0.29125,
+          "four_blocking_diodes_loss_model_125c_w": 1.165,
+          "hs_switch_four_channel_conduction_w_with_25c_max_ron": 0.165,
+          "hs_switch_four_channel_conduction_w_with_150c_max_ron": 0.28,
+          "hs_switch_four_channel_conduction_w_at30v_with_nominal_bleeders": 0.28337008,
+          "reference_short_circuit_switch_w_at_24v_0_7a": 16.799999999999997,
+          "initial_current_limit_resistor_ohm": 2870.0,
+          "nominal_current_limit_a": 0.6968641114982579,
+          "selected_sense_burden_ohm": 1198.306844501238,
+          "nominal_sense_ratio": 300.0,
+          "nominal_sense_v_at_0_5a": 1.99717807416873,
+          "sense_fault_voltage_v": [
+            4.5,
+            6.5
+          ],
+          "note": "The diode equation is the manufacturer's 125 C loss model, not a guaranteed maximum across production. Ron limits bound conduction only; operating current, diode leakage, fault energy, thermal coupling and layout remain. Sense/current-limit tolerance and an unpowered MCU require protection; thermal swing can precede latched thermal shutdown."
+        },
+        "blocking_fet_reference": {
+          "candidate": "CSD19537Q3",
+          "fast_gate_discharge_candidate": "BSS138P,215",
+          "vds_rating_v": 100.0,
+          "gate_absolute_voltage_v": 20.0,
+          "rds_on_max_at_25c_vgs10v_ohm": 0.0145,
+          "conduction_w_at_3a_25c_vgs10v_reference": 0.1305,
+          "efuse_gate_drive_min_typ_max_v": [
+            8.3,
+            10.23,
+            14.0
+          ],
+          "note": "The 10 V Rds maximum does not establish a maximum loss at the eFuse's 8.3 V minimum gate drive. Verify lower-drive/hot resistance and transient SOA. A 100 V FET alone does not resolve the IC's -85 V input/output pulse limit."
+        },
+        "pwm_budget_policy": {
+          "channel": "DO3 / PE9 / TIM1_CH1 / AF2",
+          "initial_frequency_hz": 100.0,
+          "commanded_duty_percent": [
+            10.0,
+            90.0
+          ],
+          "static_endpoints_percent": [
+            0.0,
+            100.0
+          ],
+          "instantaneous_load_ceiling_a": 0.5,
+          "continuous_full_on_channels_budgeted": 4,
+          "note": "No input-current credit for reduced duty. PWM overlap redistributes delivered power into switch heat and is screened separately in pwm_checks.py; do not add it twice to the fixed-current supply model. High-side operating current, parasitics, conversion/protection losses and measured margins remain to be closed."
+        },
+        "resistive_load_fixture": [
+          {
+            "supply_v": 9.0,
+            "ideal_terminal_resistance_ohm_per_channel": 18.0,
+            "minimum_dissipation_w_per_channel": 4.5,
+            "total_fixture_dissipation_w": 18.0
+          },
+          {
+            "supply_v": 12.0,
+            "ideal_terminal_resistance_ohm_per_channel": 24.0,
+            "minimum_dissipation_w_per_channel": 6.0,
+            "total_fixture_dissipation_w": 24.0
+          },
+          {
+            "supply_v": 24.0,
+            "ideal_terminal_resistance_ohm_per_channel": 48.0,
+            "minimum_dissipation_w_per_channel": 12.0,
+            "total_fixture_dissipation_w": 48.0
+          },
+          {
+            "supply_v": 30.0,
+            "ideal_terminal_resistance_ohm_per_channel": 60.0,
+            "minimum_dissipation_w_per_channel": 15.0,
+            "total_fixture_dissipation_w": 60.0
+          }
+        ],
+        "fixed_48ohm_fixture_at_30v": {
+          "current_a_per_channel": 0.625,
+          "dissipation_w_per_channel": 18.75,
+          "note": "A 24 V fixture exceeds 0.5 A/channel at 30 V; choose appropriate loading."
+        }
+      },
+      "detail_location": "#/results/3/result"
+    },
+    {
+      "check": "support_calculations",
+      "exit_code": 0,
+      "original_generated_report_name": "support_calculations.json",
+      "result": {
+        "scope": "Arithmetic and documented assumptions; pin/net/layout/firmware/bench checks pending",
+        "resistor_error_fraction": 0.0016250000000000001,
+        "field_uv_rising_release_v": [
+          7.890844390408555,
+          8.109745323607894
+        ],
+        "field_uv_falling_assert_v": [
+          7.7113992387799515,
+          8.029497921579598
+        ],
+        "minimum_full_load_vfield_v": 8.4,
+        "field_ov_rising_assert_v": [
+          30.77753054336625,
+          31.62483432527936
+        ],
+        "field_ov_falling_release_v": [
+          30.0777791393977,
+          31.31183169600679
+        ],
+        "analog15_uv_rising_release_v": [
+          13.018895815424937,
+          13.382097387129084
+        ],
+        "analog15_uv_falling_assert_v": [
+          12.722830296892552,
+          13.249680710028796
+        ],
+        "analog15_ov_rising_assert_v": [
+          16.17861326928117,
+          16.622615233911358
+        ],
+        "analog15_ov_falling_release_v": [
+          15.810781371115688,
+          16.458094387535997
+        ],
+        "eeprom_rise_time_200pf_s": 7.964620000000001e-07,
+        "hse_pll": {
+          "input_hz": 8000000,
+          "m": 2,
+          "n": 72,
+          "r": 2,
+          "q": 6,
+          "core_hz": 144000000,
+          "usb_fdcan_hz": 48000000
+        },
+        "watchdog_timeout_ms": [
+          170,
+          230
+        ],
+        "watchdog_service_interval_ms": 50,
+        "digital3v3_screen": {
+          "divider_top_ohm": 31201.0,
+          "divider_bottom_ohm": 10000.0,
+          "nominal_v": 3.29608,
+          "power_save_initial_accuracy_screen_v": [
+            3.160441450149564,
+            3.448874363083956
+          ],
+          "power_save_initial_accuracy_without_fb_leakage_v": [
+            3.172901569499564,
+            3.4363736824339557
+          ],
+          "pwm_initial_accuracy_screen_v": [
+            3.1768813546547428,
+            3.4158323084451676
+          ],
+          "signed_fb_leakage_allowance_a": [
+            -4e-07,
+            4e-07
+          ],
+          "source": "TPS62160 SLVSAM2E p. 6 section 7.5/footnotes 5-6; 0.1% resistors plus 25ppm/C over +/-25C. FB leakage is MAX at VFB=1.2V; this signed allowance at regulated 0.8V is conservative screening.",
+          "limitations": "Initial accuracy excludes line/load regulation; capacitor retention, ripple, startup, transient excursions and physical loading remain qualification gates. This arithmetic does not guarantee the complete 3.0..3.6V USB operating envelope."
+        },
+        "reset_compatibility_screen": {
+          "superseded_g33": {
+            "nominal_falling_trip_v": 3.07,
+            "falling_trip_v": [
+              3.0239499999999997,
+              3.1160499999999995
+            ],
+            "rising_release_screen_v": [
+              3.0239499999999997,
+              3.193951249999999
+            ],
+            "release_lower_bound_assumes_zero_hysteresis": true,
+            "maximum_hysteresis_fraction": 0.025,
+            "source": "TPS3808 SBVS050N, pp. 3, 6; fixed thresholds, full -40..125 C accuracy. Reset delay and propagation are separate timing requirements."
+          },
+          "selected_g30_all_three_rails": {
+            "nominal_falling_trip_v": 2.79,
+            "falling_trip_v": [
+              2.74815,
+              2.8318499999999998
+            ],
+            "rising_release_screen_v": [
+              2.74815,
+              2.9026462499999997
+            ],
+            "release_lower_bound_assumes_zero_hysteresis": true,
+            "maximum_hysteresis_fraction": 0.025,
+            "source": "TPS3808 SBVS050N, pp. 3, 6; fixed thresholds, full -40..125 C accuracy. Reset delay and propagation are separate timing requirements."
+          },
+          "tps709_additive_dc_screen_v": [
+            3.2070000000000003,
+            3.3929999999999993
+          ],
+          "superseded_g33_release_margin_digital_psm_v": -0.03350979985043523,
+          "superseded_g33_release_margin_ldo_v": 0.013048750000001164,
+          "selected_g30_release_margin_digital_psm_v": 0.25779520014956425,
+          "selected_g30_release_margin_ldo_v": 0.30435375000000064,
+          "ldo_source": "TPS709 SBVS186H p. 5: +/-1% accuracy, 10mV max line, 50mV max load at specified input/load conditions. Screen requires dropout headroom; ripple/transients excluded.",
+          "usb_policy_boundary": "STM32G474 DS12288 Table 92 p. 179 requires VDD=3.0..3.6V for full USB characteristics. G30 minimum trip 2.74815V is below 3.0V. Brownout is outside normal USB qualification: detach on existing health/clock loss, discard interrupted service writes, and reattach only after stable qualified rails; software is not a guaranteed 3.0V undervoltage detector. Prove collapse/recovery behavior physically, including independent digital-rail collapse."
+        },
+        "adc5_window_screen": {
+          "selected_set_high": {
+            "uv_falling_trip_v": [
+              4.7568,
+              4.8431999999999995
+            ],
+            "uv_rising_reentry_v": [
+              4.771199999999999,
+              4.8816
+            ],
+            "ov_rising_trip_v": [
+              5.1532,
+              5.2467999999999995
+            ],
+            "ov_falling_reentry_v": [
+              5.1116,
+              5.2312
+            ],
+            "source": "TPS3702 SBVS251A, p. 5 electrical limits, pp. 11/14 trip/reentry grammar, p. 21 CX50 SET thresholds. Static limits do not establish response to a transient."
+          },
+          "field5_divider_dc_screen_v": [
+            4.912215774366653,
+            5.088216476774759
+          ],
+          "adc_bleeder_upper_supply_screen_v": 5.1,
+          "adc_avdd_dynamic_bleeder_sense_current_screen_a": 0.01201233009891073,
+          "adc_filter_resistance_screen_ohm": 1.01,
+          "adc_avdd_dc_screen_v": [
+            4.900083320966753,
+            5.088216476774759
+          ],
+          "uv_assert_margin_v": 0.05688332096675364,
+          "uv_reentry_margin_v": 0.018483320966753425,
+          "ov_assert_margin_v": 0.0649835232252407,
+          "ov_reentry_margin_v": 0.023383523225240843,
+          "nominal_field_target_v": [
+            4.9,
+            5.1
+          ],
+          "adc_avdd_from_nominal_field_target_dc_screen_v": [
+            4.8878675466001,
+            5.1
+          ],
+          "target_uv_reentry_margin_v": 0.0062675466001005375,
+          "target_ov_reentry_margin_v": 0.011600000000000499,
+          "limitations": "Strict ADC5_OK remains in analog validity and global output permission. Reentry margins include maximum hysteresis and are much smaller than trip-only margins; they do not prove nuisance-free startup or load steps. ADC current and monitor specifications have stated test conditions. The selected 1-ohm initial +/-1% tolerance is included; its temperature drift and supply-filter transients are excluded."
+        },
+        "not_adopted_wider_field_monitor_scenario": {
+          "status": "Not selected: comparison only; no extra monitor or gating change is authorized by this arithmetic",
+          "set_low_monitor": {
+            "uv_falling_trip_v": [
+              4.50905,
+              4.590949999999999
+            ],
+            "uv_rising_reentry_v": [
+              4.5226999999999995,
+              4.627349999999999
+            ],
+            "ov_rising_trip_v": [
+              5.40095,
+              5.4990499999999995
+            ],
+            "ov_falling_reentry_v": [
+              5.35735,
+              5.4827
+            ],
+            "source": "TPS3702 SBVS251A, p. 5 electrical limits, pp. 11/14 trip/reentry grammar, p. 21 CX50 SET thresholds. Static limits do not establish response to a transient."
+          },
+          "converter_recommended_input_v": [
+            4.5,
+            5.5
+          ],
+          "upstream_uv_static_margin_to_converter_min_v": 0.009050000000000225,
+          "upstream_ov_static_margin_to_converter_max_v": 0.0009500000000004505,
+          "assumed_efficiency_fraction": 0.5,
+          "port_output_current_a": 0.18,
+          "port_output_voltage_v": 5.15,
+          "bead_room_temperature_dcr_max_ohm": 0.045,
+          "input_current_scenario_a": 0.41117308523968465,
+          "input_bead_drop_scenario_v": 0.018502788835785808,
+          "post_bead_input_at_uv_trip_scenario_v": 4.490547211164214,
+          "source": "TPS3702 SBVS251A p. 21 SET-low CX50; UCC33421-Q1 recommended VINP 4.5..5.5V; BLM21PG221SN1D manufacturer 45mohm max room-temperature DCR; project 180mA bus-side allowance.",
+          "limitations": "Threshold accuracy, post-bead voltage drop and dynamic response leave no established complete converter-input protection envelope. Broad field-power gating would not cure global disarm caused by strict ADC5_OK if that safety condition remains. Exact converter efficiency/current, hot bead DCR and transient/startup behavior require evidence."
+        },
+        "efuse_pgood_buck_enable_screen": {
+          "status": "Selected sequencing direction with conditional EN-network screen; capture and complete startup/collapse qualification remain open",
+          "pgood_release_condition": "Internal pass-FET gate enhanced AND PGTH above rising threshold, then PGOOD rising deglitch; PGOOD falls when PGTH falls below its falling threshold",
+          "superseded_pgth_604k_100k_rising_v": [
+            8.165539797070386,
+            8.731773452619882
+          ],
+          "superseded_pgth_604k_100k_falling_v": [
+            7.561785238228504,
+            8.209358468270313
+          ],
+          "selected_pgth_475k_100k_rising_v": [
+            6.672740734451048,
+            7.128292036414642
+          ],
+          "selected_pgth_475k_100k_falling_v": [
+            6.179566205560496,
+            6.701647802033773
+          ],
+          "pgood_pullup_to_vfield_ohm": 100000.0,
+          "en_pulldown_to_main_ground_ohm": 100000.0,
+          "pullup_pulldown_initial_tolerance_fraction": 0.01,
+          "pgood_guaranteed_signed_output_leakage_a": [
+            -1.5e-07,
+            1.5e-07
+          ],
+          "en_unverified_signed_leakage_allowance_a": [
+            -1e-06,
+            1e-06
+          ],
+          "en_high_min_at_8p4v_field_v": 4.10050575,
+          "en_high_min_at_minimum_pgth_rising_v": 3.2455124135532687,
+          "en_required_start_max_v": 1.4,
+          "en_low_max_at_35v_field_v": 0.045989511271820445,
+          "en_guaranteed_off_ceiling_v": 0.95,
+          "pgood_sink_current_screen_max_a": 0.00035468535353535354,
+          "pgood_output_sink_resistance_max_ohm": 130.0,
+          "pgood_rising_deglitch_s": [
+            0.00107,
+            0.0016
+          ],
+          "source": "TPS2663 SLVSE94G pp. 8-9 output/PGTH/timing limits, p. 19 section 8.3.2 gate-enhanced condition, p. 32 section 9.2.2.5.1 direct downstream EN and 10..100k pullup recommendation. LMR38020 SNVSC40E p. 6 EN limits and p. 11 section 8.3.3 tracking/never-floating requirements.",
+          "limitations": "Static calculation assumes EN leakage <=1uA in either direction and initial +/-1% resistors; EN leakage over actual voltage/temperature/power states and resistor drift still need evidence. Pullup is to VFIELD=LMR VIN, no added EN capacitor; this prevents DC excess VIN in the passive network but does not bound rapid collapse/parasitic charge/retained-output backfeed. Verify EN<=VIN+0.3V throughout collapse and the disabled state at unpowered eFuse conditions. PGTH changes eFuse retained-output fast-recovery selection too. This sequencing does not validate whole-tree inrush, SOA, thermal behavior, converter soft starts or 680uF boost precharge."
+        },
+        "pa15_acquisition_default": {
+          "mcu_supply_upper_v": 3.6,
+          "reset_internal_pullup_min_ohm": 25000.0,
+          "external_pulldown_ohm": 1000.0,
+          "external_pulldown_tolerance_fraction": 0.01,
+          "total_net_positive_source_allowance_a": 1e-05,
+          "reset_node_max_v": 0.14950019223375624,
+          "lvc_guaranteed_low_ceiling_v": 0.8,
+          "driven_high_pulldown_current_max_a": 0.0036363636363636364,
+          "note": "DS12288 reset JTDI pullup and 25k minimum require the approved 1k pulldown. The 10uA complete-net positive sourcing allowance remains to be verified; this arithmetic is not a captured-netlist or physical reset test."
+        }
+      },
+      "detail_location": "#/results/4/result"
+    },
+    {
+      "check": "analog_calculations",
+      "exit_code": 0,
+      "original_generated_report_name": "analog_calculations.json",
+      "result": {
+        "arithmetic": {
+          "scope": "Selection arithmetic; fixed illustrative ADC resistance/on-resistance; specified resistor tolerances cornered without statistical averaging",
+          "shunt_ohm": 200.0,
+          "shunt_power_rating_w": 1.25,
+          "shunt_power_at_40ma_w": 0.32,
+          "one_shunt_resistor_power_at_40ma_w": 0.064,
+          "one_shunt_resistor_30v_55us_energy_j": 4.9500000000000004e-05,
+          "loop_max_20ma_burden_v": 4.25,
+          "voltage_adc_at_10v_nominal_850kohm_v": 9.99023361656795,
+          "current_adc_at_20ma_nominal_850kohm_v": 3.9978707326984475,
+          "cs_adc_v_per_raw_v_nominal": 0.3248711425787205,
+          "cs_effective_burden_ohm": 1198.306844501238,
+          "cs_adc_at_0p5a_nominal_ratio300_v": 0.6488255228883639,
+          "diagnostic_switch_typical_on_ohm": 2,
+          "diagnostic_off_leakage_2ua_times47kohm_v": 0.094,
+          "input_protection_15v_reservation_a": 0.01,
+          "tmux_parent_vdd_added_bypass_nominal_f": 2e-06,
+          "tmux_parent_vdd_added_bypass_screening_max_f": 2.53e-06,
+          "tmux_bypass_accounting_note": "Two approved local VDD bypasses add to parent startup capacitance; no extra credit to its unverified500uF hold-up floor and no change to child VFP maximum capacitance.",
+          "current_diagnostic_5v_reservation_a": 0.012,
+          "vfp11_nominal_v": 10.9756,
+          "vfp6_nominal_v": 5.98886,
+          "vfp11_corner_v": [
+            10.709600350499002,
+            11.243321393987976
+          ],
+          "vfp6_corner_v": [
+            5.846292513293414,
+            6.132271561442885
+          ],
+          "adc_voltage_filter_loaded_nominal_hz": 143.7900048845766,
+          "adc_current_filter_loaded_nominal_hz": 131.90531037368885,
+          "diagnostic_off_s_max_at5p75v_v": 3.455517792882847,
+          "vfp_shutdown": {
+            "parent_disable_min_v": 12.72283,
+            "parent_bulk_min_f": 0.0005,
+            "parent_discharge_max_a": 0.025,
+            "child_disable_delay_max_s": 0.001,
+            "child_cap_max_f": 1.2776500000000002e-05,
+            "child_tau_max_s": 0.06016964910000001,
+            "parent_zero_time_s": 0.2544566,
+            "child_end_max_v": [
+              0.18972621378931862,
+              0.11402502649401176
+            ],
+            "child_total_net_sourcing_max_a_assumed": 5e-06,
+            "scope": "Conditional proof: parent >=500uF effective over 0-50C; child disable <=1ms; total sourcing into each child net <=5uA including connected protector/external input; all require independent evidence; ordinary rail removal, no internal hard short; convex exponential-minus-linear bound"
+          }
+        }
+      },
+      "detail_location": "#/results/5/result"
+    },
+    {
+      "check": "pwm_calculations",
+      "exit_code": 0,
+      "original_generated_report_name": "pwm_calculations.json",
+      "result": {
+        "scope": "Pre-capture arithmetic and analytical resistive edge model; schematic, firmware, PCB, temperature and fault qualification pending",
+        "sources": {
+          "switch": "https://www.ti.com/lit/ds/symlink/tps4h160-q1.pdf (Rev E, sections 6.5, 6.6, 8.2)",
+          "pwm_method": "https://www.ti.com/lit/pdf/slvaf10 (sections 2-4)",
+          "timer_pin": "https://www.st.com/resource/en/datasheet/stm32g474ve.pdf (Rev 6, tables 12-13)"
+        },
+        "qualification_target": {
+          "channel": "DO3 / PE9 / LQFP100 pin40 / TIM1_CH1 AF2",
+          "input_connector_v": [
+            9,
+            30
+          ],
+          "high_side_supply_planning_v": [
+            8.4,
+            30
+          ],
+          "whole_input_path_drop_max_at9v_v": 0.6,
+          "ambient_c": [
+            0,
+            50
+          ],
+          "instantaneous_current_max_a": 0.5,
+          "loads": "Resistive first; specifically qualified resistor-limited LED assembly later; no motor/proportional-solenoid claim",
+          "command_duty_window": [
+            0.1,
+            0.9
+          ],
+          "endpoints": "Steady 0/100% use timer disabled, GPIO low/high behind hardware PERMISSION"
+        },
+        "timer": {
+          "apb2_prescaler": 1,
+          "tim1_kernel_hz": 144000000,
+          "prescaler": 143,
+          "auto_reload": 9999,
+          "tick_s": 1e-06,
+          "pwm_hz": 100.0,
+          "ccr1_min_max": [
+            1000,
+            9000
+          ],
+          "pwm_mode": "Mode1 active high; compare preload on period boundary"
+        },
+        "datasheet_conditions": {
+          "supply_v": 13.5,
+          "load_a": 0.5,
+          "logic_v": 5,
+          "current_limit_for_cs_timing_a": 2,
+          "delay_max_us": 90,
+          "slew_min_v_per_us": 0.1,
+          "delay_match_us": [
+            -50,
+            50
+          ],
+          "cs_on_settling_max_us": 150,
+          "sense_mux_settling_max_us": 50,
+          "supply_operating_min_v": 4,
+          "current_sense_full_linear_range_min_supply_v": 6.5,
+          "note": "The actual 8.4-30 V post-protection supply, 3.3 V logic and ~0.7 A limit need bench confirmation; applying slew/delay across that range is a planning assumption. Connector fixtures remain 9-30 V and require ≤0.6 V whole-path drop at 9 V/full load."
+        },
+        "timing": {
+          "shortest_command_phase_us": 999.9999999999998,
+          "full_swing_plus_delay_estimate_us": 390.0,
+          "command_phase_remaining_us": 609.9999999999998,
+          "sample_window_after_rising_command_us": [
+            600,
+            800
+          ],
+          "mux_preselect_before_edge_us": 200,
+          "cs_guard_before_sample_us": 450,
+          "readback_five_tau_estimate_us": 2.96218487394958,
+          "note": "ADC acquisition and amplifier recovery need measured closure; the RC estimate alone is not full-chain settling."
+        },
+        "model_sweep": {
+          "cases": 1620,
+          "minimum_high_plateau_us": 630.0000000000001,
+          "minimum_low_plateau_us": 629.9999999999986,
+          "minimum_sample_start_after_full_rise_us": 209.99999999999994,
+          "minimum_sample_end_before_falling_command_us": 199.99999999999997,
+          "resistor_power_error_extremes_fraction": [
+            -0.25181818181818183,
+            0.13363636363636355
+          ],
+          "note": "Independent delay/slew corners deliberately ignore their correlations. Diode drop, RON, capacitor inrush, current limiting, parasitics, LED behavior and IC bias are outside this waveform model. No precision duty-to-power claim."
+        },
+        "loss_screen": {
+          "supply_v": 30,
+          "pwm_hz": 100.0,
+          "pwm_instantaneous_external_load_a": 0.5,
+          "pwm_peak_driver_current_including_bleeder_a": 0.5030379746835443,
+          "full_rise_fall_us": [
+            300,
+            300
+          ],
+          "resistor_overlap_estimate_w": 0.15091139240506327,
+          "constant_current_overlap_estimate_w": 0.45273417721518977,
+          "three_continuous_and_one_90percent_conduction_estimate_w": 0.2763275467393046,
+          "four_continuous_conduction_estimate_w": 0.28341286845056884,
+          "four_blocking_diodes_125c_loss_model_w": 1.165,
+          "note": "Overlap is a screening estimate, not a guaranteed maximum; operating current, COSS/other parasitics, PCB thermal resistance and measured temperature remain separate."
+        },
+        "current_telemetry": {
+          "reported_quantity": "Settled on-state driver current including bleeder; sample age, duty and validity",
+          "average_current": "Duty x estimated external on-load current, after accounting for bleeder uncertainty, is only an estimate for the qualified resistor fixture; exclude transition/fault samples",
+          "note": "No off-current, proportional-current-control or precision average-current guarantee; low-current CS error remains datasheet dependent."
+        },
+        "output_bleeders": {
+          "component": "4x YAGEO RC1206FR-0710KL, 10k, 1%, 0.25W at70C, 1206",
+          "connection": "Each DOx_SW before blocking diode to MAIN_GND; no off-load pullup",
+          "resistance_error_fraction_including_temperature": 0.0125,
+          "resistance_min_max_ohm": [
+            9875.0,
+            10125.0
+          ],
+          "nominal_current_each_at30v_a": 0.003,
+          "maximum_current_each_at30v_a": 0.0030379746835443038,
+          "maximum_power_each_at30v_w": 0.09113924050632911,
+          "nominal_four_full_dc_power_at30v_w": 0.36,
+          "off_node_capacitance_max_f": 1e-08,
+          "off_net_source_leakage_assumption_a": 0.0001,
+          "release_allowance_us": 90.0,
+          "off_fault_difference_max_v": 2.6,
+          "clear_cases": [
+            {
+              "supply_v": 8.4,
+              "release_plus_discharge_us": 133.92032910782703
+            },
+            {
+              "supply_v": 9.0,
+              "release_plus_discharge_us": 129.87188188272094
+            },
+            {
+              "supply_v": 12.0,
+              "release_plus_discharge_us": 117.33909577224138
+            },
+            {
+              "supply_v": 24.0,
+              "release_plus_discharge_us": 102.15289797580986
+            },
+            {
+              "supply_v": 30.0,
+              "release_plus_discharge_us": 99.51489680248012
+            }
+          ],
+          "acceptance_clear_time_us": 150,
+          "datasheet_off_fault_deglitch_min_us": 300,
+          "source": "https://yageogroup.com/component-documentation/download/specsheet/RC1206FR-0710KL",
+          "scope": "Capacitance, diag-enabled net source leakage and release allowance are design/qualification constraints; the datasheet does not guarantee them for this assembled node. Verify previously energized/unloaded channels before enabling PWM."
+        },
+        "fault_inhibition": {
+          "arm_clear_source": "Conditioned receiving-domain DO_FAULT_N participates in asynchronous ARM clear",
+          "ic_thermal_latch": "THER-high latch resets when INx toggles; PWM edges must not be relied on to hold that IC latch",
+          "sequence_permitted_command": [
+            true,
+            false,
+            false,
+            false
+          ],
+          "sequence": "Armed high command; fault assertion; fault clears with stale high command; fresh rearm with command cleared",
+          "scope": "State/truth model only; captured logic, propagation and measured shutdown remain pending"
+        }
+      },
+      "detail_location": "#/results/6/result"
+    },
+    {
+      "check": "diagnostics_tests",
+      "exit_code": 0,
+      "test_summary": [
+        "----------------------------------------------------------------------",
+        "Ran 30 tests in 0.251s",
+        "",
+        "OK"
+      ],
+      "original_generated_report_name": "diagnostics_tests.txt",
+      "detail_text": "test_degenerate_nonfinite_and_negative_slope_rejected (test_diagnostics.CalibrationMathTests.test_degenerate_nonfinite_and_negative_slope_rejected) ... ok\ntest_two_point_fit_units_and_no_write (test_diagnostics.CalibrationMathTests.test_two_point_fit_units_and_no_write) ... ok\ntest_address_function_and_exception_shape (test_diagnostics.CodecTests.test_address_function_and_exception_shape) ... ok\ntest_bad_read_byte_count_and_trailing_bytes (test_diagnostics.CodecTests.test_bad_read_byte_count_and_trailing_bytes) ... ok\ntest_corrupt_and_truncated_frames_rejected (test_diagnostics.CodecTests.test_corrupt_and_truncated_frames_rejected) ... ok\ntest_known_modbus_crc_vector (test_diagnostics.CodecTests.test_known_modbus_crc_vector) ... ok\ntest_request_limits_and_broadcast_disabled (test_diagnostics.CodecTests.test_request_limits_and_broadcast_disabled) ... ok\ntest_serial_deadline_must_be_finite_without_opening_a_port (test_diagnostics.CodecTests.test_serial_deadline_must_be_finite_without_opening_a_port) ... ok\ntest_write_echo_mismatch_no_retry (test_diagnostics.CodecTests.test_write_echo_mismatch_no_retry) ... ok\ntest_accepted_result_cannot_confirm_wrong_epoch_state_or_applied_outputs (test_diagnostics.FieldIOTests.test_accepted_result_cannot_confirm_wrong_epoch_state_or_applied_outputs) ... ok\ntest_arm_clear_set_atomic_and_disarm_clear (test_diagnostics.FieldIOTests.test_arm_clear_set_atomic_and_disarm_clear) ... ok\ntest_boot_epoch_stale_sequence_guards_enforced_by_device (test_diagnostics.FieldIOTests.test_boot_epoch_stale_sequence_guards_enforced_by_device) ... ok\ntest_commit_busy_and_zero_boot_inhibit_guarded_commands (test_diagnostics.FieldIOTests.test_commit_busy_and_zero_boot_inhibit_guarded_commands) ... ok\ntest_corrupt_mutation_reply_has_uncertain_outcome_and_no_retry (test_diagnostics.FieldIOTests.test_corrupt_mutation_reply_has_uncertain_outcome_and_no_retry) ... ok\ntest_csv_marks_simulation_and_reads_only (test_diagnostics.FieldIOTests.test_csv_marks_simulation_and_reads_only) ... ok\ntest_default_cli_is_read_only_snapshot (test_diagnostics.FieldIOTests.test_default_cli_is_read_only_snapshot) ... ok\ntest_health_config_owner_and_missing_static_qualification (test_diagnostics.FieldIOTests.test_health_config_owner_and_missing_static_qualification) ... ok\ntest_incoherent_snapshot_retried_bounded_then_rejected (test_diagnostics.FieldIOTests.test_incoherent_snapshot_retried_bounded_then_rejected) ... ok\ntest_lease_expires_and_reads_never_renew (test_diagnostics.FieldIOTests.test_lease_expires_and_reads_never_renew) ... ok\ntest_pwm_refused_without_both_capability_masks (test_diagnostics.FieldIOTests.test_pwm_refused_without_both_capability_masks) ... ok\ntest_raw_full_scale_is_not_missing_sentinel (test_diagnostics.FieldIOTests.test_raw_full_scale_is_not_missing_sentinel) ... ok\ntest_raw_generation_mismatch_retries_entire_pair (test_diagnostics.FieldIOTests.test_raw_generation_mismatch_retries_entire_pair) ... ok\ntest_read_only_identity_snapshot_and_raw_do_not_write (test_diagnostics.FieldIOTests.test_read_only_identity_snapshot_and_raw_do_not_write) ... ok\ntest_rejected_write_invalidates_raw_capture_latch (test_diagnostics.FieldIOTests.test_rejected_write_invalidates_raw_capture_latch) ... ok\ntest_repeated_reset_refuses_to_publish_mismatched_identity (test_diagnostics.FieldIOTests.test_repeated_reset_refuses_to_publish_mismatched_identity) ... ok\ntest_reset_mid_log_discards_ambiguous_sample_and_updates_identity (test_diagnostics.FieldIOTests.test_reset_mid_log_discards_ambiguous_sample_and_updates_identity) ... ok\ntest_sentinel_current_age_excludes_scaled_and_raw_diagnostics (test_diagnostics.FieldIOTests.test_sentinel_current_age_excludes_scaled_and_raw_diagnostics) ... ok\ntest_sequence_exhaustion_requires_unconditional_stop_and_reset (test_diagnostics.FieldIOTests.test_sequence_exhaustion_requires_unconditional_stop_and_reset) ... ok\ntest_set_does_not_automatically_arm (test_diagnostics.FieldIOTests.test_set_does_not_automatically_arm) ... ok\ntest_stale_analog_age_is_excluded_even_if_validity_bit_is_set (test_diagnostics.FieldIOTests.test_stale_analog_age_is_excluded_even_if_validity_bit_is_set) ... ok\n\n----------------------------------------------------------------------\nRan 30 tests in 0.251s\n\nOK\n",
+      "detail_location": "#/results/7/detail_text"
+    },
+    {
+      "check": "simulated_identity",
+      "exit_code": 0,
+      "original_generated_report_name": "simulated_identity.json",
+      "result": {
+        "evidence_kind": "SIMULATED",
+        "host_received_utc": "2026-10-06T20:50:07.567912+00:00",
+        "uid96_hex": "53494d554c41544544000001",
+        "boot_id": 1,
+        "firmware_version": "0.0.0",
+        "build_id": 0,
+        "hardware_revision": "1.0",
+        "assembly_variant": 0,
+        "protocol_version": "1.0",
+        "map_revision": 1,
+        "implemented_mask": 127,
+        "qualified_mask": 95,
+        "implemented": [
+          "digital_inputs",
+          "voltage_inputs",
+          "current_inputs",
+          "static_outputs",
+          "relays",
+          "current_diagnostics",
+          "modbus"
+        ],
+        "qualified": [
+          "digital_inputs",
+          "voltage_inputs",
+          "current_inputs",
+          "static_outputs",
+          "relays",
+          "modbus"
+        ]
+      },
+      "detail_location": "#/results/8/result"
+    },
+    {
+      "check": "simulated_snapshot",
+      "exit_code": 0,
+      "original_generated_report_name": "simulated_snapshot.json",
+      "result": {
+        "evidence_kind": "SIMULATED",
+        "host_received_utc": "2026-10-06T20:50:07.670881+00:00",
+        "uid96_hex": "53494d554c41544544000001",
+        "boot_id": 1,
+        "firmware_version": "0.0.0",
+        "build_id": 0,
+        "hardware_revision": "1.0",
+        "assembly_variant": 0,
+        "protocol_version": "1.0",
+        "map_revision": 1,
+        "implemented_mask": 127,
+        "qualified_mask": 95,
+        "sequence": 1,
+        "uptime_ms": 0,
+        "state": "READY",
+        "owner": "none",
+        "status_mask": 959,
+        "fault_mask": 0,
+        "validity_mask": 63,
+        "digital_input_mask": 5,
+        "output_applied_mask": 0,
+        "relay_coil_mask": 0,
+        "pwm_applied_permille": 0,
+        "di1_pulse_count": 1,
+        "voltage_1_mV": 2500,
+        "voltage_2_mV": 7500,
+        "current_1_uA": 8000,
+        "current_2_uA": 16000,
+        "output_1_on_current_mA": null,
+        "output_2_on_current_mA": null,
+        "output_3_on_current_mA": null,
+        "output_4_on_current_mA": null,
+        "lease_remaining_ms": 0,
+        "last_command_sequence": 0,
+        "last_command_result": 0,
+        "configuration_revision": 1,
+        "calibration_revision": 1,
+        "ai_sample_age_ms": [
+          10,
+          10,
+          10,
+          10
+        ],
+        "current_sample_age_ms": [
+          65535,
+          65535,
+          65535,
+          65535
+        ],
+        "pwm_frequency_Hz": 0,
+        "configured_owner": "modbus",
+        "control_epoch": 1
+      },
+      "detail_location": "#/results/9/result"
+    },
+    {
+      "check": "spice_dc_model",
+      "exit_code": 0,
+      "result": {
+        "scope": "Active-input DC and passive-pole connectivity checks; ideal finite-gain diagnostic amplifier, fixed ADC resistance/on-resistances; no IC fault, stability, surge or hardware validation",
+        "simulator": {
+          "library_file": "ngspice.dll",
+          "library_sha256": "e435be7a0dc2316cef440a523ef62d1a3cdeabc7e1fa9110b5539bfd273282e6",
+          "version_output": [
+            "stdout ******",
+            "stdout ** ngspice-46 : Circuit level simulation program",
+            "stdout ** Compiled with KLU Direct Linear Solver",
+            "stdout ** The U. C. Berkeley CAD Group",
+            "stdout ** Copyright 1985-1994, Regents of the University of California.",
+            "stdout ** Copyright 2001-2025, The ngspice team.",
+            "stdout ** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html",
+            "stdout ** Please file your bug-reports at https://ngspice.sourceforge.io/bugrep.html",
+            "stdout ** Creation Date: Apr 14 2026   05:15:29",
+            "stdout ******"
+          ]
+        },
+        "circuit": {
+          "file": "dc_frontends.cir",
+          "sha256": "0af7f7199867581759e33db5f2c5fc4c2f0f2c8307d073e57a3b20c63029ea96"
+        },
+        "assumptions": {
+          "adc_biased_input_ohm": 850000,
+          "adc_bias_v": 2.5,
+          "input_protector_on_ohm": 8.3,
+          "diagnostic_switch_on_ohm": 2,
+          "diagnostic_amplifier_open_loop_gain": 1000000.0
+        },
+        "dc": {
+          "voltage_adc_v_at_10v": 9.990233616568153,
+          "current_shunt_v_at_20ma": 3.999647559827619,
+          "current_adc_v_at_20ma": 3.997870732698466,
+          "current_diagnostic_raw_v_at0p5a_ratio300": 1.9971780741687308,
+          "current_diagnostic_adc_v_at0p5a_ratio300": 0.6488248737925437
+        },
+        "passive_poles": {
+          "voltage_input_hz": 143.7952209939071,
+          "current_input_hz": 131.9069326209791
+        }
+      },
+      "original_generated_report_name": "spice_dc_model.json",
+      "detail_location": "#/results/10/result"
+    },
+    {
+      "check": "whitespace",
+      "exit_code": 0,
+      "original_generated_report_name": "whitespace.txt",
+      "detail_text": "",
+      "detail_location": "#/results/11/detail_text"
+    }
+  ],
+  "final_targeted_recheck": {
+    "completed_at_utc": "2026-10-06T20:54:19.814338+00:00",
+    "scope": "After final source/wording corrections; calculations and host implementation were unchanged.",
+    "project_audit_exit_code": 0,
+    "selection_audit_exit_code": 0,
+    "whitespace_exit_code": 0,
+    "archive_and_checked_model_integrity_exit_code": 0,
+    "source_and_archive_sha256_match": true,
+    "corrected_buffer_maps_and_oscillator_range_confirmed": true
+  },
+  "submitted_arithmetic_output": {
+    "scope": "External source arithmetic reproduced before cleanup; does not approve its assumptions.",
+    "script": "independent_verification_calcs_2026-10-06.py",
+    "result": {
+      "efuse_uvlo_rising_V": [
+        8.174,
+        8.722
+      ],
+      "efuse_uvlo_falling_V": [
+        7.57,
+        8.201
+      ],
+      "efuse_ilim_A": {
+        "nominal": 3.523,
+        "pm8pct": [
+          3.241,
+          3.804
+        ]
+      },
+      "efuse_dvdt_V_per_s": {
+        "nominal": 500.0,
+        "range_incl_cap_tol_temp": [
+          330.0,
+          756.0
+        ]
+      },
+      "efuse_startup_24V": {
+        "cap_charge_J": 0.086,
+        "buck_loaded_during_ramp_J": 0.33,
+        "ramp_s": 0.048,
+        "avg_power_if_loaded_W": 8.7,
+        "avg_power_if_buck_enabled_by_PGOOD_W": 1.8
+      },
+      "efuse_startup_30V": {
+        "cap_charge_J": 0.135,
+        "buck_loaded_during_ramp_J": 0.498,
+        "ramp_s": 0.06,
+        "avg_power_if_loaded_W": 10.5,
+        "avg_power_if_buck_enabled_by_PGOOD_W": 2.2
+      },
+      "input_path_drop_3A": {
+        "R_total_mohm": 109.6,
+        "drop_V": 0.329,
+        "limit_V": 0.6,
+        "efuse_loss_W": 0.477,
+        "fet_loss_W": 0.232,
+        "fuse_loss_W": 0.152
+      },
+      "buck5_vout_V": [
+        4.917,
+        5.083
+      ],
+      "buck5_fsw_nom_kHz": 405.8,
+      "buck5_ripple": {
+        "8.4": {
+          "ripple_App_typ": 0.333,
+          "ripple_App_worst(12uH,320k)": 0.522,
+          "ton_ns_at_500k": 1190.0
+        },
+        "12": {
+          "ripple_App_typ": 0.479,
+          "ripple_App_worst(12uH,320k)": 0.764,
+          "ton_ns_at_500k": 833.0
+        },
+        "24": {
+          "ripple_App_typ": 0.65,
+          "ripple_App_worst(12uH,320k)": 1.046,
+          "ton_ns_at_500k": 417.0
+        },
+        "30": {
+          "ripple_App_typ": 0.685,
+          "ripple_App_worst(12uH,320k)": 1.102,
+          "ton_ns_at_500k": 333.0
+        },
+        "35": {
+          "ripple_App_typ": 0.704,
+          "ripple_App_worst(12uH,320k)": 1.135,
+          "ton_ns_at_500k": 286.0
+        }
+      },
+      "buck5_min_ripple_check": {
+        "Vin8.4_L18uH_f490k_App": 0.231,
+        "rule_of_thumb_min_App(10% of 2A)": 0.2
+      },
+      "buck5_peak_at_1.2A_35V_A": 1.767,
+      "buck5_limits_A": {
+        "HS_min": 2.6,
+        "LS_valley_min": 1.8,
+        "Isat_inductor_typ": 6.4
+      },
+      "buck5_Lmin_subharmonic_uH": 3.12,
+      "dig3v3_V": {
+        "nominal": 3.2961,
+        "min_PSM": 3.168,
+        "min_PWM": 3.185,
+        "max": 3.44
+      },
+      "reset_TPS3808G33": {
+        "VIT_max": 3.116,
+        "release_max(VIT+2.5%hys)": 3.194,
+        "margin_release_vs_min_PSM_V": -0.026,
+        "margin_trip_vs_min_PSM_V": 0.052
+      },
+      "reset_TPS3808G30": {
+        "VIT_max": 2.832,
+        "release_max(VIT+2.5%hys)": 2.903,
+        "margin_release_vs_min_PSM_V": 0.266,
+        "margin_trip_vs_min_PSM_V": 0.336
+      },
+      "ldo3v3_min_V": 3.207,
+      "reset_TPS3808G33_vs_LDO_margin_V": 0.013,
+      "adc5_ok_window": {
+        "UV_trip_max_V": 4.843,
+        "OV_trip_min_V": 5.153,
+        "AVDD_DC_min_V": 4.906,
+        "AVDD_DC_max_V": 5.083,
+        "DC_margin_low_V": 0.062,
+        "DC_margin_high_V": 0.07
+      },
+      "boost15": {
+        "fs_max_kHz": 797.8,
+        "Iout_max_mA_eta0.6": 33.2,
+        "Iout_max_mA_eta0.75": 41.5,
+        "ton_max_us(18uH,450mA)": 1.84
+      },
+      "boost_bulk_precharge_during_5V_softstart_A": 1.02,
+      "boost_bulk_LC_Z0_ohm": 0.1485,
+      "boost_bulk_energy_to_15V_mJ": 69.3,
+      "service_5V_bottom_up_W": {
+        "TPS62160 input (3V3_DIG)": 0.266,
+        "TPS709 field logic (I_in = I_out)": 0.086,
+        "TPS709 MCU analog (5 mA)": 0.025,
+        "ADS8684A AVDD (11.5 mA max)": 0.059,
+        "OPA2320 (2x1.75 mA) + LM4040 feed 2.5 mA": 0.031,
+        "Relay coils 2x (5.1V/51.6ohm at 0C)": 1.008,
+        "RS-485 port: UCC33421 180 mA out @ ~55 %": 1.636,
+        "CAN port: ISO1042 77.5 mA dominant @ ~45 %": 0.861,
+        "+15 V boost (real load ~9 mA @ 60 %)": 0.232
+      },
+      "service_5V_total_W": 4.205,
+      "service_5V_total_A": 0.841,
+      "service_reservation_W": 6.0,
+      "input_current_A": {
+        "8.4V_eta0.8": 2.925,
+        "8.4V_eta0.85": 2.872,
+        "9.0V_eta0.8": 2.865,
+        "9.0V_eta0.85": 2.816,
+        "12.0V_eta0.8": 2.657,
+        "12.0V_eta0.85": 2.62,
+        "24.0V_eta0.8": 2.345,
+        "24.0V_eta0.85": 2.326,
+        "30.0V_eta0.8": 2.282,
+        "30.0V_eta0.85": 2.267
+      },
+      "hs_current_limit_A": {
+        "nominal": 0.697,
+        "pm15pct_pm1pctR": [
+          0.586,
+          0.809
+        ]
+      },
+      "hs_CS_volts": {
+        "at_0.5A": 1.997,
+        "at_limit_max": 3.233,
+        "linear_range_max_V": 4.0,
+        "fault_VCS_H_V": [
+          4.5,
+          6.5
+        ]
+      },
+      "hs_IC_dissipation_W_4x0.5A_hot": 0.52,
+      "hs_IC_Tj_rise_C_(RthJA 32.7 C/W, JEDEC)": 17.0,
+      "hs_short_circuit_W_30V": 24.3,
+      "blocking_diode_loss_W_each(ST model)": 0.291,
+      "blocking_diodes_total_W": 1.164,
+      "bleeders_total_W_30V": 0.365,
+      "inductive_energy_mJ_100mH_0.5A": 12.5,
+      "DO_terminal_voltage_at_VFIELD8.4V_V": 7.66,
+      "DI_thresholds_RTHR100": {
+        "VIH_max_interp_V": 8.79,
+        "VIL_min_interp_V": 6.72,
+        "ON_spec_V": 9.0,
+        "margin_V": 0.21,
+        "IEC61131-2_Type3": "ON>=11V&>=2mA, OFF<=5V: met (ON current 2.05-2.75 mA)"
+      },
+      "DI_power_30V_mW": 82.5,
+      "AI_V_loading": {
+        "gain_error_pct_typ": 0.1107,
+        "TVS_SMCJ11CA_IR_max_uA_at_11V": 5,
+        "error_from_5uA_x_1.1k_mV": 5.5,
+        "pole_Hz": 143.6
+      },
+      "ADC_LSB": {
+        "V_range_uV": 156.25,
+        "I_range_nA": 390.62
+      },
+      "AI_V_error_budget_mV": {
+        "ADC gain drift 4ppm/C": 1.0,
+        "internal ref drift 10ppm/C": 2.5,
+        "offset drift 3ppm/C of 10.24V FSR": 0.768,
+        "INL 2LSB": 0.312,
+        "TVS leakage change (est.)": 5.5,
+        "calibration source (assume 0.01%+1mV)": 2.0
+      },
+      "AI_V_error_RSS_mV": 6.5,
+      "AI_V_error_linear_sum_mV": 12.08,
+      "AI_I_error_budget_uA": {
+        "shunt TCR 25ppm/C": 12.5,
+        "ADC gain drift 4ppm/C": 2.0,
+        "ref drift 10ppm/C": 5.0,
+        "offset drift (3ppm x 5.12V)/200ohm": 1.92,
+        "INL 2LSB": 0.781,
+        "shunt self-heating (~3C x 25ppm)": 1.5,
+        "calibration source (assume 0.01%+1uA)": 3.0
+      },
+      "AI_I_error_RSS_uA": 14.17,
+      "AI_I_error_linear_sum_uA": 26.7,
+      "loop_headroom_20mA_V": 6.7,
+      "loop_headroom_24mA_V": 5.82,
+      "loop_burden_20mA_V": 4.25,
+      "tps2661_ovlo_if_Vs_5V": {
+        "OVLO_min_V": 4.967,
+        "shunt_V_at_24mA_max": 4.805,
+        "margin_V": 0.162,
+        "ADC_range_V": 5.12
+      },
+      "ADC_SPI": {
+        "transaction_us": 28.44,
+        "scan4_us": 113.8,
+        "max_aggregate_kSPS": 35.16,
+        "planned_kSPS": 4,
+        "bus_utilisation_pct": 11.4
+      },
+      "RS485_idle_bias_V": {
+        "nominal": 0.538,
+        "worst(4.75V,+1%bias,-1%term)": 0.502,
+        "TIA-485 failsafe threshold": 0.2
+      },
+      "RS485_TVS": {
+        "SMBJ8.5CA_VC_max_V": 14.4,
+        "ISO1410_bus_absmax_V": 18,
+        "standoff_V": 8.5,
+        "RS485_common_mode_spec_V": [
+          -7,
+          12
+        ]
+      },
+      "CAN_split_term_ohm": 120.8,
+      "CAN_TVS": {
+        "PESD2CANFD24V_VC_V": 42,
+        "ISO1042_absmax_V": 70
+      },
+      "isolated_port_out_W": {
+        "RS485_worst(160mA x 5.15V)": 0.824,
+        "CAN_worst(77.5mA x 5.15V)": 0.399,
+        "UCC33421_rating_W": 1.5
+      },
+      "MCU_clock": {
+        "PLL_in_MHz": 4.0,
+        "VCO_MHz": 288.0,
+        "SYSCLK_MHz": 144.0,
+        "PLLQ_MHz": 48.0,
+        "USB_accuracy_needed_ppm": 2500,
+        "clock_ppm": 25,
+        "FDCAN_tq_per_bit_500k_at_48MHz": 96.0,
+        "FDCAN_tq_per_bit_2M_at_48MHz": 24.0,
+        "CiA601-3_recommended_clock_MHz": [
+          20,
+          40,
+          80
+        ]
+      },
+      "TIM1_PWM": {
+        "tick_us": 1.0,
+        "period_ms": 10.0
+      },
+      "I2C_rise_ns": 796.0,
+      "WDT_margin": {
+        "WDI_period_ms": 50,
+        "tWD_min_ms": 170,
+        "ratio": 3.4
+      },
+      "LED_current_mA": 1.3,
+      "relay_coil_mA_each_0C_5.1V": 98.9,
+      "relay_two_coils_W": 1.009,
+      "board_heat_24V_full_load_W": {
+        "eFuse RON at 2.3 A (24 V full load)": 0.237,
+        "blocking FET + fuse (2.3 A)": 0.224,
+        "TPS4H160 4x0.5 A + I_op": 0.472,
+        "series blocking diodes 4x": 1.164,
+        "output bleeders 4x @24V": 0.23,
+        "LMR38020 + inductor loss (6 W out, 88 %)": 0.818,
+        "UCC33421 x2 losses (RS-485 worst + CAN)": 1.213,
+        "relay coils (2x)": 0.794,
+        "TPS709 x2 + TPS62160 + boost losses (est.)": 0.34,
+        "ISO1212 x2 field-side (2.75 mA x 24 V x 4)": 0.264
+      },
+      "board_heat_total_W": 5.76,
+      "IPC2221_width_mm": {
+        "3A_ext_1oz_dT10": 1.37,
+        "3A_int_0.5oz_dT10": 7.11,
+        "3A_int_1oz_dT10": 3.56,
+        "0.5A_ext_1oz_dT10": 0.12,
+        "2A_LOAD_RETURN_ext_1oz_dT10": 0.78
+      },
+      "fix_TPS3702_SET_low_on_5V_FIELD": {
+        "UV_trip_V": [
+          4.509,
+          4.591
+        ],
+        "OV_trip_V": [
+          5.401,
+          5.499
+        ],
+        "margin_low_V": 0.326,
+        "margin_high_V": 0.318,
+        "inside_UCC33421_4.5-5.5V": true
+      },
+      "fix_TPS3808G30": {
+        "trip_min_V": 2.748,
+        "release_max_V": 2.903,
+        "margin_vs_3V3_DIG_min_V": 0.266,
+        "margin_vs_TPS70933_min_V": 0.304
+      },
+      "alt_3V3_DIG_32k4_top": {
+        "nominal_V": 3.392,
+        "min_PSM_V": 3.26,
+        "max_V": 3.541
+      },
+      "fix_PGTH_475k_100k": {
+        "rising_V": [
+          6.76,
+          7.04
+        ],
+        "falling_V": [
+          6.27,
+          6.61
+        ]
+      },
+      "present_PGTH_604k_100k": {
+        "rising_V": [
+          8.28,
+          8.62
+        ],
+        "falling_V": [
+          7.67,
+          8.1
+        ]
+      },
+      "R3_CS_divider_22k_47k": {
+        "ratio": 0.681,
+        "CS_gain_change_pct": -1.72,
+        "ADC_V_at_0.809A_limit": 2.184,
+        "ADC_V_at_min_fault_4.5V": 3.065,
+        "clamp_current_mA_at_6.5V_fault": 0.132
+      }
+    }
+  },
+  "cleanup_migration": {
+    "completed_at_utc": "2026-10-06T23:09:46.313589+00:00",
+    "detail_storage": "Complete generated check outputs embedded in this record before removal of scratch directories.",
+    "source_identity_scope": "source_sha256 records identify files at the original verification; subsequent documentation-only cleanup is recorded separately.",
+    "preservation": {
+      "InitialScratchFiles": 193,
+      "InitialScratchBytes": 22453215.0,
+      "MarketArchive": "references/market/upwork_evidence_2026-10-04.zip",
+      "MarketArchiveSHA256": "4523380ecafd39a0a9c29b8d5da04f3d05c1d06b42af976b48a2e073a8041826",
+      "MarketPdf": "references/market/Upwork_PCB_Portfolio_Review_2026-10-04.pdf",
+      "MarketPdfSHA256": "683830C0ACD94D14554FA28573698611E4C220752BB3F29F6E1F670ABF690463",
+      "ExternalReport": "references/reviews/external_pre_capture_report_2026-10-05.txt",
+      "ExternalReportSHA256": "03729eaed9a7725185c07c9aa382c92112eb406cdef6bbf00c7d02c8048f1f1c",
+      "MockupsMoved": [
+        {
+          "Name": "1-home-desktop.png",
+          "Destination": "outside_project/website_mockups/1-home-desktop.png",
+          "SHA256": "EA5E39BBF90998ACC508AB5375C9AB97DB55C49DAD49C109C519EE227BC9A243",
+          "Bytes": 888510
+        },
+        {
+          "Name": "2-pcb2-case-study-desktop.png",
+          "Destination": "outside_project/website_mockups/2-pcb2-case-study-desktop.png",
+          "SHA256": "EBB52D6CFB65AF0A0794A862AFBA3078192A08C5DE61840B642100A799F0B685",
+          "Bytes": 778169
+        },
+        {
+          "Name": "3-pcb2-architecture-tracer.png",
+          "Destination": "outside_project/website_mockups/3-pcb2-architecture-tracer.png",
+          "SHA256": "EAF399AD13D4EB980E02DDA65316B197BFA239A6A9756401D695D9D4F366F772",
+          "Bytes": 281552
+        },
+        {
+          "Name": "4-mobile.png",
+          "Destination": "outside_project/website_mockups/4-mobile.png",
+          "SHA256": "41A214FB2B1C8B68FEED35F22C58A54A10B21577227621FD98BAD15F4B53DEAE",
+          "Bytes": 554843
+        }
+      ],
+      "OriginalMarketArchiveSHA256": "ACB7483BDA07593C5C25C5B0F6B8E562C2BCAA688F5B3BE8491511AB20E9AD30",
+      "OriginalExternalReportSHA256": "3EA568286B6C4B9ED3E9F3AE1AE99B99A290AEC2B08601C50BB1272DAFA02477"
+    },
+    "folders_removed": [
+      "out",
+      "output",
+      "Claude outputs"
+    ],
+    "unused_footprints_removed": [
+      "D_SMA.kicad_mod",
+      "D_SOD-123F.kicad_mod",
+      "Fuse_1206_3216Metric.kicad_mod"
+    ],
+    "cache_directories_removed": 4,
+    "files_removed": 203,
+    "bytes_removed": 20066011,
+    "design_component_selections_changed": false,
+    "features_removed": false
+  },
+  "cleanup_recheck": {
+    "completed_at_utc": "2026-10-06T23:13:23.301898+00:00",
+    "document_audit": {
+      "exit_code": 0,
+      "markdown_files": 44,
+      "local_links_checked": 446,
+      "candidate_pdfs_identity_hash_checked": 41,
+      "capacitor_csvs_checked": 6,
+      "warnings": [],
+      "failures": []
+    },
+    "selection_audit": {
+      "exit_code": 0,
+      "component_groups": 166,
+      "unique_order_codes": 142,
+      "failures": []
+    },
+    "asset_audit": {
+      "exit_code": 0,
+      "groups_checked": 150,
+      "groups_with_missing_assets": 30,
+      "groups_with_unchecked_stock_assets": 0,
+      "capture_asset_gate": "open",
+      "failures": []
+    },
+    "host_diagnostics_tests": {
+      "exit_code": 0,
+      "tests_run": 30,
+      "result": "OK"
+    },
+    "whitespace_exit_code": 0
+  },
+  "public_copy_preparation": {
+    "completed_at_utc": "2026-10-06T23:18:53.459753+00:00",
+    "changes": "Local computer paths in source metadata and the public source copies replaced with neutral source IDs. Original report, research ZIP and metadata preserved locally outside the repository.",
+    "job_text_and_counts_unchanged": true,
+    "original_source_sha256": {
+      "research_zip": "acb7483bda07593c5c25c5b0f6b8e562c2bcaa688f5b3be8491511ab20e9ad30",
+      "external_report": "3ea568286b6c4b9ed3e9f3ae1ae99b99a290aec2b08601c50bb1272dafa02477"
+    },
+    "public_source_sha256": {
+      "research_zip": "4523380ecafd39a0a9c29b8d5da04f3d05c1d06b42af976b48a2e073a8041826",
+      "external_report": "03729eaed9a7725185c07c9aa382c92112eb406cdef6bbf00c7d02c8048f1f1c"
+    }
+  }
+}

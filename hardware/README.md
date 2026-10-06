@@ -4,6 +4,8 @@ I am developing a four-layer STM32G474 controller for 12/24 V sensors and actuat
 
 The [architecture](../docs/Architecture.md) describes the system, and [design decisions](../docs/Design_Decisions.md) explain the component and protection choices.
 
+I retain the complete channel/port baseline in [Scope](../docs/Scope.md). I close the [rail/crossing architecture disposition](../docs/Architecture_Review.md) before freezing affected sheets, then follow the [implementation milestones](../docs/Implementation_Plan.md). Static Modbus operation comes before classic CAN and PWM; CAN FD and the wider operating envelope need separate physical qualification.
+
 ## Circuit organization
 
 | Block | Design scope |

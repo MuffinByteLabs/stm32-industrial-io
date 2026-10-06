@@ -4,15 +4,20 @@ I keep candidate footprints and mechanical models in project-relative collection
 
 | Collection | Contents |
 | --- | --- |
-| IndustrialIO.pretty | USB-C receptacle, tactile switch, 1206 fuse, SMA diode, and SOD-123F diode footprints |
+| IndustrialIO.pretty | Selected USB-C receptacle and tactile-switch footprint candidates |
+| IndustrialIO.kicad_sym | Registered empty destination for custom symbols; creation/pin review remains pending |
 | IndustrialIO.3dshapes | USB and switch STEP/VRML models |
 | logos/logos.pretty | MuffinByte branding footprints |
 
 The [native project tables](../STM32_Industrial_IO/README.md) resolve local collections through this directory. Exact pin numbering, pad geometry, exposed-pad treatment, courtyard, model alignment, and mechanical fit will be reviewed against the selected manufacturer's drawings before release.
 
+The [library preflight](../../docs/Library_Preflight.md) gives the preparation order and missing-asset work list. The selected custom identifiers now consistently use the registered IndustrialIO namespace. No missing symbol or footprint is represented as already created or approved.
+
+The unselected local `D_SMA`, `D_SOD-123F` and `Fuse_1206_3216Metric` copies were removed during the October 6 cleanup. Current SMA diodes and the Nano2 fuse use their exact stock identifiers in the component selections. The remaining USB/switch candidates, referenced models, branding and registered custom-symbol destination are retained.
+
 ## Attribution and license
 
-Fuse_1206_3216Metric, D_SMA, D_SOD-123F, and USB_C_Receptacle_HRO_TYPE-C-31-M-12 are modified local copies derived from the KiCad community libraries. They were saved in KiCad 10 format, with project-local asset references where applicable. Their upstream collections are Fuse.pretty, Diode_SMD.pretty, and Connector_USB.pretty in [kicad-footprints](https://gitlab.com/kicad/libraries/kicad-footprints).
+USB_C_Receptacle_HRO_TYPE-C-31-M-12 is a modified local copy derived from the KiCad community Connector_USB.pretty library. It was saved in KiCad 10 format with project-local asset references. Its upstream source is [kicad-footprints](https://gitlab.com/kicad/libraries/kicad-footprints).
 
 These redistributed assets retain the [KiCad Libraries License](KiCad_Library_LICENSE.md): Creative Commons Attribution-ShareAlike 4.0 with the KiCad design exception. [KiCad's licensing explanation](https://www.kicad.org/libraries/license/) distinguishes a redistributed library collection from a design using its data. The project license does not replace these terms.
 

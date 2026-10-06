@@ -31,9 +31,9 @@ I maintain manufacturer documents for my [circuit specifications](../../docs/Sch
 | SN74LVC2G17DBVR | [SN74LVC2G17.pdf](SN74LVC2G17.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/sn74lvc2g17.pdf); capture implementation review pending |
 | BSS138P,215 | [BSS138P.pdf](BSS138P.pdf); [manufacturer](https://assets.nexperia.com/documents/data-sheet/BSS138P.pdf); capture implementation review pending |
 | TPS61040DBVR | [TPS61040.pdf](TPS61040.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/tps61040.pdf); capture implementation review pending |
-| SN74LVC2G04DCUR | [SN74LVC2G04.pdf](SN74LVC2G04.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/sn74lvc2g04.pdf); capture implementation review pending |
-| TPD2E2U06DBZR | [TPD2E2U06.pdf](TPD2E2U06.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/tpd2e2u06.pdf); capture implementation review pending |
-| SiT8008BI-22-33S-8.000000E | [SiT8008.pdf](SiT8008.pdf); [manufacturer](https://www.sitime.com/datasheet/SiT8008); capture implementation review pending |
+| SN74LVC2G04DBVR | [SN74LVC2G04.pdf](SN74LVC2G04.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/sn74lvc2g04.pdf); capture implementation review pending |
+| TPD2E2U06DCKR | [TPD2E2U06.pdf](TPD2E2U06.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/tpd2e2u06.pdf); capture implementation review pending |
+| SiT8008BI-22-XXS-8.000000E | [SiT8008.pdf](SiT8008.pdf); [manufacturer](https://www.sitime.com/datasheet/SiT8008); capture implementation review pending |
 | TPS7A1601DGNR | [TPS7A16.pdf](TPS7A16.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/tps7a16.pdf); capture implementation review pending |
 | OPA2320AIDR | [OPA320.pdf](OPA320.pdf); [manufacturer](https://www.ti.com/lit/ds/symlink/opa320.pdf); capture implementation review pending |
 | MMBT3904,215 | [MMBT3904.pdf](MMBT3904.pdf); [manufacturer](https://assets.nexperia.com/documents/data-sheet/MMBT3904.pdf); capture implementation review pending |

@@ -10,3 +10,8 @@
 *.pdf binary
 *.step binary
 *.zip binary
+
+# Preserve source evidence exactly; its manifests record the original bytes.
+references/capacitors/*.csv -text whitespace=cr-at-eol
+references/reviews/independent_verification_calcs_2026-10-06.py -text
+references/reviews/external_pre_capture_report_2026-10-05.txt -text

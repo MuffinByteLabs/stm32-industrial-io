@@ -4,6 +4,8 @@ I am developing a four-layer STM32 controller for nominal 12/24 V DC equipment. 
 
 Rev A is a pre-schematic design. My circuit selections and calculations define implementation targets; schematic connectivity, PCB layout, firmware and measured ratings remain pending.
 
+The [scope baseline](Scope.md) freezes the major functions. I implement nominal 12/24 V room-temperature Modbus operation first, then classic CAN, bounded PWM and the wider qualification targets in the [implementation plan](Implementation_Plan.md). The tables below retain the complete design targets; they are not the completion status of the first milestone.
+
 ## Functional scope
 
 | Function | Rev A target |
@@ -25,6 +27,8 @@ Rev A is a pre-schematic design. My circuit selections and calculations define i
 | Environment | Indoor enclosed prototype, 0–50 °C |
 
 I start with a provisional 140 × 100 mm envelope. I will set its final size from the enclosure, terminals, isolation spacing and thermal layout.
+
+I retain all four input/output channels, both analog input types, two relay circuits and both wired ports. Staged population does not reduce their final power/thermal budget. Wireless, Ethernet, battery charging and analog command outputs are outside this revision. I record any change to that baseline in [Scope](Scope.md).
 
 ## Power architecture
 
@@ -51,7 +55,7 @@ The external supply powers the complete board. USB VBUS supplies only its detect
 | --- | --- |
 | VFIELD | Protected main input and load-switch energy |
 | 5V_FIELD | LMR38020FDDAR buck; all downstream conversion, relay coils and isolated supplies |
-| 3V3_DIG / 3V3_MCU_ANA | TPS62160DSGR digital buck / TPS70933DBVR MCU analog LDO |
+| 3V3_DIG / 3V3_MCU_ANA | TPS62160DGKR digital buck / TPS70933DBVR MCU analog LDO |
 | 3V3_FIELD_LOGIC | Separate TPS70933DBVR field-interface LDO |
 | ADC_AVDD | Filtered field 5 V with permanent discharge path |
 | 15V_ANA | TPS61040DBVR boost for the retained analog input protectors and threshold supplies |
@@ -59,6 +63,8 @@ The external supply powers the complete board. USB VBUS supplies only its detect
 | Isolated port rails | Two separate UCC33421QDHARQ1 supplies and reference islands |
 
 I retain the positive auxiliary and threshold rails because the input-protection circuits need them. The [power specification](circuits/Power.md) fixes support values, enables and shutdown behavior; boost disable alone does not isolate its passive output path.
+
+I retain the listed separate local rails and receiving-domain crossings through the [architecture review record](Architecture_Review.md). Their pin limits, startup/collapse and shutdown requirements remain verification gates. DI_COM and the two bus reference islands retain their actual isolation boundaries.
 
 I reserve 6 W delivered at 5V_FIELD. The following allocations are conservative engineering reservations, rather than predictions or guaranteed device maxima.
 
@@ -102,6 +108,8 @@ PWM is an added low-frequency load-control mode. A compatible load sees full sup
 
 Current diagnostics are sequential. PWM readings represent settled on-state driver current, including the small bleeder current, and carry timing/validity information; an average-current estimate requires a stated load model. Hardware limiting and permission removal do not depend on successful sampling. Two G5Q-1 DC5 relays provide dry SPDT contacts; deenergized COM–NO is open and COM–NC closed.
 
-ISO1410 and ISO1042 each have an independent isolated supply, reference and protection island. I qualify Modbus RTU and classic CAN first, then the short-bus CAN FD target. I select one command owner—Modbus, CAN or local demonstration—with a default 1 s command lease. Owner changes, rail loss, reset, watchdog failure and reported high-side/global faults clear arming. Firmware must disable timer commands before recovery and issue fresh valid commands and an explicit arm transition.
+ISO1410 and ISO1042 each have an independent isolated supply, reference and protection island. I qualify Modbus RTU and classic CAN telemetry first, then the short-bus CAN FD target. The ownership model permits one command owner—Modbus, CAN or local demonstration—with a default 1 s command lease. M1/M2 use Modbus ownership; CAN control remains unavailable until a separate guarded command contract is released and tested. Owner changes, rail loss, reset, watchdog failure and reported high-side/global faults clear arming. Bus-off while CAN mode is enabled is a latched global fault that disarms all outputs; inactive CAN does not create this fault. Firmware disables and clears timer commands before recovery. After the cause is removed, explicit DISARM acknowledges recoverable latches and self-check returns READY; a fresh ARM with zero commands precedes any new SET that energizes a load.
+
+I implement the [versioned protocol contract](../firmware/Protocol.md) with an actual diagnostic/calibration host workflow. Supported interfaces, implemented modes and physically qualified modes have separate capability records; a populated port or timer peripheral cannot enable an unqualified mode. A development simulator supplies host-test data only, while my [portfolio records](Portfolio_Evidence.md) require physical evidence.
 
 My [interface contract](Interfaces.md), [capture package](Schematic_Capture.md), [design decisions](Design_Decisions.md) and [validation matrix](Validation.md) describe the implementation and required evidence.

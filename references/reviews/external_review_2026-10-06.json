@@ -1,0 +1,52 @@
+{
+  "source_file": "independent_verification_calcs.py",
+  "archived_file": "independent_verification_calcs_2026-10-06.py",
+  "sha256": "1205163cb787420fe236b22aed1639b132644115b45063a2dd0948d3f21c0683",
+  "bytes": 18722,
+  "review_date": "2026-10-06",
+  "classification": "submitted external AI calculations; source constants and model assumptions are not approved by execution",
+  "static_review": {
+    "imports": [
+      "json",
+      "math"
+    ],
+    "calls": [
+      "buck_ripple",
+      "div_thresh",
+      "ei.items",
+      "ei.values",
+      "ev.items",
+      "ev.values",
+      "heat.items",
+      "heat.values",
+      "iin",
+      "int",
+      "ipc2221_width_mm",
+      "json.dumps",
+      "loads_3v3dig.values",
+      "loads_3v3field.values",
+      "loads_5v.items",
+      "loads_5v.values",
+      "math.log",
+      "math.sqrt",
+      "print",
+      "rng",
+      "round",
+      "startup_energy",
+      "sum"
+    ],
+    "result": "Only pure arithmetic/JSON and stdout printing found; no file/process/network operation in submitted script."
+  },
+  "report_availability": "Full submitted report reviewed; public source copy neutralizes only the local workspace path. Original bytes are preserved locally outside the repository. Historical Markdown links are not current project instructions.",
+  "submitted_report": {
+    "project_relative_file": "references/reviews/external_pre_capture_report_2026-10-05.txt",
+    "sha256": "03729eaed9a7725185c07c9aa382c92112eb406cdef6bbf00c7d02c8048f1f1c",
+    "bytes": 47109,
+    "original_project_relative_file": "Claude outputs/Pre_Capture_Verification_Report.md",
+    "original_sha256": "3ea568286b6c4b9ed3e9f3ae1ae99b99a290aec2b08601c50bb1272dafa02477",
+    "original_bytes": 47152,
+    "public_copy_changes": "Local workspace path replaced with <project folder>; engineering text unchanged.",
+    "original_retention": "Original source preserved in local app workspace outside this public repository."
+  },
+  "source_origin": "User-supplied downloaded script; machine-specific download path omitted in the public record."
+}

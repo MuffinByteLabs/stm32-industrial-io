@@ -35,6 +35,9 @@ def arithmetic():
         "diagnostic_switch_typical_on_ohm": switch_on,
         "diagnostic_off_leakage_2ua_times47kohm_v": 2e-6 * 47000,
         "input_protection_15v_reservation_a": .010,
+        "tmux_parent_vdd_added_bypass_nominal_f": 2 * 1e-6,
+        "tmux_parent_vdd_added_bypass_screening_max_f": 2 * 1e-6 * 1.10 * 1.15,
+        "tmux_bypass_accounting_note": "Two approved local VDD bypasses add to parent startup capacitance; no extra credit to its unverified500uF hold-up floor and no change to child VFP maximum capacitance.",
         "current_diagnostic_5v_reservation_a": .012,
         "vfp11_nominal_v": 1.193 * (1 + 82000 / 10000),
         "vfp6_nominal_v": 1.193 * (1 + 40200 / 10000),
@@ -55,7 +58,8 @@ def arithmetic():
     tau = child_cap_max * 4700 * 1.002
     fall_time = supply_min * bulk_min / parent_load
     disable_delay = .001
-    # Disabled LDO supply current is pessimistically assigned entirely to OUT.
+    # Qualification assumption on the complete child net, including its TMUX.
+    # LDO shutdown INPUT current alone does not guarantee this sourcing bound.
     asymptote = 5e-6 * 4700 * 1.002
     child_ends = [asymptote + (v - asymptote) * math.exp(-(fall_time - disable_delay) / tau)
                   for v in (out["vfp11_corner_v"][1], out["vfp6_corner_v"][1])]
@@ -67,7 +71,8 @@ def arithmetic():
                            "child_tau_max_s": tau,
                            "parent_zero_time_s": fall_time,
                            "child_end_max_v": child_ends,
-                           "scope": "Parent >=500uF effective over 0-50C; child disable <=1ms; ordinary rail removal, no internal hard short; convex exponential-minus-linear bound"}
+                           "child_total_net_sourcing_max_a_assumed": 5e-6,
+                           "scope": "Conditional proof: parent >=500uF effective over 0-50C; child disable <=1ms; total sourcing into each child net <=5uA including connected protector/external input; all require independent evidence; ordinary rail removal, no internal hard short; convex exponential-minus-linear bound"}
     assert out["shunt_power_at_40ma_w"] < out["shunt_power_rating_w"]
     assert out["loop_max_20ma_burden_v"] == 4.25
     assert .6 < out["cs_adc_at_0p5a_nominal_ratio300_v"] < .7

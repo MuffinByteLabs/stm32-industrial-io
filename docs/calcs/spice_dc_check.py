@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import ctypes as c
+import hashlib
 import json
 import math
 import os
@@ -50,7 +51,12 @@ def main() -> None:
     ng.ngSpice_Command.argtypes = [c.c_char_p]
     ng.ngGet_Vec_Info.argtypes = [c.c_char_p]
     ng.ngGet_Vec_Info.restype = c.POINTER(Vector)
-    ng.ngSpice_Init(send, send, controlled_exit, None, None, None, None)
+    if ng.ngSpice_Init(send, send, controlled_exit, None, None, None, None) != 0:
+        raise RuntimeError("ngspice initialization failed: " + "\n".join(messages))
+    version_start = len(messages)
+    if ng.ngSpice_Command(b"version") != 0:
+        raise RuntimeError("ngspice version query failed: " + "\n".join(messages))
+    version_messages = messages[version_start:]
     source = Path(__file__).with_name("dc_frontends.cir")
     lines = [line.encode("ascii") for line in source.read_text().splitlines()]
     circuit = (c.c_char_p * (len(lines) + 1))(*lines, None)
@@ -123,6 +129,11 @@ def main() -> None:
             raise RuntimeError(f"Passive pole disagrees with equation for {name}")
     print(json.dumps({
         "scope": "Active-input DC and passive-pole connectivity checks; ideal finite-gain diagnostic amplifier, fixed ADC resistance/on-resistances; no IC fault, stability, surge or hardware validation",
+        "simulator": {"library_file": library.name,
+                      "library_sha256": hashlib.sha256(library.read_bytes()).hexdigest(),
+                      "version_output": version_messages},
+        "circuit": {"file": source.name,
+                    "sha256": hashlib.sha256(source.read_bytes()).hexdigest()},
         "assumptions": {"adc_biased_input_ohm": 850000, "adc_bias_v": 2.5,
                         "input_protector_on_ohm": 8.3, "diagnostic_switch_on_ohm": 2,
                         "diagnostic_amplifier_open_loop_gain": 1e6},

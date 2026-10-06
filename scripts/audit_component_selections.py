@@ -13,7 +13,11 @@ RETIRED_PARTS = {'TPS2121RUXR', 'TPS2553DBVR', 'LM7705MM/NOPB',
 REQUIRED_QUANTITIES = {'STM32G474VET6': 1, 'ADS8684AIDBTR': 1,
                        'ISO1212DBQR': 2, 'TPS4H160BQPWPRQ1': 1,
                        'TPS26611DDFR': 2, 'UCC33421QDHARQ1': 2,
-                       'ISO1410DWR': 1, 'ISO1042DWVR': 1}
+                       'ISO1410DWR': 1, 'ISO1042DWVR': 1,
+                       'G5Q-1 DC5': 2, '24LC64-I/SN': 1,
+                       'TPS3431SDRBR': 1, 'TYPE-C-31-M-12': 1,
+                       '1759017': 1, '1757019': 1,
+                       'TPS3808G30DBVR': 3, 'TPS62160DGKR': 1}
 
 
 def main():
@@ -61,7 +65,7 @@ def main():
     print(json.dumps({'scope':'Selection-index structure and block coverage only; not a released BOM, inventory, library or electrical approval',
                       'groups_by_block':counts,'component_groups':len(ids),
                       'unique_order_codes':len(parts),
-                      'scope_checks':'Retired power/AO blocks absent; MCU, ADC, four-channel I/O and two isolated buses retained',
+                      'scope_checks':'Retired power/AO blocks absent; MCU, ADC, four-channel I/O, two relays, two isolated buses, EEPROM, watchdog, USB, reset supervisors and main power connector retained',
                       'failures':errors},indent=2))
     return bool(errors)
 

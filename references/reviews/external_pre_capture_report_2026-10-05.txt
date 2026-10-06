@@ -1,0 +1,582 @@
+# Pre-capture verification report: STM32 Industrial I/O Controller, Rev A
+
+| | |
+| --- | --- |
+| Review date | 5 October 2026 |
+| Project folder | `<project folder>` (the folder name is a holdover; the design is the STM32G474 controller) |
+| State reviewed | Folder contents as of 2026-10-05 03:34:40 UTC. I checked again at 04:05 UTC and nothing had changed. |
+| Last commit | `d4f47fe`, 2026-10-04 12:11 (−04:00). There are 36 modified and 15 untracked paths on top of it (see §8). |
+| Method | Read-only. I read every document, checked each component selection against the datasheets in `references/`, and redid the calculations myself. The project's scripts and tests ran on a copy outside the folder. |
+| Companion file | `independent_verification_calcs.py` recomputes every number in §2, §3 and §6. It writes nothing. |
+| Placement | Links assume this file is saved as `docs/Pre_Capture_Verification_Report.md`. |
+
+I made no changes to the project folder. One `git status` early in the review refreshed the stat cache in `.git/index`. Every git command after that ran with `--no-optional-locks`.
+
+---
+
+## 1. Verdict
+
+**The engineering package is very strong, but five items need resolving before you start the schematic.**
+
+The documentation, traceability and arithmetic are far more thorough than is typical at this stage. Every number I recomputed matches the project's own value within rounding (§6). The project audits pass (40 Markdown files, 396 local links, 41 datasheet identities, 162 selection groups / 140 order codes, 0 failures), and all 30 host-tool unit tests pass.
+
+The five items to fix first (§2):
+
+- a datasheet pin-map error that would cross-wire 10 logic packages
+- a missing main power connector
+- two reset/health supervisor windows with too little worst-case margin
+- five key ICs that had no authorized-distributor stock in my snapshot
+
+After those, the remaining gate is the project's own LIB-01: 31 selection groups still need symbols or footprints.
+
+As a recommendation rather than a defect: the controller is much more complex than is typical for this class of board. It has 64 ICs, 29 of them single- or dual-gate logic, plus 7 discrete transistors, across 512 placements. The optional simplifications in §4 would remove roughly 25–37 active parts without dropping anything in `Scope.md`. They would also close the project's highest-risk open gate (SEQ-01) and make hand assembly much easier.
+
+| Area | Result |
+| --- | --- |
+| Documentation and traceability | Excellent. All audits pass. |
+| Calculations | All values I recomputed agree with the project's (§6). |
+| Component choices | Sound, industrial-grade parts. There is one pin-map error in the docs (B1). Three packages are hard to hand-solder and have drop-in alternatives (§5). |
+| Worst-case margins | Two supervisor problems (B3, B4). Everything else has margin. |
+| BOM completeness | The main input connector is not fitted (B2). |
+| Supply chain | Five parts showed zero authorized stock in the snapshot (B5). |
+| Industry standards | IEC 61131-2 Type 3 DI thresholds and DO behaviour are met. Surge protection on the digital inputs is missing (S1), and the board has no functional-earth (FE) path (S4). |
+| Capture readiness | Not yet. There is no KiCad project, the custom symbol library is empty, and 31 asset groups are missing (§9). |
+
+---
+
+## 2. Must fix before you start the schematic
+
+### B1. SN74LVC2G125 output pins are swapped in the documentation (10 packages)
+
+The datasheet ([SN74LVC2G125.pdf](../references/datasheets/SN74LVC2G125.pdf), SCES204Q, Pin Functions) gives this DCU pin map:
+
+| Pin | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Function | 1OE | 1A | **2Y** | GND | 2A | **1Y** | 2OE | VCC |
+
+The project documents it the other way round:
+
+- [Control_Service.md](circuits/Control_Service.md), line 133: `1 OE1_N; 2 A1; 3 Y1; 4 GND; 5 A2; 6 Y2; 7 OE2_N; 8 VCC`. This swaps Y1 and Y2.
+- [Loop_Status.md](circuits/Loop_Status.md), pin table: `3 1Y → LOOP1_BAD_MCU`, `6 2Y → LOOP2_BAD_MCU`. Also swapped.
+- `docs/components/control_service.json`, `LS_QUALIFY` evidence text: same wording.
+
+**Impact.** If the project symbol is drawn from these tables, every LVC2G125 cross-wires its two channels. The 9 domain-crossing buffers would put each signal on the other channel's net, and loop status 1 and 2 would be reported swapped. The SN74LVC2G08 table in the same file is correct (Y1 = 7, Y2 = 3), so the error is local to this part.
+
+**Fix.**
+
+- Correct both tables to `2 1A → 6 1Y` and `5 2A → 3 2Y`.
+- In Loop_Status.md: `6 1Y → LOOP1_BAD_MCU (PD8)` and `3 2Y → LOOP2_BAD_MCU (PD9)`.
+- Alternatively, use KiCad's stock `74xGxx:74LVC2G125` symbol after checking its pin numbers against the datasheet.
+
+### B2. The main DC input connector is not in the fitted BOM
+
+`power.json` contains no connector. The 2-position MSTB header and plug (1759017 / 1757019) appear only as catalogue entries with quantity 0 in `field_io.json`. [Field_IO.md](circuits/Field_IO.md), line 192, says the power sheet "owns" their fitted quantity, but the power sheet never takes it. As a result, the 9–30 V, 3 A input has no connector.
+
+**Fix.** Add a fitted header and plug to `power.json`. I recommend **MSTB 2,5/2-G-5,08 (1759017) + MSTB 2,5/2-ST-5,08 (1757019)**:
+
+- It has a different pin count from the 3-position relay plugs and 4-position output plugs, so the 24 V supply cannot be pushed into a relay or output connector.
+- MSTB 2,5 is rated well above the 5 A fuse.
+
+If you want FE on the same plug (see S4), use a coded 3-position part rather than the uncoded 1759020 the relays use, for the same mis-mating reason.
+
+### B3. TPS3808G33 reset release can sit above the worst-case 3.3 V digital rail
+
+| Quantity | Value | Basis |
+| --- | --- | --- |
+| TPS3808G33 threshold, VIT | 3.07 V ±1.5% (−40…125 °C) | [TPS3808.pdf](../references/datasheets/TPS3808.pdf), electrical characteristics |
+| Hysteresis, fixed versions | 1% typical, **2.5% maximum** | same table |
+| **Reset release, worst case** | 3.07 × 1.015 × 1.025 = **3.194 V** | |
+| 3V3_DIG nominal (TPS62160, 30.9 kΩ + 301 Ω over 10 kΩ, VREF 0.8 V) | 3.296 V | |
+| TPS62160 initial accuracy | −3% / +3% (PWM); **−3.5% / +4% (power-save mode, i.e. light load at power-up)** | [TPS62160.pdf](../references/datasheets/TPS62160.pdf) |
+| FB leakage error (400 nA × 31.2 kΩ) | 12.5 mV | |
+| **3V3_DIG worst-case minimum** | **3.168 V** (PSM) / 3.185 V (PWM) | |
+| **Margin** | **−26 mV** (PSM) / −9 mV (PWM) | |
+| TPS70933 rails (±1%, line ≤ 10 mV, load ≤ 50 mV) minimum | 3.207 V → **+13 mV** | [TPS709.pdf](../references/datasheets/TPS709.pdf) |
+
+A typical pair has about 200 mV of margin, so a bench prototype will probably start. A worst-case pair, however, can hold `RESET_OK` low indefinitely, or chatter on load steps. Industry practice is to design reset thresholds to worst case.
+
+**Fix (recommended):** change all three supervisors to **TPS3808G30DBVR**. VIT is 2.79 V, so the worst-case release is 2.903 V. That gives +266 mV against the 3V3_DIG minimum and +304 mV against the LDO minimum. The footprint and pins are the same.
+
+Check every device on those rails down to the 2.748 V minimum trip point:
+
+| Device | Status |
+| --- | --- |
+| STM32G474 (1.71–3.6 V) | OK |
+| 24LC64 (2.5–5.5 V) | OK |
+| LVC/AUP logic | OK |
+| ISO1212 VCC1 (2.25–5.5 V) | OK |
+| ISO1410 and ISO1042 VCC1 | OK |
+| ADS8684A DVDD (specified performance from 2.7 V) | OK |
+| TMUX1511 | OK |
+| SiT8008 with the "33" supply code (2.97–3.63 V) | **Not OK.** Change the code to **"XX" (2.25–3.63 V)**: `SiT8008BI-22-XXS-8.000000E`. The datasheet lists both options (Vdd_XX, Vdd_YY). |
+
+*Alternative:* raise 3V3_DIG with a 32.4 kΩ top resistor. That gives 3.392 V nominal, 3.260 V minimum and 3.541 V maximum. It leaves only about 60 mV below the STM32's 3.6 V limit, so I don't prefer it.
+
+### B4. ADC5_OK gates actuator permission and isolated power on a ±4% window with about 60 mV of margin
+
+| Quantity | Value |
+| --- | --- |
+| TPS3702CX50 with SET high: nominal UV / OV | 4.80 V / 5.20 V (±4%), accuracy ±0.9% ([TPS3702.pdf](../references/datasheets/TPS3702.pdf)) |
+| Worst-case UV trip / OV trip | ≤ 4.843 V / ≥ 5.153 V |
+| ADC_AVDD DC range (LMR38020 VREF ±1.5%, 0.1% divider, 11.5 mA through the 1 Ω filter) | 4.906–5.083 V |
+| **DC margin** | **62 mV low / 70 mV high**, before ripple, load steps, drift and comparator response |
+
+That window drives `FIELD5V_VALID = FIELD_OK AND ADC5_OK`, and through it:
+
+- start-up of both UCC33421 converters
+- `HEALTH_READY`, then `CLR_N`, then the asynchronous clear of the ARM latch
+
+**Failure scenario.** A 5 V load step (two relay coils at 99 mA each, UCC33421 start-up, CAN dominant current) dips the rail by more than 62 mV. That clears permission, and a fresh ARM is required by design. It also shuts down both isolated converters. The resulting load release overshoots toward a 70 mV OV margin. The outcome is nuisance disarms in the field and a possible hiccup loop.
+
+**Fix (no new BOM line, just quantity 1 → 2).**
+
+1. Keep the existing TPS3702CX50 with SET high on ADC_AVDD, but route it only to the MCU as an **ADC data-valid** flag. The tight window is right for that job, because it brackets the ADS8684A's 4.75–5.25 V AVDD range.
+2. Add a **second TPS3702CX50DDCR with SET tied to GND**, which gives the ±9% band (TPS3702 datasheet SBVS251A §6.3.3: "when VSET ≤ VIL(SET) … ±9%"). Put it on 5V_FIELD and use it for `FIELD5V_VALID` and `HEALTH_READY`.
+   - Worst-case trips: 4.509–4.591 V and 5.401–5.499 V.
+   - Margin: **326 mV / 318 mV**.
+   - The window stays inside the UCC33421's 4.5–5.5 V input range, and the relays (75% must-operate = 3.75 V) are unaffected.
+3. During bring-up, measure the LMR38020 response to a 0.5 A step. The output is 3 × 22 µF X7R, about 40 µF effective at 5 V.
+
+### B5. Decide procurement now, because the alternatives change footprints
+
+Findchips snapshot, 4–5 October 2026, authorized distributors:
+
+| Part | Snapshot | Risk | Options |
+| --- | --- | --- | --- |
+| UCC33421QDHARQ1 ×2 | DigiKey 0, Mouser 0 | High | UCC33421DHAR: TI lists it as the active industrial version in the same 16-pin DHA package, but Mouser also showed 0. Or switch to integrated-power transceivers (R4). UCC33420 is **not** a drop-in: it is a 12-pin VSON. |
+| ISO1410DWR | DigiKey 0, Mouser 0 | High | ISOW1412 (R4), or check TI direct and other packaging options |
+| ISO1042DWVR | DigiKey 0, Mouser 0 | High | ISOW1044 (R4) |
+| TPS4H160BQPWPRQ1 | Mouser 0; Maritex 50; Win Source 30,000 (independent broker) | High | Buy only through TI or authorized channels; broker stock carries counterfeit risk |
+| STM32G474VET6 | DigiKey 2 (tray); Mouser, Newark, Future and TME 0 | High | ST eStore. STM32G484VET6 (same LQFP100 family, adds AES; RS lists it) after checking its own datasheet's pinout. |
+| TPS26632RGER | Mouser 508 | OK | |
+| TPS26633PWPR (hand-assembly option) | Mouser 53 | Low stock | |
+| LMR38020FDDAR | DigiKey 155, Mouser 201 | OK | |
+| TPS26611DDFR | Mouser 2,151 | OK | |
+| TMUX7462FPWR | Mouser 2,511 | OK | R2 removes it |
+| ADS8684AIDBT(R) | Mouser 1,371 (DBT) | OK | |
+| ISO1212DBQR | Not read; findchips returned HTTP 429 (rate limit) | Unknown | Check before ordering |
+
+Stock moves daily, so treat this as a snapshot. If the prototype quantity of these five cannot be bought now, adopt R4 before drawing the isolated-port sheet.
+
+---
+
+## 3. Should fix (during capture, before layout or release)
+
+### S1. The digital inputs have no surge protection
+
+The current input network is RTHR = 100 Ω MELF, RSENSE = 562 Ω, CIN = 1 nF, with no TVS. TI's ISO1212 datasheet ([ISO1212.pdf](../references/datasheets/ISO1212.pdf), §8.2.1.2.5, Table 8-1) recommends this for Type 3 inputs:
+
+- **RTHR = 1 kΩ with CIN = 10 nF** for ±1 kV line-to-PE and line-to-line surge, or 330 nF for ±1 kV line-to-FGND.
+- For a smaller RTHR, which this design needs to keep VIH ≤ 9 V, TI says to use TVS diodes or varistors instead (Figure 8-10). TI names VCAN26A2-03S, EZJ-P0V420WM and GSOT36C.
+
+IEC 61131-2 requires IEC 61000-4-5 surge immunity on DC I/O.
+
+**Fix.** Add one bidirectional TVS per input, from IN to FGND/DI_COM. Use **GSOT36C** (TI-listed, 36 V standoff) or **SMBJ33CA** (SMB, easy to hand-solder).
+
+- Don't use VCAN26A2-03S: its 26 V standoff is below your 30 V input maximum.
+- Keep RTHR at 100 Ω, so the 8.79 V / 6.72 V thresholds don't change.
+- TI also recommends about 500 pF from FGND to PE. That ties into S4.
+
+### S2. The 5 V buck runs while the eFuse is still ramping
+
+LMR38020 EN is tied to VFIELD, and TPS2663 PGOOD is only a test point. The buck therefore starts at about 4 V on the eFuse output and loads the eFuse FET while the FET is still dropping most of the input voltage.
+
+Upper-bound estimate, assuming 7.5 W input during the 500 V/s ramp:
+
+| Input | Energy into the eFuse FET (buck running) | Energy if the buck waits for PGOOD |
+| --- | --- | --- |
+| 24 V | 0.086 J capacitor charge + up to 0.33 J (about 8.7 W average over 48 ms) | about 1.8 W average |
+| 30 V | 0.135 J + 0.50 J (10.5 W over 60 ms) | about 2.2 W average |
+
+The real start-up load is smaller, because the isolated converters and relays are gated off. It still includes the 680 µF precharge (S3).
+
+**Fix.**
+
+1. Move the **PGOOD pull-up from 3V3_FIELD_LOGIC (10 kΩ) to VFIELD (100 kΩ)** and connect PGOOD to LMR38020 EN. This is within ratings: PGOOD is rated 67 V absolute maximum and 60 V recommended; LMR38020 EN is rated to VIN + 0.3 V, with a 1.1–1.4 V rising threshold.
+2. Re-scale PGTH from 604 k / 100 k (now 8.28–8.62 V rising, 7.67–8.10 V falling, which leaves only about 0.3 V above the 8.4 V minimum VFIELD) to about **475 k / 100 k (6.76–7.04 V rising, 6.27–6.61 V falling)**. That way normal dips don't drop the 5 V rail. `FIELD_OK` remains the operating-validity monitor.
+3. PGOOD then sits at VFIELD level, so it can no longer go to an MCU pin. Nothing is lost: it was only a test point. The MCU keeps `INPUT_FAULT_N` (FLT) on PD10 and FIELD_OK for input status.
+
+### S3. The 680 µF hold-up capacitor precharges through the boost inductor during the 5 V soft-start
+
+The TPS61040's inductor-plus-diode path is a direct DC path from 5 V to the 15 V bulk. During the LMR38020's 4 ms soft-start, the bulk draws 680 µF × 1.2 × 5 V / 4 ms ≈ **1.0 A**. The 15 µH / 680 µF LC is essentially undamped (Z₀ ≈ 0.15 Ω). This is within the buck's 2 A rating, but it is real stress and it belongs to the project's own SEQ-01 gate.
+
+**Fix:** adopt R2, which deletes the whole branch. Otherwise, add a series resistor or NTC in the boost feed and capture the waveform during bring-up.
+
+### S4. There is no functional-earth (FE) or chassis path
+
+The board has five ground references and no earth path:
+
+- isolated DI FGND/DI_COM
+- RS485_REF
+- CAN_REF
+- MAIN_GND
+- the USB shield
+
+[Interfaces.md](Interfaces.md) leaves shield bonding to the installer. IEC 61000-4-2/-4/-5 testing, and real installations, need a defined discharge path for each isolated domain.
+
+**Industry-standard fix:**
+
+- Add an FE terminal: a screw or mounting-hole lug, or the third pin of a coded input plug.
+- Add footprints, DNP by default, for **1 MΩ ∥ 4.7 nF / 2 kV (or Y2)** from each isolated reference and MAIN_GND to FE.
+- Add an optional USB-shield RC (1 MΩ ∥ 4.7 nF).
+- Add TI's 500 pF from FGND to PE for the ISO1212.
+
+The installer can then choose the bonding without a board spin.
+
+### S5. Several connectors are identical and can be cross-mated
+
+The board has identical headers in three groups:
+
+- 4 × MC 1,5/3-G-3,5 (DI1, DI2, RS-485, CAN)
+- 2 × MSTB 3-position (relays)
+- 2 × MSTB 4-position (DO)
+
+An RS-485 plug fits a DI header, for example. The usual practice is to fit Phoenix's coding profiles or sections for the MC and MSTB series (order the matching header and plug coding parts) or to use different plug colours, plus clear silkscreen legends.
+
+### S6. Thermal plan
+
+The board dissipates about **5.8 W at 24 V and full load**.
+
+| Source | Dissipation |
+| --- | --- |
+| Series blocking diodes | 4 × 0.29 W |
+| Two UCC33421 | 1.21 W |
+| LMR38020 and inductor | 0.82 W |
+| Relay coils | 0.79 W |
+| TPS4H160 | 0.47 W at 24 V (0.52 W hot worst case, +17 °C at the JEDEC 32.7 °C/W rating) |
+| eFuse, FET and fuse | 0.46 W |
+
+In a sealed enclosure, this sets the internal temperature rise. Give each SMA diode about 100 mm² of copper. Stitch thermal vias under every exposed pad (TPS2663, LMR38020, TPS4H160, TPS7A16). Then estimate the enclosure ΔT before you commit to the 0–50 °C rating.
+
+### S7. Current-carrying copper (IPC-2221/2152, 10 °C rise)
+
+| Path | Minimum width |
+| --- | --- |
+| 3 A input, outer layer 1 oz | ≥ 1.4 mm (use pours) |
+| 3 A input, inner layer 1 oz | ≥ 3.6 mm |
+| 3 A input, inner layer 0.5 oz | ≥ 7.1 mm. Don't route 3 A on 0.5 oz inner layers. |
+| 2 A LOAD_RETURN, outer layer | ≥ 0.8 mm |
+| Each 0.5 A output | ≥ 0.12 mm (use ≥ 0.5 mm for robustness) |
+
+### S8. Library and reference housekeeping
+
+- **Stale entries.** [references/datasheets/README.md](../references/datasheets/README.md), lines 34–35, still list SN74LVC2G04**DCUR** and TPD2E2U06**DBZR**. These were replaced by DBVR and DCKR in PRE-02 and PRE-03.
+- **Missing datasheets** in `references/` for fitted parts: STPS2H100A, all Phoenix MC/MSTB headers and plugs, Coilcraft XAL7050/XFL3012/XAL4040, Panasonic EEU-FR, Littelfuse 0451, Würth 885382209002, the Murata GRM/GRT families (only GRM31CR71E106KA12 has bias data), Murata BLM21, Samtec FTSH, Lite-On LTST-C190, Harwin M20/M7567, and the Vishay MELF and CRCW-HP resistors. The TS-1187A PDF is an image with no text layer, and the USB-C PDF is a footprint drawing rather than a datasheet.
+- **Unused project footprints.** Three of the five in `IndustrialIO.pretty` are not used:
+  - `D_SMA`: the BOM uses stock `Diode_SMD:D_SMA`.
+  - `D_SOD-123F`: no selected part uses it.
+  - `Fuse_1206_3216Metric`: the fuse is a Nano2 451 on stock `Fuse:Fuse_Littelfuse-NANO2-451_453`.
+
+  Delete them or mark them obsolete so they can't be picked by mistake.
+- **Use KiCad's stock Phoenix libraries** (`Connector_Phoenix_MC`, `Connector_Phoenix_MSTB`) for 1844210, 1844223, 1759020, 1759033 and 1759017, instead of creating `IndustrialIO:Phoenix_*`. Check each against the Phoenix drawing. This removes several of LIB-01's 31 groups.
+
+### S9. Optional: CAN FD clock
+
+FDCAN at 48 MHz works: 96 time quanta at 500 kbit/s and 24 at 2 Mbit/s. However, CiA 601-3 recommends 20, 40 or 80 MHz for CAN FD interoperability. A clean alternative:
+
+- 8 MHz HSE ÷ 2 × 80 = 320 MHz VCO
+- SYSCLK 160 MHz (PLLR ÷ 2)
+- FDCAN 80 MHz (PLLQ ÷ 4)
+- USB from HSI48, trimmed by CRS from USB SOF
+
+All of these are within the STM32G4 PLL limits.
+
+### S10. Minor items
+
+| Item | Note |
+| --- | --- |
+| Status LEDs at 1.3 mA | Visible but dim; panel indicators usually run 2–5 mA. |
+| G5Q minimum load | The datasheet's "P level" reference is 10 mA at 5 VDC. For dry contacts into PLC inputs (2–3 mA), use a gold-clad signal relay or document a 10 mA minimum load. |
+| RS-485 TVS (SMBJ8.5CA) | VBR min is 9.4 V, so it clips the +12 V end of the TIA-485 common-mode range. That's acceptable on an isolated node if RS485_REF is wired to the cable's ground conductor; write this into Interfaces.md. An asymmetric −7/+12 V TVS would need its clamp voltage checked against the ISO1410's ±18 V bus absolute maximum. |
+| ADS8684A reference capacitors | 2 × 22 µF per pin meets the 10 µF minimum, and the datasheet gives no maximum. The 15 ms turn-on time (specified at 22 µF) roughly doubles, so firmware should wait ≥ 30–50 ms after power-up or PWR_DN exit. |
+| I²C | 4.7 kΩ pull-ups are right for 100 kHz. For 400 kHz, confirm a rise time ≤ 300 ns. |
+| eFuse MODE | Left open for latch-off. That is a valid conservative choice, but unattended equipment usually auto-retries. Decide which you want and document it. |
+| eFuse IMON | Currently a test point. A spare MCU ADC pin would give input-current telemetry almost for free. |
+
+---
+
+## 4. Recommended simplifications (optional, industry-typical)
+
+`Architecture_Review.md` currently says "Retain the complete documented architecture". Each item below is therefore a proposal that would need those documents updated. None of them removes a feature listed in `Scope.md`.
+
+### R1. Merge 3V3_DIG and 3V3_FIELD_LOGIC into one 3.3 V logic rail
+
+Both rails come from 5V_FIELD. USB cannot power the board: it is self-powered and only senses VBUS. So the state the domain-crossing buffers guard against, one logic rail up while the other is down, exists only for milliseconds during power ramps.
+
+- **Remove:** 9 × SN74LVC2G125 (keep the loop-status qualifier), 2 × MMBT3904 OE drivers, 1 × TPS70933, 1 × TPS3808 (FIELD3V3_OK), and their pull resistors and decoupling.
+- **Keep:** the 3V3_MCU_ANA LDO, and Schmitt conditioning on slow open-drain or RC signals.
+- **Effect:** about 13 fewer active parts. ISO1212, ISO1410 and ISO1042 VCC1 and ADS8684A DVDD move to 3V3_DIG, adding about 11 mA to a 1 A buck.
+
+### R2. Remove the TMUX7462F protection path and the +15 V / VFP rails
+
+- **Current inputs.** TPS26611 is already a ±50 V-rated loop protector (±55 V absolute maximum). Its +Vs range is 2.25–30 V. Powered from 5 V, its output over-voltage threshold becomes +Vs + 0.05 to +Vs + 0.30 V ([TPS2661.pdf](../references/datasheets/TPS2661.pdf)). That is well inside the ADS8684A's ±20 V input protection, and still 0.16 V above the 4.805 V shunt voltage at 24 mA. NAMUR NE43 over-range readings to 24 mA are preserved.
+- **Voltage inputs.** The existing 1 kΩ 2512 + SMCJ11CA already clamp a ±30 V miswire to about 12–14 V at the ADC pin. The project's own analysis puts 0.32 W in the resistor. The ADS8684A rates its inputs at **±20 V when AVDD is at 5 V or has a < 30 kΩ path to ground** ([ADS8684A.pdf](../references/datasheets/ADS8684A.pdf), absolute-maximum note 2). The 10 kΩ AVDD bleeder provides that path, so the rating holds when the board is unpowered.
+- **Remove:** 2 × TMUX7462F, 2 × TPS7A1601, TPS61040, XAL4040, PMEG4010CEJ, the 680 µF/25 V capacitor, 1 × TPS3700 (ANA15_OK), and about 20–25 passives.
+- **Retires:** **SEQ-01** (high/high), the 15.5 V branch's 4.2 mW reserve in PWR-01/PRE-11, and S3. It also takes the switch's on-resistance and leakage out of the signal path, which improves the error budget.
+
+### R3. Replace the DO current-diagnostic chain with TI's reference arrangement
+
+- **Today:** CS → 1.21 kΩ ∥ 56 k/68 k → OPA2320 follower → 1 k/1.5 k → BAS70-04 to an LM4040 2.5 V clamp → TMUX1511 power-off switch → ADC.
+- **Proposed:** CS (1.21 kΩ) → **22 k / 47 k divider (×0.681, −1.7% gain change, calibrated out)** → 10 nF → PB1 / ADC1_IN12, with **one BAS70-04 (already in the BOM) clamping to 3V3_MCU_ANA and GND**.
+  - The 0.809 A maximum current limit reads 2.18 V.
+  - The minimum 4.5 V fault level reads ≥ 3.07 V, so the two are distinguishable.
+  - A 6.5 V fault pushes only 0.13 mA into the clamp.
+- **Unpowered MCU:** the 22 kΩ series resistor and the clamp limit the current into an unpowered MCU to about 0.3 mA, even at the 6.5 V fault level. That is too little to back-power the rail, so the power-off switch isn't needed.
+- **Keep DIAG_EN as it is now.** If DIAG_EN is low, both CS *and* FAULT go high-impedance (protection stays active; TPS4H160-Q1 datasheet Table 7-1), and the permission logic relies on FAULT.
+- **Remove:** OPA2320, LM4040, TMUX1511, 1 × BAS70-04, and about 8 passives.
+
+### R4. Isolated transceivers with integrated power (also fixes three B5 parts)
+
+- Replace **ISO1410 + UCC33421 with ISOW1412**: RS-485, 500 kbit/s, integrated DC/DC, 20-pin SOIC (DFM, 12.83 × 10.3 mm).
+- Replace **ISO1042 + UCC33421 with ISOW1044**: CAN FD to 5 Mbit/s, ±58 V bus-fault protection, 20 mA spare isolated output, VDD 4.5–5.5 V, VIO 1.71–5.5 V.
+
+This removes both UCC33421s and about 14 support parts (EN/SEL resistors, 15 nF, 10 µF and 22 µF capacitors, BLM21 beads). If the fail-safe bias network is fitted (about 9 mA), confirm the ISOW1412 can supply it from its isolated output.
+
+### R5. Wired-AND health signals (larger change; consider it after R1–R2)
+
+Most health sources are open-drain: TPS3808 RESET, TPS3700, TPS3702, TPS3431 WDO and TPS4H160 FAULT. Tie them to one pulled-up `HEALTH_READY` node, follow it with a single Schmitt buffer, and keep the LVC1G74 ARM latch and the per-output PERMISSION AND gates. The MCU can work out which rail failed from its own ADC readings.
+
+- **Saving:** potentially about 8 of the 11 LVC2G08 and 3 of the 4 LVC2G17.
+- **Cost:** the documented truth tables must be re-derived, and you lose per-signal hardware visibility.
+
+### Effect of R1–R5
+
+| Option | Active parts removed | Open gates retired or reduced | Effort |
+| --- | --- | --- | --- |
+| R1 | about 13 | Domain-crossing analysis | Low |
+| R2 | 7 semiconductors + inductor + 680 µF | SEQ-01, part of PWR-01, S3 | Low–medium |
+| R3 | 4 | Part of the diagnostic-chain capture | Low |
+| R4 | 2 (+ about 14 passives) | Two CAP-01 isolated-port gates; three B5 stock risks | Medium (new footprints) |
+| R5 | up to about 11 | None (re-derivation needed) | Medium |
+| **Total** | **about 25 (R1–R4) to about 37 (R1–R5)**, out of 64 ICs + 7 transistors | | |
+
+---
+
+## 5. Component-by-component verification
+
+**How I checked.** Pin maps were compared against the manufacturer datasheets stored in `references/datasheets/`. Values were recalculated from datasheet limits (§6).
+
+**Hand-assembly rating:**
+
+- **Easy:** leaded parts at ≥ 0.65 mm pitch, or two-terminal parts 0603 and larger.
+- **Medium:** 0.5 mm pitch leaded parts, or exposed-pad packages (use paste and a hot plate).
+- **Hard:** leadless QFN, SON, WSON or VSON, and LGA oscillators.
+
+"✓" means correct and suitable as selected.
+
+### 5.1 Power
+
+| Part (qty) | Package | What I verified | Hand assembly | Verdict and action |
+| --- | --- | --- | --- | --- |
+| TPS26632RGER (1) | VQFN-24 4×4, exposed pad | Pin map. UVLO 604 k/100 k gives 8.17–8.72 V rising. ILIM 5.11 kΩ gives 3.52 A (3.24–3.80 A). dVdT 100 nF gives 500 V/s. PLIM disabled. 35 V clamp. | Hard | ✓. Hand-assembly option: **TPS26633PWPR** (HTSSOP-20). It has the same 35 V clamp, PLIM, B_GATE/DRV, IMON and PGOOD, and adds 2× pulse-current support, so re-check the overload timing. Also see S2. |
+| CSD19537Q3 (1) | SON-8 3.3×3.3 | 100 V. Drop calculation uses Rds(on) max × 1.55 hot. | Medium–hard | ✓ |
+| BSS138P (1) | SOT-23 | Pins, fast gate discharge | Easy | ✓ |
+| 0451005.MRL (1) | Nano2 451 | 5 A very-fast fuse, 12.5 mΩ cold. 3 A continuous is within the usual 75% derating. | Easy | ✓. Datasheet not in `references/`. |
+| SMCJ33CA (1) | SMC | 33 V standoff ≥ 30 V maximum input, coordinated with the 35 V eFuse clamp | Easy | ✓ |
+| EEUFR1H221 (1) | Radial D10 | 50 V rating on a ≤ 35 V clamped rail | Easy | ✓ |
+| LMR38020FDDAR (1) | HSOIC-8 PowerPAD | Pins. VREF 1.0 V gives 4.917–5.083 V. RT 64.9 kΩ gives about 406 kHz. 15 µH + 3 × 22 µF matches TI's table. 1.77 A peak vs 2.6 A minimum high-side limit. 4 ms soft-start. | Medium | ✓. See S2 and B4. |
+| XAL7050-153MEC (1) | XAL7050 | 15 µH, Isat ≈ 6.4 A typical | Easy | ✓ |
+| TPS62160DSGR (1) | WSON-8 2×2 | Pins and accuracy (B3) | **Hard** | **Change to TPS62160DGKR** (VSSOP-8 3×3). Pin numbers 1–8 are identical and there is no thermal pad. Use the stock `Package_SO:VSSOP-8_3x3mm_P0.65mm` footprint, and confirm the name of the DGK symbol in KiCad's `Regulator_Switching` library. |
+| XFL3012-222MEC (1) | 3×3 | 2.2 µH per TI's table | Medium | ✓. Custom footprint pending (LIB-01). |
+| TPS70933DBVR (2) | SOT-23-5 | Pin map (base variant: 1 IN, 2 GND, 3 EN, 4 NC, 5 OUT), ±1% | Easy | ✓. R1 reduces this to one. |
+| TPS61040DBVR (1) | SOT-23-5 | Pins. 15.043 V output. fs ≤ 798 kHz. About 33 mA capability vs about 9 mA load. | Easy | ✓. R2 removes it. |
+| XAL4040-153MEC, PMEG4010CEJ, EEUFR1E681 (1 each) | Molded / SOD-323F / radial | Values and pins | Easy | ✓. R2 removes them. |
+| Thin-film dividers (Yageo RT, 0.1%, 25 ppm/°C) | 0603 | Every divider recalculated | Easy | ✓ |
+| Würth 885382209002, 2.2 µF/100 V soft-termination (8) | 1210 | 100 V rating on the raw input; soft termination resists board-flex cracks | Easy | ✓. Good practice. |
+
+### 5.2 Analog
+
+| Part (qty) | Package | What I verified | Hand assembly | Verdict and action |
+| --- | --- | --- | --- | --- |
+| ADS8684AIDBTR (1) | TSSOP-38, 0.5 mm | **Full pin map matches the datasheet.** REF 4.096 V ±1 mV, ≤ 10 ppm/°C. Input protection ±20 V. DAISY, REFSEL and AUX tied correctly. | Medium | ✓. For prototypes, order the DBT (small-quantity) suffix. |
+| TPS26611DDFR (2) | SOT-23-THN-8 | Pins. +Vs 2.25–30 V. OUT over-voltage at +Vs + 0.05 to +0.30 V. | Easy–medium | ✓ |
+| TMUX7462FPWR (2) | TSSOP-16 | Pins | Easy | ✓. R2 removes them. |
+| TPS7A1601DGNR (2) | HVSSOP-8, exposed pad | Pins | Medium | ✓. R2 removes them. |
+| OPA2320AIDR (1) | SOIC-8 | Pins; unused half wired as a grounded follower | Easy | ✓. R3 removes it. |
+| LM4040AIM3-2.5 (1) | SOT-23-3 | 2.5 V, A grade | Easy | ✓. R3 removes it. |
+| TMUX1511PWR (1) | TSSOP-14 | **Full pin map matches the datasheet.** | Easy | ✓. R3 removes it. |
+| BAS70-04 (2) | SOT-23 | Pins | Easy | ✓ |
+| SMCJ11CA (2) | SMC | VBR ≥ 12.2 V, clamp 18.2 V, IR ≤ 5 µA at 11 V (included in the error budget) | Easy | ✓ |
+| SMCJ33CA (2, loop inputs) | SMC | Standoff vs 30 V | Easy | ✓ |
+| RT1206BRD071KL (10, two banks of 5 → 200 Ω) | 1206 | 0.1%, 25 ppm/°C. 80 mW per bank at 20 mA. | Easy | ✓ |
+| CRCW25121K00FKEGHP (2) | 2512 HP | 0.32 W during a 30 V miswire, inside the part's rating | Easy | ✓ |
+| Phoenix 1844210 + 1840366 (4 + 4) | MC, 2-position, 3.5 mm | Mating pair | Easy | ✓. See S5 for coding. |
+
+### 5.3 Field I/O and isolated ports
+
+| Part (qty) | Package | What I verified | Hand assembly | Verdict and action |
+| --- | --- | --- | --- | --- |
+| ISO1212DBQR (2) | SSOP-16, 0.635 mm | Pins. With RTHR 100 Ω: VIH ≤ 8.79 V, VIL ≥ 6.72 V, ON current 2.05–2.75 mA. IEC 61131-2 Type 3 met. | Easy–medium | ✓, but **add TVS (S1)**. Stock not read. |
+| MMA0204 100 Ω MELF (4) | MELF 0204 | 0.25 W MELF, as TI requires for RTHR | Medium (they roll; tack with paste) | ✓ |
+| TPS4H160BQPWPRQ1 (1) | HTSSOP-28, exposed pad | Pins. 2.87 kΩ sets 0.697 A (0.586–0.809 A). CS 1.21 kΩ at 300:1 gives 2.0 V at 0.5 A. Fault level 4.5–6.5 V. 0.52 W. | Medium | ✓, but supply risk (B5) |
+| STPS2H100A (10) | SMA | 100 V / 2 A; 0.29 W each at 0.5 A | Easy | ✓. Datasheet not in `references/`. |
+| G5Q-1 DC5 (2) | THT | Pinout checked against the drawing. Coil 98.9 mA at 0 °C. Must-operate 3.75 V. 30 VDC / 1 A target is inside the contact rating. | Easy | ✓. Minimum-load note in S10. |
+| PMV30UN2R (2) | SOT-23 | Pins | Easy | ✓ |
+| ISO1410DWR (1) | SOIC-16 wide | Pins (half duplex: A = 12, B = 13). Bus pins ±18 V absolute maximum. | Easy | ✓, but supply risk (B5, R4) |
+| SMBJ8.5CA (2) | SMB | Clamp ≤ 14.4 V, below the ±18 V absolute maximum | Easy | ✓. Common-mode note in S10. |
+| 120 Ω termination + Harwin M20 / M7567 jumpers; 249 Ω bias (DNP) | 1206 / THT | Idle differential 0.538 V nominal, 0.502 V worst case (≥ 0.2 V required) | Easy | ✓ |
+| ISO1042DWVR (1) | SOIC-8 wide (DWV) | Pins. Bus ±70 V. | Easy | ✓, but supply risk (B5, R4) |
+| 2 × 60.4 Ω + 4.7 nF split termination; PESD2CANFD24V | 1206 / SOT-23 | 120.8 Ω total. TVS clamp about 42 V, below 70 V. | Easy | ✓ |
+| UCC33421QDHARQ1 (2) | SSOP-16 (DHA) | Pins. EN and SEL wiring. Capacitor values per datasheet. Worst-case load 0.82 W (RS-485) and 0.40 W (CAN) vs 1.5 W rating. | Medium | ✓, but supply risk (B5, R4) |
+| Phoenix MC 3-position (4), MSTB 4-position (2), MSTB 3-position (2), with plugs | THT | Mating pairs | Easy | ✓. Coding needed (S5). |
+
+### 5.4 Control and service
+
+| Part (qty) | Package | What I verified | Hand assembly | Verdict and action |
+| --- | --- | --- | --- | --- |
+| STM32G474VET6 (1) | LQFP-100, 0.5 mm | Pins and alternate functions: PE9 TIM1_CH1, PA0, PB1 ADC1_IN12, PD0/PD1 FDCAN1, PD4–PD6 USART2, PC8/PC9 I2C3, PA5–PA7 SPI1, PA11/PA12 USB, PB3, PB8, PA15, VREF+ pin 36, VDDA pin 37. Clock tree 8 MHz → 144 MHz / 48 MHz. | Medium (drag-solder with flux) | ✓, but supply risk (B5). Clock option in S9. |
+| SiT8008BI-22-33S-8.000000E (1) | 3.2×2.5, 4 pads | 8 MHz, ±25 ppm (USB needs ±2,500 ppm). ST pin held high. | Hard | ✓. **Change to the "XX" supply code** if you adopt the B3 fix. |
+| 24LC64-I/SN (1) | SOIC-8 | Supply range, pull-ups | Easy | ✓ |
+| TPS3808G33DBVR (3) | SOT-23-6 | Pins | Easy | **B3: change to TPS3808G30DBVR** |
+| TPS3700DDCR (2) | SOT-23-6 (DDC) | Pins, dividers | Easy | ✓. R2 reduces this to one. |
+| TPS3702CX50DDCR (1) | SOT-23-6 (DDC) | Pins; SET behaviour | Easy | **B4: increase to two, one with SET tied low** |
+| TPS3431SDRBR (1) | VSON-8 3×3, exposed pad | Pins. CWD 10 kΩ + SET1 gives a 170–230 ms window. A 50 ms kick gives 3.4× margin. | **Hard** (no leaded version) | ✓. Use paste and a hot plate. |
+| SN74LVC1G74DCUR (1) | VSSOP-8, 0.5 mm | Pin map (1 CLK, 2 D, 3 Q_N, 4 GND, 5 Q, 6 CLR_N, 7 PRE_N, 8 VCC) | Medium | ✓ |
+| SN74LVC2G08DCUR (11) | VSSOP-8 | Pin map (Y1 = 7, Y2 = 3) | Medium | ✓. R5 would reduce the count. |
+| SN74LVC2G17DBVR (4), SN74LVC2G04DBVR (1) | SOT-23-6 | Pin maps | Easy | ✓ |
+| **SN74LVC2G125DCUR (10)** | VSSOP-8 | **Documented pin map is wrong** | Medium | **Fix B1.** R1 reduces this to one. |
+| SN74AUP1T17DCKR (2), TPD2E2U06DCKR (1) | SC70-5 / SC70-3 | Pin maps | Medium | ✓ |
+| USBLC6-2SC6 (1) | SOT-23-6 | Pins | Easy | ✓ |
+| TYPE-C-31-M-12 (1) | Hybrid SMT/THT | Footprint pads compared with the HRO drawing (16 signal + 4 shell). 5.1 kΩ Rd on CC1 and CC2. | Medium | ✓ |
+| MMBT3904 (3) | SOT-23 | Pins | Easy | ✓. R1 reduces this to one. |
+| FTSH-105-01-L-DV-K (1) | 1.27 mm SMT | Key and cable comparison still open (PRE-05) | Medium | ✓. Verify against your debug cable. |
+| TS-1187A (2), LTST-C190 LEDs (2) | SMD | The TS-1187A datasheet is image-only. LEDs run at 1.3 mA. | Easy | ✓ |
+
+### 5.5 Hand-assembly summary
+
+- **Hard packages and their alternatives:**
+  - TPS62160DSGR → **DGKR**
+  - TPS26632RGER → **TPS26633PWPR** (optional)
+  - TPS3431 (VSON only), SiT8008, CSD19537Q3 and XFL3012 have no leaded alternative. They need paste and a hot plate.
+- **22 VSSOP-8 (0.5 mm) logic packages**: 11 LVC2G08, 10 LVC2G125 and 1 LVC1G74. R1 and R5 would remove most of them.
+- **Recommended kit:**
+  - a stainless stencil, or syringe paste, plus a hot plate or preheater for the leadless and exposed-pad parts
+  - a fine conical or hoof tip with flux for drag-soldering the LQFP and TSSOP parts
+  - hot air for rework
+- **Moisture sensitivity:** bake QFN, SON and LQFP parts per J-STD-033 if the bags have been open beyond their MSL floor life.
+
+---
+
+## 6. Calculation cross-check
+
+I recalculated each of these from datasheet limits. The companion script `independent_verification_calcs.py` reproduces every figure.
+
+| # | Item | Project value | My value | Requirement | Status |
+| --- | --- | --- | --- | --- | --- |
+| 1 | eFuse UVLO, rising | 8.448 V nominal; 8.17–8.73 V | 8.174–8.722 V | Start below a 9 V input minus path drop | ✓ |
+| 2 | eFuse UVLO, falling | — | 7.57–8.20 V | — | Info |
+| 3 | eFuse current limit | 3.52 A | 3.523 A (3.24–3.80 A) | Above 2.93 A worst-case input | ✓ (≥ 10% margin) |
+| 4 | eFuse dV/dt | 500 V/s; 379–643 V/s | 500 V/s; 330–756 V/s | — | ✓ (my range also includes capacitor temperature drift) |
+| 5 | Input-path drop at 3 A | ≤ 0.6 V budget | 0.33 V (110 mΩ, hot) | 0.6 V | ✓ |
+| 6 | 5 V buck output | 4.917–5.083 V | 4.917–5.083 V | 4.90–5.10 V target | ✓ |
+| 7 | 5 V buck switching frequency | ≈ 400 kHz | 405.8 kHz | — | ✓ |
+| 8 | Buck ripple (35 V, 12 µH, 320 kHz) | 1.135 A p-p | 1.135 A p-p | — | ✓ |
+| 9 | Buck peak current at 1.2 A load | 1.77 A | 1.767 A | 2.6 A high-side limit (min) | ✓ |
+| 10 | 3V3_DIG | 3.296 V | 3.296 V nominal; 3.168–3.44 V | TPS3808G33 release ≤ 3.194 V | **✗ B3** |
+| 11 | ADC5_OK window | 4.80 / 5.20 V nominal | Trips at 4.843 / 5.153 V vs 4.906–5.083 V | Margin for transients | **⚠ B4** |
+| 12 | +15 V boost | 15.043 V; 14.60–15.50 V; 798 kHz; 1.83 µs | 797.8 kHz; 1.84 µs; about 33 mA capability | < 1 MHz; on-time < 4 µs | ✓ |
+| 13 | 15.5 V branch reservation | 645.8 mW of 650 mW | — | — | ⚠ Project gate PWR-01 (R2 removes it) |
+| 14 | Input current at 8.4 V, 80% efficiency | 2.916 A | 2.925 A | 3 A target | ⚠ Tight but inside the target (both) |
+| 15 | Input current at 24 V, 80% efficiency | — | 2.345 A | — | ✓ |
+| 16 | 5 V service load, bottom-up | 6 W reserved | 4.2 W | 6 W | ✓ (30% headroom) |
+| 17 | TPS4H160 current limit | 0.697 A; 0.586–0.809 A | Same | > 0.5 A rated load | ✓ |
+| 18 | CS voltage at 0.5 A | 1.997 V | 1.997 V | Linear up to about 4 V | ✓ |
+| 19 | TPS4H160 dissipation | — | 0.52 W, +17 °C | Tj | ✓ |
+| 20 | DO terminal voltage at VFIELD = 8.4 V | — | 7.66 V | IEC 61131-2 ON drop ≤ 3 V | ✓ |
+| 21 | DI thresholds (RTHR 100 Ω) | VIH 8.79 V (8.83 V with reserve); VIL 6.72 V | 8.79 / 6.72 V | Project: ON at 9 V. Type 3: ON ≥ 11 V and ≥ 2 mA; OFF ≤ 5 V. | ✓ (0.17–0.21 V margin to the 9 V target) |
+| 22 | Voltage-input accuracy | ±20 mV at room temperature; ±50 mV over 0–50 °C | Drift budget 6.5 mV RSS / 12.1 mV linear | — | ✓ |
+| 23 | Current-input accuracy | ±32 µA at room temperature; ±80 µA over 0–50 °C | 14.2 µA RSS / 26.7 µA linear | — | ✓ |
+| 24 | 4–20 mA loop headroom | — | 6.7 V at 20 mA (24 V −10%, 200 m cable, 10.5 V transmitter); 5.8 V at 24 mA | > 0 | ✓ |
+| 25 | TPS2661 OV threshold with +Vs = 5 V (R2) | — | ≥ 4.967 V vs 4.805 V shunt voltage at 24 mA | Margin > 0 | ✓ (0.16 V) |
+| 26 | ADC SPI | — | 28.4 µs per transaction; 11.4% bus use at 4 kSPS | — | ✓ |
+| 27 | RS-485 idle bias | 0.538 V; 0.502 V worst | Same | ≥ 0.2 V | ✓ |
+| 28 | CAN split termination | 2 × 60.4 Ω | 120.8 Ω | 120 Ω nominal | ✓ |
+| 29 | Isolated port loads | — | 0.82 W (RS-485 worst), 0.40 W (CAN) | 1.5 W per UCC33421 | ✓ |
+| 30 | Clock tree | 144 MHz SYSCLK; 48 MHz USB and FDCAN | Same; ±25 ppm vs USB's ±2,500 ppm | — | ✓ (S9 optional) |
+| 31 | Watchdog | 50 ms kick vs 170–230 ms window | 3.4× margin | ≥ 2× | ✓ |
+| 32 | Relay coils | — | 98.9 mA each at 0 °C; 1.0 W for the pair | Must-operate 3.75 V | ✓ |
+| 33 | Board heat | — | 5.76 W at 24 V, full load | Enclosure rise | ⚠ S6 |
+| 34 | I²C rise time | — | 796 ns with a conservative 200 pF bus | 1,000 ns at 100 kHz | ✓ |
+| 35 | Fix check for B3 (TPS3808G30) | — | Release ≤ 2.903 V; margin +266 mV (buck), +304 mV (LDO) | > 0 | ✓ |
+| 36 | Fix check for B4 (SET low on 5V_FIELD) | — | Trips at 4.509–4.591 V and 5.401–5.499 V; margin +326 / +318 mV | Inside 4.5–5.5 V | ✓ |
+| 37 | Fix check for S2 (PGTH 475 k / 100 k) | — | 6.76–7.04 V rising; 6.27–6.61 V falling | Below 8.4 V minimum VFIELD | ✓ |
+| 38 | Fix check for R3 (22 k / 47 k divider) | — | 2.18 V at the 0.809 A limit; ≥ 3.07 V at a fault; 0.13 mA into the clamp | Faults distinguishable from load | ✓ |
+
+---
+
+## 7. Industry-standard compliance matrix
+
+| Standard | Applies to | Status in the design | Gap or action |
+| --- | --- | --- | --- |
+| IEC 61131-2, digital inputs (Type 3, 24 V DC) | ISO1212 inputs | Thresholds met: VIH ≤ 8.83 V (< 11 V), VIL ≥ 6.72 V (> 5 V), ON current 2.05–2.75 mA (≥ 2 mA) | Surge protection (S1) |
+| IEC 61131-2, digital outputs (0.5 A, high-side) | TPS4H160 | Current-limited at 0.586–0.809 A. Inductive loads clamped by freewheel diodes. About 0.7 V ON drop at 24 V. Pulled down when off. | Short-circuit and thermal cycling still to be measured (PHYS-01) |
+| IEC 61000-4-2 (ESD) | Every connector | TVS on power input, analog inputs, RS-485, CAN, USB data and CC | Digital inputs (S1); FE path (S4) |
+| IEC 61000-4-4 (EFT) | I/O and power | Filtering plus TVS | FE path (S4) |
+| IEC 61000-4-5 (surge) | Power and I/O | Input SMCJ33CA (1.5 kW) + 35 V eFuse clamp; SMCJ on analog inputs; SMBJ on RS-485 | Digital inputs (S1). The CAN TVS is ESD-class, so add a surge-rated part if lines are long. FE path (S4). |
+| TIA/EIA-485-A | RS-485 port | Jumper-selectable 120 Ω termination; fail-safe bias 0.502 V worst case; isolated | Common-mode range note (S10) |
+| ISO 11898-2 / CiA 601-3 | CAN FD port | ISO1042 (±70 V); split termination; PESD2CANFD24V | 48 MHz CAN clock (S9) |
+| USB 2.0 full-speed + Type-C sink | Service port | 5.1 kΩ Rd on CC1/CC2; USBLC6 + TPD2E2U06; self-powered with VBUS detect; internal D+ pull-up | ✓ (0 Ω series resistors fitted, per PRE-04) |
+| IPC-2221 / IPC-2152 | Copper sizing | Widths calculated | Apply S7 |
+| IPC-7351 / J-STD-001 | Land patterns, soldering | 31 asset groups pending | LIB-01 |
+| J-STD-020 / J-STD-033 | Moisture-sensitive parts | QFN, SON, WSON, VSON, LQFP present | Handle and bake per MSL rating (§5.5) |
+| IEC 62368-1 / IEC 61010-1 (creepage and clearance) | Isolation barriers | Every circuit is SELV ≤ 30 V DC, so isolation is functional only. The parts' reinforced ratings exceed what is needed. | Keep the isolator keep-out slots. Mark relay terminals "30 V DC max". |
+| Terminal marking (IEC 60445 practice) | All terminals | — | Silkscreen polarity, voltage rating and function at every terminal |
+
+---
+
+## 8. Folder, documentation and tooling check
+
+| Check | Result |
+| --- | --- |
+| `scripts/audit_project.py` | Pass. 40 Markdown files, 396 local links, 41 PDF identities, 6 capacitor CSV samples. 0 warnings, 0 failures. |
+| `scripts/audit_component_selections.py` | Pass. 162 groups, 140 order codes, 0 failures. |
+| `scripts/audit_capture_readiness.py` | Gate **open**: 148 groups checked, **31 missing assets**. 142 stock assets were left unchecked because no KiCad stock library was on the review machine. 0 script failures. |
+| `docs/calcs/*.py` | `controller_budget`, `pwm_checks`, `analog_checks` and `support_checks` all run cleanly. `spice_dc_check.py` needs `--library` with vendor SPICE models, so I didn't run it. |
+| `tools/diagnostics` tests | **30 / 30 pass.** |
+| CI | `kicad-ci.yml` uses `kicad/kicad:10.0-full`, so capture in **KiCad 10.0.x** (10.0.0 was released in March 2026). `project-audit.yml` runs the audits. |
+| Native design files | **None.** There is no `.kicad_pro`, `.kicad_sch` or `.kicad_pcb`. `IndustrialIO.kicad_sym` exists but is empty. |
+| Capacitor evidence | All 14 numeric-minimum banks are `open_effective_capacitance`. The two isolated-port gates and the parent hold-up gate are also open (CAP-01). Only GRM31CR71E106KA12 has measured bias curves. |
+| Git state | **36 modified and 15 untracked paths** since `d4f47fe`. They include `Scope.md`, `Pre_Schematic_Review.md`, `Library_Preflight.md`, `IndustrialIO.kicad_sym`, `tools/`, `scripts/audit_capture_readiness.py`, `firmware/Protocol.md` and `references/capacitors/`. **Commit them and tag a baseline** before you start capture. |
+| Clutter | `Claude outputs/` (two large PNGs, untracked), `output/pdf` (untracked) and `out/upwork_review` (gitignored) are unrelated to the hardware. Move them out or ignore them. |
+| Consistency between docs, selections and calculations | Values, quantities, part numbers and packages all agree, apart from B1 (pin map), B2 (connector ownership) and S8 (stale README entries). |
+
+---
+
+## 9. Schematic-capture readiness checklist (in order)
+
+1. ☐ **Commit and tag** the current working tree. Clear out the clutter (§8).
+2. ☐ **Fix B1**: the LVC2G125 tables in Control_Service.md, Loop_Status.md and control_service.json.
+3. ☐ **Fix B2**: add the input connector and plug to `power.json`, and decide on the FE terminal (S4).
+4. ☐ **Fix B3**: TPS3808G30 ×3 and the SiT8008 "XX" code. Update `support_checks.py`.
+5. ☐ **Fix B4**: add the second TPS3702CX50 with SET low on 5V_FIELD, re-derive `FIELD5V_VALID` and `HEALTH_READY`, and keep ADC5_OK for data validity only.
+6. ☐ **Decide B5 and R1–R5.** Settle these before drawing sheets, because they change sheets and footprints. My recommended set is R1 + R2 + R3, plus R4 if the isolated-port parts can't be bought.
+7. ☐ **Hand-assembly swaps**: TPS62160DGKR, and optionally TPS26633PWPR.
+8. ☐ **Fold in S1 and S2** (DI TVS; PGOOD → EN with re-scaled PGTH) while the circuit docs are open.
+9. ☐ **Library (LIB-01)**: use stock Phoenix and TI footprints where they exist. Create the remaining custom symbols from datasheet pin tables, ideally cross-checked by a second person or a script. Delete the three unused footprints.
+10. ☐ **Create the KiCad 10 project** in `hardware/STM32_Industrial_IO/` and set up the 4-layer stack-up and net classes (S7). Capture the sheets: power → control/service → analog → field I/O.
+11. ☐ **Run ERC.** Review the permission truth tables against the captured netlist, then hand over to layout (NATIVE-01).
+12. ☐ **Bring-up measurements** that stay open regardless: CAP-01, PWR-01, ANA-01, PHYS-01, and the 5 V load-step response (B4).
+
+---
+
+## 10. Appendix
+
+### What I did not check, and why
+
+- **SPICE DC check:** needs vendor model libraries (`--library`).
+- **KiCad stock-library presence and land-pattern approval:** no KiCad installation or stock library on the review machine. This is part of LIB-01.
+- **Live pricing and lead times beyond the findchips snapshot:** findchips rate-limited the ISO1212 lookup (HTTP 429).
+- **Firmware:** there is no target firmware yet (FW-01). Only the host diagnostics tool exists, and its tests pass.
+- **Mechanical fit and enclosure:** no enclosure model is in the folder.
+
+### Concurrent edits during the review
+
+Another process edited the folder between about 03:00 and 03:35 UTC on 5 October. It added PRE-01 to PRE-12, `Library_Preflight.md` and the capacitor sources. I paused, took a new snapshot once the folder was stable, and reviewed that final state. Every finding above applies to it.
+
+### Sources
+
+- Datasheets in `../references/datasheets/`: SN74LVC2G125, TPS3808, TPS62160, TPS709, TPS3702, TPS2663, LMR38020, ADS8684A, TPS2661, ISO1212, ISO1410, UCC33421-Q1, SiT8008, G5Q, TMUX1511, plus every other pin map named in §5.
+- TI product pages: [UCC33421](https://www.ti.com/product/UCC33421), [UCC33420](https://ti.com/product/UCC33420), [ISOW1412](https://www.ti.com/product/ISOW1412), [ISOW1044](https://www.ti.com/product/ISOW1044).
+- Distributor snapshot: findchips.com searches for each part number in B5, 4–5 October 2026.
+- [STM32G484VET6 listing (RS)](https://uk.rs-online.com/web/p/microcontrollers/1939868).
+- [KiCad 10.0.0 release announcement](https://www.kicad.org/blog/2026/03/Version-10.0.0-Released/).

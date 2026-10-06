@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "record_date_local": "2026-10-06",
+  "local_timezone": "America/New_York",
+  "generated_at_utc": "2026-10-06T20:42:41Z",
+  "purpose": "Bounded sourcing evidence for the six exact selected IC ordering codes challenged by the external pre-capture review.",
+  "scope": {
+    "type": "read_only_observation",
+    "inventory_unit": "pieces shown by the source",
+    "observation_method": "Current rendered DigiKey US product pages read directly in Chrome on the record date; manufacturer product and authorization pages retrieved separately. Page-specific clock times and raw page archives were not captured.",
+    "limitations": [
+      "This is a dated inventory observation, not a reservation, quotation, order, delivery guarantee, or proof of global availability or global zero stock.",
+      "Manufacturer lead times are displayed estimates. Available-to-order is distinct from stock held by the distributor.",
+      "Earlier cached search results with conflicting quantities were superseded by the directly rendered product-page observations recorded here.",
+      "Packaging alternatives below are procurement notes only. No active BOM, selected MPN, symbol, footprint, or design contract was changed.",
+      "No credentials, account access, cart, purchase, supplier contact, or broker sourcing was used."
+    ]
+  },
+  "authorization_basis": [
+    {
+      "id": "TI_AUTHORIZED_NETWORK",
+      "manufacturer": "Texas Instruments",
+      "url": "https://www.ti.com/ordering-resources/faqs/purchasing-online/authorized-distributors.html",
+      "retrieval": "Manufacturer page retrieved on 2026-10-06",
+      "supports": "TI explicitly lists DigiKey and Mouser in its authorized distribution network."
+    },
+    {
+      "id": "ST_GLOBAL_DISTRIBUTORS",
+      "manufacturer": "STMicroelectronics",
+      "url": "https://www.st.com/content/st_com/en/contact-us.html?sc=contact",
+      "retrieval": "Manufacturer page retrieved on 2026-10-06",
+      "supports": "ST lists DigiKey, Farnell/Newark/element14 and Mouser as its global e-commerce distributors, and links its own eStore."
+    }
+  ],
+  "parts": [
+    {
+      "selected_mpn": "TPS4H160BQPWPRQ1",
+      "manufacturer": "Texas Instruments",
+      "selected_package": "PWP-28",
+      "selection_source": "docs/circuits/Field_IO.md:54",
+      "observations": [
+        {
+          "distributor": "DigiKey US",
+          "mpn": "TPS4H160BQPWPRQ1",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS4H160BQPWPRQ1/6100239",
+          "retrieval": "direct_rendered_browser_page",
+          "authorization_basis_id": "TI_AUTHORIZED_NETWORK",
+          "observed_stock_quantity": 5799,
+          "observed_status": "In-Stock",
+          "displayed_manufacturer_lead_time_weeks": 20,
+          "packaging_options_observed": ["Cut Tape", "Tape & Reel"],
+          "quantity_one_cut_tape_sku": "296-44711-1-ND",
+          "full_reel_quantity": 2000
+        }
+      ],
+      "packaging_alternatives": [],
+      "bounded_conclusion": "The exact selected ordering code had positive stock at the checked authorized distributor."
+    },
+    {
+      "selected_mpn": "ISO1212DBQR",
+      "manufacturer": "Texas Instruments",
+      "selected_package": "DBQ-16",
+      "selection_source": "docs/circuits/Field_IO.md:27",
+      "observations": [
+        {
+          "distributor": "DigiKey US",
+          "mpn": "ISO1212DBQR",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/ISO1212DBQR/7931888",
+          "retrieval": "direct_rendered_browser_page",
+          "authorization_basis_id": "TI_AUTHORIZED_NETWORK",
+          "observed_stock_quantity": 11539,
+          "observed_status": "In-Stock",
+          "displayed_manufacturer_lead_time_weeks": 12,
+          "packaging_options_observed": ["Cut Tape", "Tape & Reel"],
+          "quantity_one_cut_tape_sku": "296-47558-1-ND"
+        }
+      ],
+      "packaging_alternatives": [],
+      "bounded_conclusion": "The exact selected ordering code had positive stock at the checked authorized distributor."
+    },
+    {
+      "selected_mpn": "ISO1410DWR",
+      "manufacturer": "Texas Instruments",
+      "selected_package": "DW-16",
+      "selection_source": "docs/circuits/Field_IO.md:124",
+      "manufacturer_product_url": "https://www.ti.com/product/ISO1410/part-details/ISO1410DWR",
+      "observations": [
+        {
+          "distributor": "DigiKey US",
+          "mpn": "ISO1410DWR",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/ISO1410DWR/9861445",
+          "retrieval": "direct_rendered_browser_page",
+          "authorization_basis_id": "TI_AUTHORIZED_NETWORK",
+          "observed_stock_quantity": 0,
+          "observed_status": "Out of stock / backorder",
+          "displayed_manufacturer_lead_time_weeks": 20
+        }
+      ],
+      "packaging_alternatives": [
+        {
+          "AltMPN": "ISO1410DW",
+          "relationship": "Same TI device and DW-16 package; tube carrier replaces the selected large tape-and-reel carrier.",
+          "manufacturer_equivalence_basis_url": "https://www.ti.com/product/ISO1410/part-details/ISO1410DWR",
+          "manufacturer_carriers": {"ISO1410DWR": "Large T&R, 2000", "ISO1410DW": "Tube, 40"},
+          "active_component_change": false,
+          "observation": {
+            "distributor": "DigiKey US",
+            "url": "https://www.digikey.com/en/products/detail/texas-instruments/ISO1410DW/9860785",
+            "retrieval": "direct_rendered_browser_page",
+            "authorization_basis_id": "TI_AUTHORIZED_NETWORK",
+            "observed_stock_quantity": 34,
+            "observed_status": "In-Stock",
+            "displayed_manufacturer_lead_time_weeks": 20,
+            "packaging": "Tube",
+            "distributor_sku": "296-53285-ND",
+            "quantity_one_option_observed": true
+          }
+        }
+      ],
+      "bounded_conclusion": "Selected DWR carrier had zero stock at the checked source, while its manufacturer-identified tube carrier had positive stock."
+    },
+    {
+      "selected_mpn": "ISO1042DWVR",
+      "manufacturer": "Texas Instruments",
+      "selected_package": "DWV-8",
+      "selection_source": "docs/circuits/Field_IO.md:148",
+      "manufacturer_product_url": "https://www.ti.com/product/ISO1042/part-details/ISO1042DWVR",
+      "observations": [
+        {
+          "distributor": "DigiKey US",
+          "mpn": "ISO1042DWVR",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/ISO1042DWVR/10434660",
+          "retrieval": "direct_rendered_browser_page",
+          "authorization_basis_id": "TI_AUTHORIZED_NETWORK",
+          "observed_stock_quantity": 0,
+          "observed_status": "Out of stock / backorder",
+          "displayed_manufacturer_lead_time_weeks": 20
+        }
+      ],
+      "packaging_alternatives": [
+        {
+          "AltMPN": "ISO1042DWV",
+          "relationship": "Same TI reinforced-isolation device and DWV-8 package; tube carrier replaces the selected large tape-and-reel carrier.",
+          "manufacturer_equivalence_basis_url": "https://www.ti.com/product/ISO1042/part-details/ISO1042DWVR",
+          "manufacturer_carriers": {"ISO1042DWVR": "Large T&R, 1000", "ISO1042DWV": "Tube, 64"},
+          "active_component_change": false,
+          "observation": {
+            "distributor": "DigiKey US",
+            "url": "https://www.digikey.com/en/products/detail/texas-instruments/ISO1042DWV/9860887",
+            "retrieval": "direct_rendered_browser_page",
+            "authorization_basis_id": "TI_AUTHORIZED_NETWORK",
+            "observed_stock_quantity": 90,
+            "observed_status": "In-Stock",
+            "displayed_manufacturer_lead_time_weeks": 20,
+            "packaging": "Tube",
+            "distributor_sku": "296-53076-ND",
+            "quantity_one_option_observed": true
+          }
+        }
+      ],
+      "excluded_alternative": {"mpn": "ISO1042BDWVR", "reason": "Basic-isolation B variant is not a carrier-only equivalent of selected reinforced-isolation ISO1042DWVR."},
+      "bounded_conclusion": "Selected DWVR carrier had zero stock at the checked source, while its manufacturer-identified tube carrier had positive stock."
+    },
+    {
+      "selected_mpn": "UCC33421QDHARQ1",
+      "manufacturer": "Texas Instruments",
+      "selected_package": "DHA-16",
+      "selection_source": "docs/circuits/Field_IO.md:165",
+      "manufacturer_product_url": "https://www.ti.com/product/UCC33421-Q1/part-details/UCC33421QDHARQ1",
+      "observations": [
+        {
+          "distributor": "DigiKey US",
+          "mpn": "UCC33421QDHARQ1",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/UCC33421QDHARQ1/29178265",
+          "retrieval": "direct_rendered_browser_page",
+          "authorization_basis_id": "TI_AUTHORIZED_NETWORK",
+          "observed_stock_quantity": null,
+          "observed_status": "Available To Order; not kept in stock",
+          "displayed_manufacturer_lead_time_weeks": 26,
+          "packaging_options_observed": ["Tape & Reel"],
+          "minimum_order_quantity_observed": 1000,
+          "distributor_sku": "296-UCC33421QDHARQ1TR-ND",
+          "numeric_stock_note": "No numeric inventory quantity was displayed. Null is deliberate; this is not a fabricated zero."
+        }
+      ],
+      "packaging_alternatives": [],
+      "bounded_conclusion": "No immediate distributor-held stock was shown at the checked source; displayed full-reel order quantity and lead time are material prototype sourcing constraints."
+    },
+    {
+      "selected_mpn": "STM32G474VET6",
+      "manufacturer": "STMicroelectronics",
+      "selected_package": "LQFP-100",
+      "selection_source": "docs/circuits/Control_Service.md:7",
+      "manufacturer_product_url": "https://www.st.com/en/microcontrollers-microprocessors/stm32g474ve.html",
+      "observations": [
+        {
+          "distributor": "DigiKey US",
+          "mpn": "STM32G474VET6",
+          "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/STM32G474VET6/10231570",
+          "retrieval": "direct_rendered_browser_page",
+          "authorization_basis_id": "ST_GLOBAL_DISTRIBUTORS",
+          "observed_stock_quantity": 0,
+          "observed_status": "Out of stock / backorder",
+          "displayed_manufacturer_lead_time_weeks": 52,
+          "packaging": "Tray",
+          "distributor_sku": "497-19476-ND",
+          "estimated_receipt_date_observed": null
+        },
+        {
+          "distributor": "ST manufacturer eStore",
+          "mpn": "STM32G474VET6",
+          "url": "https://estore.st.com/en/stm32g474vet6-cpn.html",
+          "retrieval": "manufacturer_page_web_retrieval_on_record_date",
+          "authorization_basis": "Manufacturer direct store linked by ST contacts page",
+          "observed_stock_quantity": null,
+          "observed_status": "Out of Stock"
+        }
+      ],
+      "packaging_alternatives": [
+        {
+          "AltMPN": "STM32G474VET6TR",
+          "relationship": "Same selected STM32G474VE LQFP-100 ordering variant with tape-and-reel carrier rather than tray.",
+          "manufacturer_equivalence_basis_url": "https://www.st.com/en/microcontrollers-microprocessors/stm32g474ve.html",
+          "active_component_change": false,
+          "observation": {
+            "distributor": "DigiKey US",
+            "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/STM32G474VET6TR/11591127",
+            "retrieval": "direct_rendered_browser_page",
+            "authorization_basis_id": "ST_GLOBAL_DISTRIBUTORS",
+            "observed_stock_quantity": 0,
+            "observed_status": "Out of stock / backorder",
+            "displayed_manufacturer_lead_time_weeks": 52,
+            "packaging_options_observed": ["Cut Tape", "Tape & Reel"],
+            "full_reel_quantity": 1000,
+            "quantity_one_cut_tape_sku": "497-STM32G474VET6TRCT-ND",
+            "estimated_receipt_date_observed": null
+          }
+        }
+      ],
+      "other_source_limitations": [
+        "Mouser US exact-part page rendered zero stock and a 52-week lead time, but an automated-access verification overlay limited the read. It is not used as a second fully confirmed live inventory source here.",
+        "Cached regional Mouser results conflicted with each other and with current US pages; they do not establish current available stock."
+      ],
+      "bounded_conclusion": "The exact tray code and matching TR carrier had zero stock at the checked authorized distributor; the manufacturer direct-store retrieval also indicated out of stock. Global zero stock was not established."
+    }
+  ],
+  "review_conclusion": "The external report's blanket five-zero-authorized-stock claim is not supported by these direct observations. TPS4H160 and ISO1212 exact codes had stock; ISO1410 and ISO1042 had stocked manufacturer-identified carrier alternatives. MCU and isolated-power-module sourcing remain unresolved at the checked sources. Recheck before purchase or assembly planning."
+}
